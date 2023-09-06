@@ -1,10 +1,40 @@
 <template>
  <div class='' id='' style="background: #f3f4fa; margin: -20px; padding: 20px;">
   <!-- {{ formInline }} -->
+  <!-- <div ref="aaaaa" style="height: 500px; border: 1px solid red; overflow: auto;">
+
+    <div style="height: 900px; border: 1px solid blue;">
+
+    </div>
+  </div> -->
+  <!-- {{crowdList}} -->
   <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline" ref="ruleForm">
-    <el-form-item label="人群ID:" prop="crowdId">
-      <el-input v-model="formInline.crowdId" @change="handleChange" placeholder="请输入" clearable></el-input>
+    <el-form-item
+      label="人群ID:"
+      v-for="(item, index) in formInline.crowdIds"
+      :key="index"
+      :prop="'crowdIds.' + index + '.value'"
+      :rules="{
+        required: true, message: '域名不能为空', trigger: 'blur'
+      }">
+      <el-input
+        v-model="item.value"
+        @change="handleChange"
+        placeholder="请输入"
+        clearable
+        style="width: 120px">
+      </el-input>
+
+      <el-button
+        v-if="formInline.crowdIds.length > 1"
+        type="text"
+        icon="el-icon-remove-outline"
+        style="color: red"
+        @click="cutContrastCrowd(formInline.crowdIds, index)"
+      >
+      </el-button>
     </el-form-item>
+    <el-button type="text" @click="addContrastCrowd(formInline.crowdIds)" style="margin-right: 50px">添加对比人群</el-button>
     <el-form-item v-if="crowdName" label="人群名:" style="margin: 0 50px 0 20px">
       {{ crowdName }}
     </el-form-item>
@@ -52,246 +82,14 @@
   </el-form>
 
   <!-- 总览 -->
-  <div v-if="pageStatus === 1">
-    <div >
-      <div style="display: flex; justify-content: space-between;">
-        <div class="big-title">总览</div>
+  <!-- :style="{width: Object.keys(allCrowdData).length * 100 + '%'}" -->
 
-        <div class="export-button">
-          <a :href="downloadUrl" download ref="download_Url"></a>
-          <el-button type="success" @click="handleGxportRightsInterests">导出数据</el-button>
-        </div>
-      </div>
-      <!-- 多级多层的表单填写项 -->
-
-      <div class="wrap-div">
-        <div class="overview-table">
-          <el-row :gutter="20">
-
-            <el-col :span="8"><div class="ibox">
-              <div class="title-one">
-                主页活跃人数
-                <span class="remark">（根据圈定量统计）</span>
-              </div>
-              <div class="text-two">
-                {{ cc_format_number(overview.homepageActiveUv) }}
-              </div>
-              <div class="small-box">
-                <div class="small">
-                  <span>圈定用户数</span>
-                  <span>
-                    {{ cc_format_number(overview.quandingUv) }}
-                  </span>
-                </div>
-              </div>
-            </div></el-col>
-
-            <el-col :span="8"><div class="ibox">
-              <div class="title-one">起播活跃率
-                <span class="remark">（根据圈定量统计）</span>
-              </div>
-              <div class="text-two">
-                {{ toPercent(overview.totalPlayRate) }}
-              </div>
-              <div class="small-box">
-                <div class="small">
-                  <span>起播人数</span>
-                  <span>
-                    {{ cc_format_number(overview.totalPlayUv) }}
-                  </span>
-                </div>
-                <div class="small">
-                  <span>主页活跃人数</span>
-                  <span>
-                    {{ cc_format_number(overview.homepageActiveUv) }}
-                  </span>
-                </div>
-              </div>
-            </div></el-col>
-
-            <el-col :span="8"><div class="ibox">
-              <div class="title-one">产品包曝光率
-                <span class="remark">（根据命中量统计）</span>
-              </div>
-              <div class="text-two">
-                {{ toPercent(overview.totalPkgShowRate) }}
-              </div>
-              <div class="small-box">
-                <div class="small">
-                  <span>产品包曝光人数</span>
-                  <span>{{ cc_format_number(overview.totalPkgShowUv) }}</span>
-                </div>
-                <div class="small">
-                  <span>起播人数</span>
-                  <span>{{ cc_format_number(overview.totalPlayUv) }}</span>
-                </div>
-              </div>
-            </div></el-col>
-
-          </el-row>
-
-          <el-row :gutter="20">
-
-            <el-col :span="8"><div class="ibox">
-              <div class="title-one">下单率
-                <span class="remark">（根据命中量统计）</span>
-              </div>
-              <div class="text-two">
-                {{ toPercent(overview.totalPkgXiadanRate) }}
-              </div>
-              <div class="small-box">
-                <div class="small">
-                  <span>下单人数</span>
-                  <span>{{ cc_format_number(overview.totalPkgXiadanUv) }}</span>
-                </div>
-                <div class="small">
-                  <span>曝光人数</span>
-                  <span>{{ cc_format_number(overview.totalPkgShowUv) }}</span>
-                </div>
-              </div>
-            </div></el-col>
-
-            <el-col :span="8"><div class="ibox">
-              <div class="title-one">付费率
-                <span class="remark">（根据命中量统计）</span>
-              </div>
-              <div class="text-two">
-                {{ toPercent(overview.totalPkgPayRate) }}
-              </div>
-              <div class="small-box">
-                <div class="small">
-                  <span>付费人数</span>
-                  <span>{{ cc_format_number(overview.totalPkgPayUv) }}</span>
-                </div>
-                <div class="small">
-                  <span>曝光人数</span>
-                  <span>{{ cc_format_number(overview.totalPkgShowUv) }}</span>
-                </div>
-              </div>
-            </div></el-col>
-
-            <el-col :span="8"><div class="ibox">
-              <div class="title-one">付费金额
-                <span class="remark">（根据命中量统计）</span>
-              </div>
-              <div class="text-two" style="height: 70px">
-                {{ cc_format_number(overview.totalPrice) }}
-              </div>
-
-            </div></el-col>
-
-          </el-row>
-
-        </div>
-
-        <!-- 漏斗图 -->
-        <div class="chart-wrap">
-          <div id="chart1" ref="chart1" class="chart-1" >chart1</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- tabs -->
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-      <el-tab-pane label="内容型" name="one">
-        <!-- 柱状图、折线图 -->
-        <div class="launch-statistics">
-            <!-- <template v-if="show"> -->
-            <template>
-              <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj2" :key="index">
-                <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
-                  <div class="unit-box">
-                    <!-- {{allChartData[key]}} -->
-                    <!-- <div class="unit-header clearfix"><span v-if="(allChartData && allChartData[key] && allChartData[key].title) || chart.title">{{ allChartData[key].title || chart.title }}</span></div> -->
-                    <div class="unit-header clearfix">
-                      <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
-                        {{ allChartData[key].title }}
-                      </span>
-                      <span v-else>
-                        {{chart.title}}
-                      </span>
-
-                    </div>
-
-                    <div class="unit-content" v-if="show && chart.title">
-                        <!-- {{ allChartData[key] && allChartData[key].series }} -->
-                      <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
-                      <div v-else class="chart-div">
-                        <el-empty description="暂无数据"></el-empty>
-                      </div>
-                    </div>
-                  </div>
-                </el-col>
-              </el-row>
-
-            </template>
-        </div>
-
-      </el-tab-pane>
-
-      <el-tab-pane label="付费型" name="two">
-
-        <!-- 柱状图、折线图 -->
-        <div class="launch-statistics">
-            <template>
-              <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index">
-                <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
-                  <div class="unit-box" >
-
-                    <!-- <div class="unit-header clearfix"><span v-if="chart.title">{{ chart.title }}</span></div> -->
-                    <div class="unit-header clearfix">
-                      <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
-                        {{ allChartData[key].title }}
-                      </span>
-                      <span v-else>
-                        {{ chart.title }}
-                      </span>
-
-                      <!-- {{ key }} -->
-                      <!-- 各卡种下单趋势 -->
-                      <el-radio-group v-model="radioType"
-                        v-if="key === 'orderPopulationTrendOfEachCard' || key === 'orderNumTrendOfEachCard'"
-                        class="radio-type"
-                      >
-                        <el-radio :label="0">下单人数</el-radio>
-                        <el-radio :label="1">下单次数</el-radio>
-                      </el-radio-group>
-
-                      <!-- 各卡种付费趋势 -->
-                      <el-radio-group v-model="radioType2"
-                        v-if="key === 'payPopulationTrendOfEachCard' || key === 'payAmountTrendOfEachCard'"
-                        class="radio-type">
-                        <el-radio :label="0">付费人数</el-radio>
-                        <el-radio :label="1">付费金额</el-radio>
-                      </el-radio-group>
-
-                    </div>
-
-                    <div class="unit-content" v-if="show && chart.title">
-                      <!-- {{ allChartData[key] && allChartData[key].series }} -->
-                      <div
-                        v-if="allChartData[key]
-                          && allChartData[key].series
-                          && allChartData[key].series.length > 0"
-                        :ref="key"
-                        :id="key"
-                        class="chart-div">
-                      </div>
-                      <div v-else class="chart-div">
-                        <el-empty description="暂无数据"></el-empty>
-                      </div>
-                    </div>
-                  </div>
-                </el-col>
-              </el-row>
-
-            </template>
-
-        </div>
-      </el-tab-pane>
-    </el-tabs>
-  </div>
-
+  <!-- 显示内容主体 -->
+  <ShowIndex
+    v-if="pageStatus === 1"
+    :allCrowdData="allCrowdData"
+  >
+  </ShowIndex>
   <!-- 初始页面 或者 查询为空 时 -->
   <div
     v-else
@@ -362,12 +160,17 @@
 </template>
 
 <script>
+import ShowIndex from './indexComs/ShowIndex.vue'
+
 const cityOptions = ['腾讯影视VIP', '爱奇艺影视VIP', '优酷影视VIP', '芒果TV大屏VIP', '芒果全屏VIP', '港剧VIP', '欢喜', '亲子VIP', '音乐K歌会员', '音乐VIP', '家庭影院VIP', '画报屏保', '4K花园', '戏曲VIP', '健身VIP', '炫舞广场', '电竞VIP', '1905', '酷喵VIP']
 const cityOptions2 = ['湖南', '河北', '贵州', '四川', '重庆', '云南', '江西', '河南', '安徽', '山西', '湖北', '甘肃', '广西', '江苏', '新疆', '山东', '辽宁', '陕西', '海南', '福建']
 export default {
-  components: {},
+  components: { ShowIndex },
   data () {
     return {
+      crowdList: [],
+      event: null,
+      allCrowdData: {},
       startTime: '',
       endTime: '',
       radioType: 0,
@@ -392,8 +195,7 @@ export default {
       // allData: {},
       overview: {},
       formInline: {
-        // crowdId: '10013',
-        crowdId: '',
+        crowdIds: [{ value: '' }],
         sourceNameList: [],
         // timeRange: ['2022-07-18', '2022-07-19']
         timeRange: [],
@@ -422,37 +224,6 @@ export default {
           return time.getTime() > Date.now() - 8.64e6
         }
       },
-      activeName: 'one',
-      rowObj: [
-        {
-          vipPkgShow: { type: 'bar', title: '各权益曝光人数及占比', span: 8 },
-          vipPkgXiadan: { type: 'bar', title: '各权益下单人数及占比', span: 8 },
-          vipPkgPay: { type: 'bar', title: '各权益付费人数及占比', span: 8 }
-        }, {
-          vipPkgShowTrend: { type: 'line', title: '影视VIP曝光趋势', span: 8 },
-          vipPkgXiadanTrend: { type: 'line', title: '影视VIP下单趋势', span: 8 },
-          vipPkgPayTrend: { type: 'line', title: '影视VIP付费趋势', span: 8 }
-        }, {
-          pathPkgShow: { type: 'bar', title: '影视VIP曝光路径人数及占比', span: 8 },
-          productTypePkgXiadan: { type: 'bar', title: '影视VIP下单产品包分类人数及占比', span: 8 },
-          pathPkgPay: { type: 'bar', title: '影视VIP付费路径人数及占比', span: 8 }
-        },
-        {
-          orderPopulationTrendOfEachCard: { type: 'line', title: '影视VIP各卡总下单趋势', span: 8 },
-          payPopulationTrendOfEachCard: { type: 'line', title: '影视VIP各卡总付费趋势', span: 8 },
-          // orderNumTrendOfEachCard: { type: 'line', title: '影视VIP各卡总下单趋势', span: 8 },
-          // payAmountTrendOfEachCard: { type: 'line', title: '影视VIP各卡总付费趋势', span: 8 },
-          productTypePkgPay: { type: 'bar', title: '影视VIP付费产品包分类人数及占比', span: 8 }
-        }
-      ],
-      rowObj2: [
-        {
-          vipPlay: { type: 'bar', title: '各权益起播人数及占比', span: 12 },
-          vipPlayTrend: { type: 'line', title: '影视VIP起播趋势', span: 12 }
-        }, {
-          viewingCategoryRank: { type: 'pie', title: '各权益观影分类TOP5及占比', span: 12 }
-        }
-      ],
       crowdId: 11882,
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       loading: false,
@@ -464,7 +235,13 @@ export default {
       // policyId: 4323
     }
   },
+  destroyed () {
+    this.event()
+  },
+
   mounted () {
+    // console.log('this.$refs.aaaaa------>', this.$refs.aaaaa)
+    // this.$refs.aaaaa.addEventListener('scroll', this.scrollEvent)
     // const data = [
     //   { value: 1048, name: '电视剧' },
     //   { value: 735, name: '电影' },
@@ -501,6 +278,9 @@ export default {
         }
       }
     }
+    // 'formInline.crowdId' () {
+    //   return this.formInline.crowdIds.map(item => item.value).join(',') || ''
+    // }
   },
   watch: {
     'formInline.sourceNameList': {
@@ -554,6 +334,52 @@ export default {
     console.log('deactivated - setTimeOutVal------->', this.setTimeOutVal)
   },
   methods: {
+    // scrollEvent () {
+    //   console.log('scroll', this.$refs.aaaaa.scrollTop)
+    // },
+    syncScroller () {
+      console.log('arguments-->', arguments)
+      // const nodes = Array.prototype.filter.call(arguments, item => item instanceof HTMLElement)
+      // const max = nodes.length
+      // if (!max || max === 1) return
+      const nodes = [...arguments].map(item => item.$el)
+      const max = nodes.length
+      let sign = 0 // 用于标注
+
+      function event () {
+        if (!sign) { // 标注为 0 时 表示滚动起源
+          sign = max - 1
+          const top = this.scrollTop
+          const left = this.scrollLeft
+          for (const node of nodes) { // 同步所有除自己以外节点
+            if (node === this) continue
+            node.scrollTo(left, top)
+          }
+        } else { --sign } // 其他节点滚动时 标注减一
+      }
+
+      nodes.forEach((ele, index) => {
+        console.log('ele--->', ele)
+        ele.addEventListener('scroll', event)
+      })
+
+      return () => {
+        nodes.forEach((ele, index) => {
+          ele.removeEventListener('scroll', event)
+        })
+      }
+    },
+
+    // 添加对比人群
+    addContrastCrowd (list) {
+      list.push({
+        value: ''
+      })
+    },
+    // 删除对比人群
+    cutContrastCrowd (list, index) {
+      list.splice(index, 1)
+    },
     resetForm (formName) {
       // 重置数据
       this.pageStatus = 0
@@ -617,92 +443,6 @@ export default {
       })
     },
 
-    // 漏斗图
-    showFunnel (element, data) {
-      const chartElement = document.getElementById(element)
-      if (!chartElement) return
-
-      const chartData = [
-        { value: data.homepageActiveUv, name: '主页活跃' },
-        { value: data.totalPlayUv, name: '起播' },
-        { value: data.totalPkgShowUv, name: '产品包曝光' },
-        { value: data.totalPkgXiadanUv, name: '下单' },
-        { value: data.totalPkgPayUv, name: '成交' }
-      ]
-
-      const _this = this
-      const option = {
-        title: {
-          text: '漏斗图'
-        },
-        tooltip: {
-          trigger: 'item'
-          // formatter: '{a} <br/>{b} : {c}%'
-        },
-        toolbox: {
-          feature: {
-            dataView: { readOnly: false },
-            restore: {},
-            saveAsImage: {}
-          }
-        },
-        legend: {
-          data: ['Show', 'Click', 'Visit', 'Inquiry', 'Order']
-        },
-        color: _this.colorList,
-        series: [
-          {
-            name: '漏斗图',
-            type: 'funnel',
-            left: '10%',
-            top: 60,
-            bottom: 60,
-            width: '80%',
-            // min: 0,
-            // max: data.homepageActiveUv,
-            minSize: '0%',
-            maxSize: '100%',
-            sort: 'none', // none-按照数据顺序展示 ; descending-倒序
-            gap: 2,
-            label: {
-              show: true,
-              position: 'inside'
-            },
-            labelLine: {
-              length: 10,
-              lineStyle: {
-                width: 1,
-                type: 'solid'
-              }
-            },
-            itemStyle: {
-              borderColor: '#fff',
-              borderWidth: 1
-            },
-            emphasis: {
-              label: {
-                fontSize: 20
-              }
-            },
-            data: chartData
-            //  [
-            //   { value: 60, name: 'Visit' },
-            //   { value: 40, name: 'Inquiry' },
-            //   { value: 20, name: 'Order' },
-            //   { value: 80, name: 'Click' },
-            //   { value: 100, name: 'Show' }
-            // ]
-          }
-        ]
-
-      }
-      const echarts = require('echarts')
-      const myChart = echarts.init(chartElement)
-      console.log('echarts--------->', echarts)
-      console.log('myChart--------->', myChart)
-
-      myChart.setOption(option)
-    },
     // initRange () {
     //   // 设置默认时间为今天的前一周
     //   const start = new Date()
@@ -735,7 +475,8 @@ export default {
       // }
 
       this.formInline = {
-        crowdId: '20101',
+        crowdIds: [{ value: '20101' }],
+        // crowdId: ['20101'],
         sourceNameList: ['优酷影视VIP'],
         timeRange: ['2023-08-03', '2023-08-08'],
         isDelCache: 0
@@ -745,34 +486,77 @@ export default {
       })
     },
     handleChange () {
-      this.formInline.timeRange = []
-      this.getCrowdInfo('setTime')
+      if (this.formInline.crowdIds.length === 1) {
+        this.formInline.timeRange = []
+        this.getCrowdInfo('setTime')
+      } else {
+        this.getCrowdInfo()
+      }
     },
     getCrowdInfo (type) {
-      const crowdId = this.formInline.crowdId
+      const originParams = this.formInline
+      const isSetRange = originParams.crowdIds.length === 1 ? type : undefined
+
+      const crowdIdArrFn = originParams.crowdIds.map(item => this.getInfo(item.value, isSetRange))
+      // console.log(' crowdIdArrFn-->', crowdIdArrFn)
+      // const crowdId = this.formInline.crowdId
       this.startTime = ''
       this.endTime = ''
       this.crowdName = ''
       return new Promise((resolve, reject) => {
+        Promise.all(crowdIdArrFn).then((res) => {
+          // console.log('originParams--->', originParams)
+          // console.log('res--->', res)
+          // 单个人群
+          if (res.length === 1) {
+            const crowdInfo = res[0].policyCrowds
+            this.crowdName = crowdInfo.crowdName
+            this.startTime = crowdInfo.createTime || '' // 创建日期 就是可选最小时间
+
+            // 下架
+            const isOffShelf = crowdInfo.putway === 0 // 【 1：上架， 0：下架】
+            // 删除
+            const isDelete = crowdInfo.delFlag === 2 //  【 1: 正常， 2：删除】
+
+            if (isOffShelf || isDelete) {
+              this.endTime = this.$moment(crowdInfo.updateTime).format('YYYY-MM-DD')
+            } else {
+              this.endTime = this.$moment().format('YYYY-MM-DD')
+            }
+            // console.log('type--->', type)
+            // console.log('isSetRange--->', isSetRange)
+            // 如果是 crowdID change 的时候调用的，就设置分析周期
+            if (this.startTime && this.endTime && isSetRange) {
+              this.formInline.timeRange = [this.startTime, this.endTime]
+            }
+          }
+          // else {
+          // 多个人群
+          // }
+          this.crowdList = res.map(item => {
+            const crowdInfo = item.policyCrowds
+            return {
+              crowdName: crowdInfo.crowdName,
+              crowdId: crowdInfo.crowdId,
+              createTime: crowdInfo.createTime
+            }
+          })
+
+          resolve(res)
+        }).catch(err => {
+          console.log('err--->', err)
+          reject(err)
+        })
+      })
+    },
+    getInfo (crowdId, type) {
+      // const originParams = this.formInline
+      // const crowdIdArr = originParams.crowdIds.map(item => item.value)
+
+      // const crowdId = this.formInline.crowdId
+
+      return new Promise((resolve, reject) => {
         this.$service.crowdEdit({ crowdId }).then(res => {
-          const crowdInfo = res.policyCrowds
-          this.crowdName = crowdInfo.crowdName
-          this.startTime = crowdInfo.createTime || '' // 投放日期 就是可选最小时间
-
-          // 下架
-          const isOffShelf = crowdInfo.putway === 0 // 【 1：上架， 0：下架】
-          // 删除
-          const isDelete = crowdInfo.delFlag === 2 //  【 1: 正常， 2：删除】
-
-          if (isOffShelf || isDelete) {
-            this.endTime = this.$moment(crowdInfo.updateTime).format('YYYY-MM-DD')
-          } else {
-            this.endTime = this.$moment().format('YYYY-MM-DD')
-          }
-          // 如果是 crowdID change 的时候调用的，就设置分析周期
-          if (this.startTime && this.endTime && type) {
-            this.formInline.timeRange = [this.startTime, this.endTime]
-          }
           resolve(res)
         }).catch((err) => {
           reject(err)
@@ -788,6 +572,7 @@ export default {
 
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
+          console.log('valid--->', valid)
           this.loading = true
           this.show = false
           this.initChart(sourceName)
@@ -832,7 +617,9 @@ export default {
 
       // 先查询人群是否存在，若存在，再去分
       try {
-        await this.getCrowdInfo()
+        const aaa = await this.getCrowdInfo()
+        console.log('aaaaaaa--->', aaa)
+
         this.fetchAllData(sourceName)
       } catch {
         this.loading = false
@@ -845,8 +632,13 @@ export default {
       const originParams = this.formInline
       this.radioType = 0 // 重置
       this.radioType2 = 0 // 重置
+      console.log('originParams-->', originParams)
+      const crowdIds = originParams.crowdIds.map(item => item.value).join(',') || ''
+
       const params = {
-        crowdId: originParams.crowdId,
+        // crowdIds: '20101,20102',
+        crowdIds,
+        // crowdIds: originParams.crowdId,
         sourceNameList: originParams.sourceNameList.join(','),
         startDate: originParams.timeRange[0],
         endDate: originParams.timeRange[1],
@@ -862,39 +654,45 @@ export default {
       //   sourceName: sourceName || '' // 点击柱状图查询单个业务数据
       // }
       // 获取所有图表数据
-      this.$service.rightsInterestsOutcome(params).then(res => {
+      this.$service.rightsInterestsOutcome(params).then(allRes => {
         // this.allData = res || {}
         this.loading = false
 
-        this.pageStatus = res.status
-        console.log('this.setTimeOutVal===', this.setTimeOutVal)
+        const res = allRes || {}
+        const arr = Object.values(res)
+
+        console.log('this.crowdList--->', this.crowdList)
+
+        for (const key in res) {
+          const obj = this.crowdList.find(item => Number(item.crowdId) === Number(key))
+          res[key].crowdName = obj.crowdName || ''
+        }
+
+        const isLoad = arr.every(item => item.status === 0)
+        const isNoData = arr.every(item => item.status !== 0 && item.status !== 1) // 无数据
         if (this.setTimeOutVal) {
           // 销毁定时器
           this.destoryTimeInterval()
         }
-        if (this.pageStatus === 0) { // 分析中
+        if (isLoad) { // 全部状态都为【分析中】
+          this.pageStatus = 0
           this.emptyTxt = '数据正在分析中，请稍后重试'
           this.allChartData = {}
-
           // 开启定时器
           this.openTimeInterval()
-        } else if (this.pageStatus === 1) { // 有数据
-          // 真实数据
-          const tableData = res.data || {}
-
-          this.overview = tableData.overview.data || {}
-          this.allChartData = tableData || {}
-          // 概览 - 漏斗图
-          this.show = true
-          this.$nextTick(() => {
-            this.showFunnel('chart1', this.overview)
-            // 详情图表
-            this.drawChart()
-          })
-        } else { // 无数据
+        } else if (isNoData) { // 全部状态都为【无数据】
+          this.pageStatus = 2
           this.emptyTxt = '暂无数据'
           this.allChartData = {}
+        } else {
+          this.pageStatus = 1
+          this.allCrowdData = res || {}
         }
+
+        // 测试数据
+        // for (let i = 0; i < 3; i++) {
+        //   this.allCrowdData[`2010${i}`] = allRes[20101]
+        // }
 
         // 重新搜索历史记录，更新数据
         this.handleGetRightsInterestsSearchRecord()
@@ -917,457 +715,6 @@ export default {
     destoryTimeInterval () {
       console.log('=========我清除了定时器-----')
       clearInterval(this.setTimeOutVal)
-    },
-    drawChart () {
-      const rowObj = this.rowObj
-      const rowObj2 = this.rowObj2
-      rowObj.forEach(item => {
-        // key 是代表 ref 值
-        for (const key in item) {
-          if (item[key].type === 'line') {
-            this.showLine(this.allChartData[key], key)
-          } else if (item[key].type === 'bar') {
-            this.showBar(this.allChartData[key], key)
-          } else if (item[key].type === 'pie') {
-            this.showPie(this.allChartData[key], key)
-          }
-        }
-      })
-      rowObj2.forEach(item => {
-        // key 是代表 ref 值
-        for (const key in item) {
-          if (item[key].type === 'line') {
-            this.showLine(this.allChartData[key], key)
-          } else if (item[key].type === 'bar') {
-            this.showBar(this.allChartData[key], key)
-          } else if (item[key].type === 'pie') {
-            this.showPie(this.allChartData[key], key)
-          }
-        }
-      })
-    },
-    //  折线图
-    showLine (data, chartID) {
-      let hasY2 = false
-      // console.log('showLine======111>>>', ...arguments)
-      if (data && data.xaxis && data.xaxis.length > 0) {
-        const series = data.series || []
-        let legendData = series.map((key) => {
-          return key.name
-        })
-        let linesData = series.map((key) => {
-          if (data.yunit === '%') {
-            const arr = key.value.map(v => v * 100)
-            return { name: key.name, data: arr, type: 'line' }
-          } else {
-            return { name: key.name, data: key.value, type: 'line' }
-          }
-        })
-        if (data.series2) {
-          hasY2 = true
-          const series2 = data.series2 || []
-          const legendData2 = series2.map((key) => {
-            return key.name
-          })
-          const linesData2 = series2.map((key) => {
-            if (data.yunit === '%') {
-              const arr = key.value.map(v => v * 100)
-              return { name: key.name, data: arr, type: 'line', yAxisIndex: 1 }
-            } else {
-              return { name: key.name, data: key.value, type: 'line', yAxisIndex: 1 }
-            }
-          })
-          legendData = legendData.concat(legendData2)
-          linesData = linesData.concat(linesData2)
-          console.log('legendData===', legendData)
-          console.log('linesData===', linesData)
-        }
-        let yAxisObjName1 = ''
-        let yAxisObjName2 = ''
-        if (chartID === 'vipPlayTrend') {
-          yAxisObjName1 = '人数/次数'
-          yAxisObjName2 = '时长'
-        } else if (chartID === 'vipPkgPayTrend') {
-          yAxisObjName1 = '人数'
-          yAxisObjName2 = '金额'
-        } else if (chartID === 'vipPkgShowTrend') {
-          yAxisObjName1 = '人数/次数'
-          yAxisObjName2 = '人均次数'
-        }
-
-        this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit, hasY2, yAxisObjName1, yAxisObjName2)
-      }
-    },
-
-    //  柱状图
-    showBar (data, chartID) {
-      // console.log('showBar======111>>>', ...chartID)
-      if (data && data.xaxis && data.xaxis.length > 0) {
-        if (data.yunit === '%') {
-          data.series = data.series.map(v => v * 100)
-        }
-        // console.log('23333=========>', data)
-        this.setBarEchart(chartID, '', data.xaxis, data.series, data.xunit, data.yunit, data.dataaxis)
-      }
-    },
-    //  环形图
-    showPie (data, chartID) {
-      console.log('showBar======111>>>', data)
-      if (data && data.data) {
-        const d = data.data.map((v, index) => {
-          return {
-            ...v,
-            value: v.count
-            // name: '123'
-          }
-        })
-        console.log('d==------------------------>', d)
-        console.log('d==------------------------>', chartID)
-        // showPie
-        // console.log('')
-        this.setPie(chartID, d)
-      }
-    },
-
-    // 通用柱状图参数设置
-    setBarEchart (element, title, xData, yData, xunit = '', yunit = '', dataaxis = []) {
-      const chartElement = document.getElementById(element)
-      if (!chartElement) return
-      // console.log('setBarEchart======111>>>', this.$refs)
-      // console.log('setBarEchart======111>>>', element)
-      // console.log('setBarEchart======111>>>', this.$refs[element])
-      // let myChart = echarts.init(this.$refs[element])
-      const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(chartElement)
-      myChart.setOption({
-        title: {
-          text: title
-        },
-        tooltip: {
-          // trigger: 'item',
-          trigger: 'axis',
-          formatter: function (parmas) {
-            let str = parmas[0].marker + parmas[0].name + '<br/>'
-            // let str = ''
-            for (const item of parmas) {
-              str = str + item.name + ': ' + _this.cc_format_number(item.value) + yunit + '<br/>' + '占比: ' + dataaxis[item.dataIndex]
-            }
-            // return _this.cc_format_number(a.data)
-            return str
-          }
-        },
-        color: _this.colorList,
-        dataZoom: [
-          {
-            disabled: yData.length <= 10,
-            type: 'inside'
-          },
-          {
-            show: yData.length > 10,
-            type: 'slider'
-          }
-        ],
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'category',
-          data: xData,
-          axisLabel: {
-            interval: 'auto',
-            rotate: yData.length > 10 ? -45 : 0,
-            formatter: function (value) {
-              return value + xunit
-            }
-          }
-        },
-        yAxis: {
-          type: 'value',
-          // axisTick: {
-          //   inside: true
-          // },
-          width: '50px',
-          triggerEvent: true,
-          scale: true,
-          axisLabel: {
-            // margin: 2,
-            interval: 'auto',
-            formatter: function (value) {
-              if (value >= 100000000) {
-                value = value / 100000000 + '亿' + yunit
-              } else if (value >= 10000000) {
-                value = value / 10000000 + '千万' + yunit
-              } else if (value >= 10000 && value < 10000000) {
-                value = value / 10000 + '万' + yunit
-              } else {
-                value = value + yunit
-              }
-              return value
-            }
-          }
-        },
-        series: [{
-          // data: yData.length === 0 ? this.fillEmptyData.data : yData,
-          data: yData,
-          type: 'bar',
-          showBackground: true,
-          backgroundStyle: {
-            color: 'rgba(180, 180, 180, 0.2)'
-          },
-          barWidth: yData.length > 10 ? '30%' : 20, // 10%
-          label: {
-            show: true,
-            position: 'top',
-            formatter: function (data) {
-              // console.log('value----->', data.dataIndex)
-              return `${dataaxis[data.dataIndex]}`
-            },
-            color: '#000'
-          }
-        }]
-      }, true)
-
-      if (element === 'vipPkgShow' || element === 'vipPkgXiadan' || element === 'vipPkgPay' || element === 'vipPlay') {
-        myChart.getZr().off('click')
-        myChart.getZr().on('click', params => {
-          const pointInPixel = [params.offsetX, params.offsetY]
-          if (myChart.containPixel('grid', pointInPixel)) {
-            const xIndex = myChart.convertFromPixel({ seriesIndex: 0 }, [params.offsetX, params.offsetY])[0]
-            // console.log(xIndex)
-            // console.log(xData)
-            const sourceName = xData[xIndex]
-            _this.onSubmit(sourceName)
-            // console.log('current--------->', sourceName)
-          }
-        })
-      }
-
-      this.allCharts[element] = myChart
-    },
-
-    // 通用多线性参数设置
-    setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
-      // console.log('setBarEchart======111>>>', this.$refs)
-      // console.log('setBarEchart======111>>>', element)
-      // console.log('setBarEchart======111>>>', this.$refs[element])
-      const chartElement = document.getElementById(element)
-      if (!chartElement) return
-
-      const echarts = require('echarts')
-      const _this = this
-      const yAxisObj = {
-        type: 'value',
-        name: yAxisObjName1,
-        axisTick: {
-          inside: true
-        },
-        // scale: true,
-        axisLabel: {
-          // margin: 30,
-          formatter: function (value) {
-            if (value >= 100000000) {
-              value = value / 100000000 + '亿' + yunit
-            } else if (value >= 10000000) {
-              value = value / 10000000 + '千万' + yunit
-            } else if (value >= 10000 && value < 10000000) {
-              value = value / 10000 + '万' + yunit
-            } else {
-              value = value + yunit
-            }
-            return value
-          }
-        }
-      }
-      // let myChart = echarts.init(this.$refs[element])
-      const option = {
-        title: {
-          text: title
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross',
-            crossStyle: {
-              color: '#999'
-            }
-          }
-        },
-        color: _this.colorList,
-        legend: {
-          data: legend
-        },
-        xAxis: {
-          type: 'category',
-          data: xData,
-          axisLabel: {
-            interval: 'auto',
-            rotate: yData.length > 10 ? -45 : 0,
-            formatter: function (value) {
-              return value + xunit
-            }
-          }
-        },
-        yAxis: [yAxisObj],
-        series: yData
-      }
-      // console.log('chart===>', myChart)
-      if (hasY2) {
-        option.yAxis.push({ ...yAxisObj, name: yAxisObjName2 })
-      }
-      const myChart = echarts.init(chartElement)
-      myChart.setOption(option, true)
-      this.allCharts[element] = myChart
-    },
-
-    // 环形图
-    setPie (element, data) {
-      const chartElement = document.getElementById(element)
-      if (!chartElement) return
-      // console.log('aaaaaaaaaaa--------------->', element)
-      // console.log('aaaaaaaaaaa--------------->', data)
-      // const name = '登录量'
-      const _this = this
-      const option = {
-        tooltip: {
-          trigger: 'item'
-        },
-        // legend: {
-        //   top: '5%',
-        //   left: 'right',
-        //   orient: 'vertical'
-        // },
-        legend: {
-          // show: legend.show, // 展示图例
-          x: 'right', // 水平居右
-          y: 'center', // 垂直居中
-          icon: 'circle', // 图例icon为方块
-          backgroundColor: 'transparent',
-          itemHeight: 10, // 图例icon高度
-          itemWidth: 10, // 图例icon宽度
-          orient: 'vertical', // 垂直排列
-          type: 'scroll', // 可滚动翻页的图例
-          pageIconSize: 8, // 翻页按钮大小
-          pageIconColor: '#2C86FF', // 翻页箭头颜色
-          pageIconInactiveColor: 'rgba(44,132,251,0.40)', // 翻页（即翻页到头时箭头的颜色
-          pageTextStyle: {
-            color: '#999' // 翻页数字颜色
-          },
-          align: 'left', // 图例icon在左侧
-          formatter: function (name) {
-            // console.log('p------->', name)
-            // 文字太长时只取20个字符
-            // const label = p.length > 20 ? p.substr(0, 20) : p
-            // 文字宽度：后台设有宽度时使用后台传的值，若没有默认70
-            // const width = 70
-            // 渲染图例文字
-            // return echarts.format.truncateText(label, width, '14px Microsoft Yahei', '…')
-            // widthStyle 对应为legend.textStyle.rich中的key名，可设置label显示的样式
-            // return `{widthStyle|${label}}`
-            // return label
-            let tarValue
-            for (let i = 0; i < data.length; i++) {
-              if (data[i].name === name) {
-                tarValue = data[i].percent
-              }
-            }
-
-            // return [`{name|${name}}`, `{num|${tarValue}}`].join(' |  ')
-            return `{name|${name}}    |    {num|${tarValue}}`
-          },
-          // tooltip: {
-          //   show: true, // 显示图例的tooltip
-          //   textStyle: {
-          //     width: 300, // 提示框宽度300
-          //     overflow: 'breakAll' // 文字太长时换行
-          //   },
-          //   formatter: (val) => {
-          //     // 图例最大宽度为600px, 超出部分隐藏
-          //     return `<p style="max-width: 600px;overflow:hidden;white-space:pre-wrap;">${val.name}</p>`
-          //   }
-          // },
-
-          textStyle: {
-            color: '#464c54', // 图例文字颜色
-            rich: {
-              name: {
-                fontSize: 14,
-                height: 30,
-                color: '#011'
-                // padding: [0, 0, 20, 0]
-              },
-              num: {
-                fontSize: 12,
-                fontWeight: 100,
-                // padding: [0, 0, 20, 0],
-                color: '#000'
-              }
-            }
-            // rich: {
-            //   widthStyle: {
-            //     width: legend.sideWidth ? (legend.sideWidth - 30) : 50,
-            //     overflow: "hidden"
-            //   }
-            // }
-          }
-        },
-        color: _this.colorList,
-
-        series: [
-          {
-            // name: 'Access From',
-            type: 'pie',
-            // radius: ['40%', '70%'],
-            // avoidLabelOverlap: true,
-
-            center: ['25%', 'center'],
-            radius: ['40%', '60%'],
-            avoidLabelOverlap: true,
-            // itemStyle: {
-            //   // borderRadius: 10,
-            //   // borderColor: '#fff',
-            //   // borderWidth: 2,
-            //   normal: {
-            //     color: function (colors) {
-            //       var colorList = [
-            //         '#fc8251',
-            //         '#5470c6',
-            //         '#91cd77',
-            //         '#ef6567',
-            //         '#f9c956',
-            //         '#75bedc'
-            //       ]
-            //       return colorList[colors.dataIndex]
-            //     }
-            //   }
-            // },
-            label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '30'
-                // fontWeight: 'bold'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data
-          }
-        ]
-      }
-      const echarts = require('echarts')
-      // let myChart = echarts.init(this.$refs[element])
-      const myChart = echarts.init(chartElement)
-
-      myChart.setOption(option)
-      this.allCharts[element] = myChart
     }
 
   }
@@ -1376,58 +723,6 @@ export default {
 
 <style lang='stylus' scoped>
 @import url('~@/assets/overview.styl')
-// .ibox {
-//   border-radius: 4px;
-//   min-height: 36px;
-//   background red
-// }
-
-.big-title{
-  color rgb(103, 106, 108)
-  font-family "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif
-  font-size 26px
-  font-weight 100
-  margin 10px 0
-}
-.overview-table {
-  flex: 1 0 730px
-  color rgb(103, 106, 108)
-}
-
-// .small:nth-child(1) {
-//   margin-bottom 10px
-// }
-.chart-wrap {
-  flex: 0.8 0 550px;
-}
-.chart-1 {
-  width: 550px;
-  height: 360px;
-  margin: 0 auto;
-}
-
-.launch-statistics {
-  // overflow hidden
-  // position: relative;
-  // height: 100%;
-  // overflow: auto;
-  // box-sizing: border-box;
-}
-.statistics-header {
-  position: sticky;
-  top: 0;
-  z-index: 1
-  background: #fff
-  padding-bottom 20px
-}
-.chart-div {
-  height: 436px
-}
-
-.unit-box {
-  // margin-bottom: 0;
-  background-color: #fff;
-}
 
 .search-text {
   font-size: 12px;
@@ -1514,4 +809,5 @@ export default {
   float: right;
   margin-top: 22px;
 }
+
 </style>
