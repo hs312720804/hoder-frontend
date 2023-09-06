@@ -422,6 +422,57 @@
                     <!--</div>-->
                 </el-form-item>
 
+                <!-- 选择本地人群 -->
+                <el-form-item v-if="crowdForm.crowdType === 2"
+                  label="选择人群"
+                  prop="tempCrowdId"
+                >
+                    <el-select
+                        filterable
+                        remote
+                        clearable
+                        v-model="crowdForm.tempCrowdId"
+                        v-loadmore="{'methord': handelLoadmore}"
+                        :remote-method="getTempCrowdList2"
+                        :disabled="status!==undefined && (status === 2 || status === 3)"
+                    >
+                        <el-option
+                            v-for="item in tempCrowdList2"
+                            :key="item.launchCrowdId+''"
+                            :label="item.launchName"
+                            :value="item.launchCrowdId"
+                        >
+                        {{item.launchName}}
+                        </el-option>
+                    </el-select>
+                    <!--<div v-if="!crowdForm.abTest">-->
+                        <!--<el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">-->
+                            <!--<el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">-->
+                                <!--<el-checkbox-->
+                                        <!--v-for="item in v.childs"-->
+                                        <!--:label="v.policyId+'_'+item.crowdId"-->
+                                        <!--:key="item.crowdId+''"-->
+                                        <!--:disabled="item.canLaunch === false"-->
+                                <!--&gt;{{item.crowdName}}-->
+                                <!--</el-checkbox>-->
+                            <!--</el-checkbox-group>-->
+                        <!--</el-form-item>-->
+                    <!--</div>-->
+                    <!--<div v-else>-->
+                        <!--<el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">-->
+                            <!--<el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">-->
+                                <!--<el-checkbox-->
+                                        <!--v-for="item in v.childs"-->
+                                        <!--:label="item.policyId+'_'+item.crowdId"-->
+                                        <!--:key="item.crowdId+''"-->
+                                        <!--:disabled="item.canLaunch === false"-->
+                                <!--&gt;{{item.crowdName}}-->
+                                <!--</el-checkbox>-->
+                            <!--</el-checkbox-group>-->
+                        <!--</el-form-item>-->
+                    <!--</div>-->
+                </el-form-item>
+
                 <!-- 选择行为人群 & 投放子人群 -->
                 <template v-if="crowdForm.crowdType === 3 && crowdForm.abTest">
                 <!-- crowdForm.policyIds 111=={{crowdForm.policyIds}} -->
@@ -882,6 +933,7 @@ export default {
       videoSourceList: [],
       showAccountRelative: false,
       tempCrowdList: [],
+      tempCrowdList2: [],
       disabledCrowdType: false,
       isTempCrowd: false,
       showEstimate: false,
@@ -898,6 +950,12 @@ export default {
         pageSize: 10
       },
       tempListpages: 0,
+      tempListFilter2: {
+        crowdType: 2,
+        pageNum: 1,
+        pageSize: 10
+      },
+      tempListpages2: 0,
       behaviorPolicyList: [], // 行为人群 - 策略列表
       behaviorCrowdList: [], // 行为人群 - 所选策略下的人群列表
       behaviorCrowdListFilter: {
@@ -1031,6 +1089,13 @@ export default {
         if (this.tempListFilter.pageNum < this.tempListpages) {
           this.tempListFilter.pageNum++ // 滚动加载翻页
           this.getTempCrowdList()
+        }
+      } else if (crowdType === 2 && !this.loading) { // 临时人群
+        console.log('this.tempListpages2', this.tempListpages2)
+        console.log('this.his.tempListFilter2.pageNum', this.tempListFilter2.pageNum)
+        if (this.tempListFilter2.pageNum < this.tempListpages2) {
+          this.tempListFilter2.pageNum++ // 滚动加载翻页
+          this.getTempCrowdList2()
         }
       } else if (crowdType === 3 && !this.loading) { // 行为人群
         if (this.behaviorCrowdListFilter.pageNum < this.behaviorCrowdListpages) {
@@ -1431,7 +1496,7 @@ export default {
         this.crowdForm.setCalculate = false
       }
     },
-    // 临时标签/本地标签 下拉列表
+    // 临时标签 下拉列表
     getTempCrowdList (query = '') {
       this.tempListFilter.launchName = query
       if (query !== '') { // 重置
@@ -1442,6 +1507,25 @@ export default {
       this.$service.getTempLaunchList(this.tempListFilter).then(data => {
         this.tempListpages = data.pageInfo.pages // 总页数
         this.tempCrowdList = this.tempCrowdList.concat(data.pageInfo.list)
+        this.loading = false
+        // this.launchStatusEnum = data.launchStatusEnum
+        // this.tableData = data.pageInfo.list
+        // this.totalCount = data.pageInfo.total
+      }).catch(() => {
+        this.loading = false
+      })
+    },
+    // 本地标签 下拉列表
+    getTempCrowdList2 (query = '') {
+      this.tempListFilter2.launchName = query
+      if (query !== '') { // 重置
+        this.tempListFilter2.pageNum = 1
+        this.tempCrowdList2 = []
+      }
+      this.loading = true
+      this.$service.getTempLaunchList(this.tempListFilter2).then(data => {
+        this.tempListpages2 = data.pageInfo.pages // 总页数
+        this.tempCrowdList2 = this.tempCrowdList2.concat(data.pageInfo.list)
         this.loading = false
         // this.launchStatusEnum = data.launchStatusEnum
         // this.tableData = data.pageInfo.list
@@ -1796,10 +1880,14 @@ export default {
     this.tempCrowdList = []
     this.tempListpages = 0
 
+    this.tempCrowdList2 = []
+    this.tempListpages2 = 0
+
     this.setEdit() // 初始化编辑数据
 
     this.getAddList(this.model) // 普通人群策略列表
-    this.getTempCrowdList() // 临时人群/本地人群列表
+    this.getTempCrowdList() // 临时人群列表
+    this.getTempCrowdList2() // 本地人群列表
     this.getBehaviorPolicyList() // 行为人群 - 策略列表
     this.getBehaviorCrowdList() // 行为人群 - 人群列表
     this.handleGetVideoList() // 人群圈定 视频源枚举
