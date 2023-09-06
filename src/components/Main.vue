@@ -216,6 +216,7 @@ export default {
         '/hitQuery': 'hitQuery',
         '/storyLine': 'storyLine',
         '/operationHelper': 'operationHelper',
+        '/cardPreference': 'cardPreference',
         '/crowdCompute': 'crowdCompute',
         '/bitmap': 'bitmap'
       },
