@@ -36,7 +36,7 @@
       <el-table-column prop="operation" label="操作" v-if="!showSelection">
         <template slot="header">
           操作
-          <el-popover placement="top" trigger="click" class="popover-button">
+          <!-- <el-popover placement="top" trigger="click" class="popover-button">
             <div>
               <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
                 <el-checkbox label="tagKey">标签code</el-checkbox>
@@ -48,7 +48,7 @@
             </div>
             <i class="el-icon-cc-setting operate" slot="reference">
             </i>
-          </el-popover>
+          </el-popover> -->
         </template>
         <template slot-scope="scope">
           <el-button-group>
@@ -58,9 +58,9 @@
             <el-button v-if="showEditBtn" type="text" @click="handleEdit(scope.row)">
               编辑
             </el-button> -->
-            <el-button type="text" @click="handleLaunch(scope.row)">
+            <!-- <el-button type="text" @click="handleLaunch(scope.row)">
               投放
-            </el-button>
+            </el-button> -->
             <el-button  type="text" @click="handleMonitor(scope.row)">
               数据监控
             </el-button>
