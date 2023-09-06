@@ -162,8 +162,9 @@
                   </template>
 
                   <!-- boolean 类型 -->
-                  <template v-if="childItem.tagType === 'boolean'">
+                  <template v-if="childItem.tagType === 'boolean' || childItem.tagType === 'bool'">
                     <el-option value="=" label="="></el-option>
+                    <el-option value="null" label="为空"></el-option>
                   </template>
 
                   <!-- collect 类型 -->
