@@ -274,7 +274,7 @@
                             :disabled="disabledCrowdType"
                     >
                         <el-radio :label="0">普通人群</el-radio> <!-- false -->
-                        <el-radio :label="1">临时标签/本地标签</el-radio><!-- true -->
+                        <el-radio :label="1">临时标签</el-radio><!-- true -->
                         <el-radio :label="3">行为人群</el-radio>
                         <el-radio :label="4">
                           混合标签投放
@@ -283,6 +283,7 @@
                           </el-tooltip>
 
                         </el-radio>
+                        <el-radio :label="2">本地标签</el-radio>
                     </el-radio-group>
                 </el-form-item>
 
