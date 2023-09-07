@@ -79,7 +79,7 @@
                 </el-select>
               </span>
               <span class="sel">
-
+                <!-- {{ childItem.tagType }} -->
                 <!-- 是时间（time）类型的下拉框 -->
                 <template v-if="childItem.tagType === 'time'">
 
@@ -162,8 +162,9 @@
                   </template>
 
                   <!-- boolean 类型 -->
-                  <template v-if="childItem.tagType === 'boolean'">
+                  <template v-if="childItem.tagType === 'boolean' || childItem.tagType === 'bool'">
                     <el-option value="=" label="="></el-option>
+                    <el-option value="null" label="为空"></el-option>
                   </template>
 
                   <!-- collect 类型 -->
@@ -399,13 +400,23 @@
                 <el-select v-else
                   v-model="childItem.value"
                   :disabled="
-                    childItem.tagType === 'string' &&
-                    childItem.operator === 'null'
+                    (childItem.tagType === 'string' &&
+                    childItem.operator === 'null')||
+                    (childItem.tagType === 'boolean' &&
+                    childItem.operator === 'null')
                   "
                 >
                   <template
                     v-if="
                       childItem.tagType === 'string' &&
+                      childItem.operator === 'null'
+                    "
+                  >
+                    <el-option label="空" value="nil"></el-option>
+                  </template>
+                  <template
+                    v-if="
+                      childItem.tagType === 'boolean' &&
                       childItem.operator === 'null'
                     "
                   >
@@ -1565,6 +1576,8 @@ export default {
     },
     handleOperatorChange (item) {
       if (item.tagType === 'string' && item.operator === 'null') {
+        item.value = 'nil'
+      } else if (item.tagType === 'boolean' && item.operator === 'null') {
         item.value = 'nil'
       } else if (item.tagType === 'string') { // string 类型的标签可多选 value值是数组
         item.value = []
