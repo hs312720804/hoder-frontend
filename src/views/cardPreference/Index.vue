@@ -2,18 +2,13 @@
   <div class="label-content">
     <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-content-wrap">
 
-      <el-tab-pane label="爱奇艺" name="aiqiyi">
-        <BehaviorTag
-          :tagName="myCollectTagName"
-          :checkList="checkList"
-          :show-selection="showSelection"
-          :currentSelectTag="tagList"
-          @clear-search="handleClearSearch"
-          @change-checkList="handleCheckListChange"
-          @get-table-selected="handleGetTableSelectedData"
-        >
-        </BehaviorTag>
+      <el-tab-pane v-for="item in tabList" :label="item.label" :name="item.value" :key="item.value" >
       </el-tab-pane>
+
+      <BehaviorTag
+        :activeName="activeName"
+      >
+      </BehaviorTag>
 
     </el-tabs>
 
@@ -49,10 +44,22 @@ export default {
   },
   data () {
     return {
-      activeName: 'aiqiyi',
+      tabList: [{
+        label: '爱奇艺',
+        value: 'iqiyi'
+      }, {
+        label: '腾讯',
+        value: 'tencent'
+      }, {
+        label: '优酷',
+        value: 'youku'
+      }, {
+        label: '亲子',
+        value: 'parent_child'
+      }
+      ],
+      activeName: 'iqiyi',
       searchVal: '',
-      labelZoneTagName: undefined,
-      myCollectTagName: undefined,
       checkList: [],
       tagList: [],
       tempCheckList: []
@@ -60,62 +67,13 @@ export default {
   },
   methods: {
 
-    handleSearch () {
-      // 全局搜索
-      if (this.activeName === 'labelZone') {
-        this.labelZoneTagName = this.searchVal
-      } else {
-        this.myCollectTagName = this.searchVal
-      }
-    },
-    handleClearSearch () {
-      this.searchVal = undefined
-      this.labelZoneTagName = undefined
-      this.myCollectTagName = undefined
-    },
-    fetchCheckListData () {
-      this.$service.getListDimension({ type: 4 }).then(data => {
-        if (data) {
-          if (data.behaviorShow) {
-            this.checkList = data.behaviorShow.split(',')
-          } else {
-            this.checkList = ['defineRemark']
-          }
-        } else {
-          this.checkList = ['defineRemark']
-        }
-      })
-    },
-
     handleTabChange () {
     },
     handleGetTableSelectedData (val, mode) {
       this.$emit('get-table-selected', val, mode)
-    },
-
-    fetchTempCheckListData () {
-      this.$service.getListDimension({ type: 5 }).then(data => {
-        if (data) {
-          if (data.behaviorShow) {
-            this.tempCheckList = data.behaviorShow.split(',')
-          } else {
-            this.tempCheckList = ['defineRemark']
-          }
-        } else {
-          this.tempCheckList = ['defineRemark']
-        }
-      })
-    },
-    handleCheckListChange (val) {
-      this.$service.saveListDimension({ type: 4, behaviorShow: val.join(',') })
-    },
-    handleTempCheckListChange (val) {
-      this.$service.saveListDimension({ type: 5, behaviorShow: val.join(',') })
     }
   },
   created () {
-    this.fetchCheckListData()
-    this.fetchTempCheckListData()
   }
 }
 </script>

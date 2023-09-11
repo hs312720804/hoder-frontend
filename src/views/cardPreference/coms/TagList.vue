@@ -2,36 +2,25 @@
   <div class="tag-list">
     <el-table ref="changeTable" v-loading="loading" element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading" border :data="dataList" @select="handleSelectOrCancel"
-      @select-all="handleSelectAllOrCancel">
-      <el-table-column type="selection" width="55" v-if="showSelection">
+    >
+      <el-table-column prop="launchCrowdId" label="卡种包ID">
       </el-table-column>
-      <el-table-column prop="tagId" label="卡种包ID">
+      <el-table-column prop="card" label="卡种包名">
       </el-table-column>
-      <el-table-column prop="tagName" label="卡种包名">
-        <template slot-scope="scope">
-          {{ scope.row.tagName }}
-          <span v-if="scope.row.newOrUpdate" class="red-new">{{ scope.row.newOrUpdate }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="dataSource" label="描述">
+      <!-- <el-table-column prop="will" label="描述">
         <template slot-scope="scope">
           {{ dataSourceEnum[scope.row.dataSource] }}
         </template>
+      </el-table-column> -->
+      <el-table-column prop="will" label="付费意愿">
       </el-table-column>
-      <el-table-column prop="dataSource" label="付费意愿">
+
+      <el-table-column prop="size" label="数量">
         <template slot-scope="scope">
-          {{ dataSourceEnum[scope.row.dataSource] }}
+            {{ cc_format_number(scope.row.size) }}
         </template>
       </el-table-column>
-      <el-table-column prop="dataSource" label="数量">
-        <template slot-scope="scope">
-          {{ dataSourceEnum[scope.row.dataSource] }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="dataSource" label="更新日期">
-        <template slot-scope="scope">
-          {{ dataSourceEnum[scope.row.dataSource] }}
-        </template>
+      <el-table-column prop="updateTime" label="更新日期">
       </el-table-column>
       <el-table-column prop="operation" label="操作" v-if="!showSelection">
         <template slot="header">

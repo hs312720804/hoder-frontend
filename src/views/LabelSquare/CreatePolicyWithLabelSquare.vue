@@ -86,6 +86,17 @@
         >
         </CrowdLabel>
       </el-tab-pane>
+      <el-tab-pane label="算法标签" name="aiLabel">
+        <AILabel
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          :checkList="tempCheckList"
+          :crowdType=2
+          @get-table-selected="handleGetTableSelectedData"
+          @change-checkList="handleCheckListChange"
+        >
+        </AILabel>
+      </el-tab-pane>
 
     </el-tabs>
 
@@ -128,6 +139,7 @@ import BigDataTag from './bigDataTag/Index.vue'
 import ThirdPartyTag from './thirdTag/Index.vue'
 import CustomTag from './customTag/Index.vue'
 import CrowdLabel from './crowdLabel/Index.vue'
+import AILabel from './AILabel/Index.vue'
 import { dataSourceColorEnum } from '@/utils/tags.js'
 import MyTopMax30 from './MyTopMax30'
 import tagList from './coms/TagList'
@@ -141,7 +153,8 @@ export default {
     CustomTag,
     MyTopMax30,
     tagList,
-    CrowdLabel
+    CrowdLabel,
+    AILabel
   },
   props: ['recordId', 'initTagList', 'policyId'],
   computed: {

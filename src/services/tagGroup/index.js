@@ -337,3 +337,11 @@ export function getbigDataRealTimeList (params) {
     params
   })
 }
+// 获取卡种偏好列表接口
+export function getAiCrowd (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/aiCrowd/pageQueryCrowdTag',
+    params
+  })
+}
