@@ -321,8 +321,9 @@ export default {
 .show-data {
   position: relative;
   bottom: 0
-  flex: 1
-  width: 100%;
+  // margin: 0 5px;
+  // flex: 1
+  // width: 100%;
   // overflow: auto;
   // border: 2px solid #3974f6;
 }

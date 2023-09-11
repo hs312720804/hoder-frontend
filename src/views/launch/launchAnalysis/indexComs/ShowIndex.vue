@@ -7,6 +7,7 @@
         :key="key"
         class="sticky-bar-item"
         :class="Object.keys(allCrowdData).length > 1 ? `d${key}-sticky-bar-item` : ''"
+        :style="{width: 100 / Object.keys(allCrowdData).length + '%'}"
       >
         {{ item.crowdId }} - {{ item.crowdName }}
       </div>
@@ -23,6 +24,7 @@
         :allChartData="item"
         :class="Object.keys(allCrowdData).length > 1 ? `d${key}-color` : ''"
         :isSingShowPanel="Object.keys(allCrowdData).length === 1"
+        :style="{width: 100 / Object.keys(allCrowdData).length + '%'}"
       >
       </showData>
     </div>
@@ -44,6 +46,7 @@
         :allChartData="item"
         :class="Object.keys(allCrowdData).length > 1 ? `d${key}-color` : ''"
         :isSingShowPanel="Object.keys(allCrowdData).length === 1"
+        :style="{width: 100 / Object.keys(allCrowdData).length + '%'}"
       >
       </showChart>
     </div>
@@ -100,7 +103,7 @@ export default {
 
 .sticky-bar {
   display: flex;
-  column-gap: 10px;
+  // column-gap: 10px;
   position: sticky;
   top: -20px;
   text-align: center;
@@ -108,21 +111,23 @@ export default {
   color #fff
   font-size: 14px;
   font-weight: 600;
+  width: 100%
   .sticky-bar-item {
     background-color: #3974f6;
     // overflow: auto;
     position: relative;
     bottom: 0;
-    flex: 1
+    // flex: 1
     height: 36px;
     line-height: 36px;
     border-radius: 10px 10px 0 0;
+    // margin: 0 5px;
   }
 }
 .show-index-panel {
   display: flex;
-  column-gap: 10px;
-  width: 100%
+  // column-gap: 10px;
+  // width: 100%
   // overflow: auto;
 }
 .d-color {

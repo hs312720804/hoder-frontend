@@ -86,7 +86,7 @@
 
   <!-- 显示内容主体 -->
   <ShowIndex
-    v-if="pageStatus === 1"
+    v-if="show && pageStatus === 1"
     :allCrowdData="allCrowdData"
   >
   </ShowIndex>
@@ -137,7 +137,7 @@
           <span :class="{'bold': item.status === 1}">
             {{ statusMap[item.status] }}
           </span>
-          <span>{{ item.createTime }}</span>
+          <span>{{ item.updateTime }}</span>
         </span>
       </div>
     </div>
@@ -323,7 +323,7 @@ export default {
     this.destoryTimeInterval()
   },
   activated () {
-    console.log('activated - setTimeOutVal------->', this.setTimeOutVal)
+    // console.log('activated - setTimeOutVal------->', this.setTimeOutVal)
     if (this.setTimeOutVal) {
       this.fetchAllData()
       // 搜索历史记录，更新数据
@@ -331,14 +331,14 @@ export default {
     }
   },
   deactivated () {
-    console.log('deactivated - setTimeOutVal------->', this.setTimeOutVal)
+    // console.log('deactivated - setTimeOutVal------->', this.setTimeOutVal)
   },
   methods: {
     // scrollEvent () {
     //   console.log('scroll', this.$refs.aaaaa.scrollTop)
     // },
     syncScroller () {
-      console.log('arguments-->', arguments)
+      // console.log('arguments-->', arguments)
       // const nodes = Array.prototype.filter.call(arguments, item => item instanceof HTMLElement)
       // const max = nodes.length
       // if (!max || max === 1) return
@@ -359,7 +359,7 @@ export default {
       }
 
       nodes.forEach((ele, index) => {
-        console.log('ele--->', ele)
+        // console.log('ele--->', ele)
         ele.addEventListener('scroll', event)
       })
 
@@ -544,7 +544,7 @@ export default {
 
           resolve(res)
         }).catch(err => {
-          console.log('err--->', err)
+          // console.log('err--->', err)
           reject(err)
         })
       })
@@ -576,9 +576,9 @@ export default {
           this.loading = true
           this.show = false
           this.initChart(sourceName)
-          this.$nextTick(() => {
-            this.show = true
-          })
+          // this.$nextTick(() => {
+          //   this.show = true
+          // })
         }
       })
     },
@@ -626,6 +626,9 @@ export default {
         this.fetchAllData(sourceName)
       } catch {
         this.loading = false
+        this.$nextTick(() => {
+          this.show = true
+        })
       }
     },
 
@@ -635,7 +638,7 @@ export default {
       const originParams = this.formInline
       this.radioType = 0 // 重置
       this.radioType2 = 0 // 重置
-      console.log('originParams-->', originParams)
+      // console.log('originParams-->', originParams)
       const crowdIds = originParams.crowdIds.map(item => item.value).join(',') || ''
 
       const params = {
@@ -664,7 +667,7 @@ export default {
         const res = allRes || {}
         const arr = Object.values(res)
 
-        console.log('this.crowdList--->', this.crowdList)
+        // console.log('this.crowdList--->', this.crowdList)
 
         for (const key in res) {
           const obj = this.crowdList.find(item => Number(item.crowdId) === Number(key))
@@ -697,7 +700,10 @@ export default {
         // for (let i = 0; i < 5; i++) {
         //   this.allCrowdData[`2010${i}`] = allRes[20101]
         // }
-
+        // 数据加载完成后显示数据展示
+        this.$nextTick(() => {
+          this.show = true
+        })
         // 重新搜索历史记录，更新数据
         this.handleGetRightsInterestsSearchRecord()
       }).catch(e => {
@@ -706,18 +712,21 @@ export default {
         this.destoryTimeInterval()
         // 重新搜索历史记录，更新数据
         this.handleGetRightsInterestsSearchRecord()
+        this.$nextTick(() => {
+          this.show = true
+        })
       })
     },
     // 开启定时器
     openTimeInterval () {
-      console.log('我执行了定时器-----')
+      // console.log('我执行了定时器-----')
       this.setTimeOutVal = setInterval(() => {
         this.fetchAllData()
       }, 8000)
     },
     // 销毁定时器
     destoryTimeInterval () {
-      console.log('=========我清除了定时器-----')
+      // console.log('=========我清除了定时器-----')
       clearInterval(this.setTimeOutVal)
     }
 

@@ -1160,7 +1160,8 @@ export default {
 .show-data {
   position: relative;
   bottom: 0
-  flex: 1
+  // margin: 0 5px;
+  // flex: 1
   // width: 50%;
   // min-width: 50%;
   // max-width: 50%;
