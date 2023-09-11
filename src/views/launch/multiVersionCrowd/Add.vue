@@ -30,15 +30,21 @@
                             </el-input>
                         </el-form-item>
                         <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
-                            <el-select v-model="crowdDefineForm.biIds" multiple placeholder="请选择投放平台">
-                                <el-option
-                                        v-for="(item,index) in launchPlatform"
-                                        :key="index"
-                                        :label="item.biName"
-                                        :value="item.biId+''"
-                                >
-                                    <!-- {{item.biName}} -->
-                                </el-option>
+                            <el-select
+                              ref="multipleSelectRef"
+                              v-model="crowdDefineForm.biIds"
+                              multiple
+                              placeholder="请选择投放平台"
+                              @change="multipleSelectChange"
+                            >
+                              <el-option
+                                v-for="(item,index) in launchPlatform"
+                                :key="index"
+                                :label="item.biName"
+                                :value="item.biId+''"
+                              >
+                                  <!-- {{item.biName}} -->
+                              </el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="数据有效期" prop="expiryDay">
@@ -213,11 +219,12 @@
                 </el-form-item>
                 <el-form-item label="投放平台" class="multipleSelect form-width" prop="biIds">
                     <el-select
+                      ref="multipleSelectRef"
                       v-model="crowdForm.biIds"
-                      @change="handleBiIdChange"
                       multiple
                       placeholder="请选择投放平台"
                       :disabled="status!==undefined && (status === 2 || status === 3)"
+                      @change="handleBiIdChange"
                     >
                         <el-option
                                 v-for="item in launchPlatform"
@@ -1005,6 +1012,10 @@ export default {
   },
 
   methods: {
+    multipleSelectChange () {
+      // 改变选中值后，自动收起下拉框
+      this.$refs.multipleSelectRef.blur()
+    },
     handePushListLoadmore () {
       if (this.remoteMethodParams.pageNum < this.totalPages) {
         this.remoteMethodParams.pageNum++ // 滚动加载翻页
@@ -1486,6 +1497,9 @@ export default {
       })
     },
     handleBiIdChange (val) {
+      // 改变选中值后，自动收起下拉框
+      this.$refs.multipleSelectRef.blur()
+
       if (val) {
         if (val.join(',') === '7') {
           this.showAccountRelative = true

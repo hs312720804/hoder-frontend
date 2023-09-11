@@ -11,8 +11,10 @@
                 <div class="tips">投放模式(pull):针对主页、产品包、广告、活动、弹窗、媒资</div>
                 <el-form-item label="投放平台" prop="biIdsPull" class="multipleSelect">
                     <el-select
+                      ref="multipleSelectRef"
                       v-model="crowdForm.biIdsPull"
                       multiple
+                      @change="multipleSelectChange"
                     >
                         <el-option
                           v-for="(platform, index) in Platforms"
@@ -66,12 +68,17 @@
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
-                    <el-select v-model="crowdForm.biIds" multiple placeholder="请选择投放平台">
+                    <el-select
+                      ref="multipleSelectRef2"
+                      v-model="crowdForm.biIds"
+                      multiple
+                      placeholder="请选择投放平台"
+                      @change="multipleSelectChange2">
                         <el-option
-                                v-for="item in launchPlatform"
-                                :key="item.biId+''"
-                                :label="item.biName"
-                                :value="item.biId+''"
+                          v-for="item in launchPlatform"
+                          :key="item.biId+''"
+                          :label="item.biName"
+                          :value="item.biId+''"
                         >
                         </el-option>
                     </el-select>
@@ -351,6 +358,14 @@ export default {
     }
   },
   methods: {
+    multipleSelectChange () {
+      // 改变选中值后，自动收起下拉框
+      this.$refs.multipleSelectRef.blur()
+    },
+    multipleSelectChange2 () {
+      // 改变选中值后，自动收起下拉框
+      this.$refs.multipleSelectRef2.blur()
+    },
     // 选项之间互斥
     estimateValueChange (val) {
       const arr1 = ['0', '1', '2', '3']
