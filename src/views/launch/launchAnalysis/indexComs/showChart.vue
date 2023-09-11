@@ -10,7 +10,7 @@
         <div class="launch-statistics" v-show="activeName === 'one' && showChart">
             <!-- <template v-if="show"> -->
           <!-- <div class="unit-row" v-for="(row, index) in rowObj2" :key="index"> -->
-            <div v-for="(chart, key) in rowObj2" :key="key">
+            <div v-for="(chart, key) in rowObj2" :key="key" class="unit-wrap">
               <div class="unit-box">
                 <!-- {{allChartData[key]}} -->
                 <!-- <div class="unit-header clearfix"><span v-if="(allChartData && allChartData[key] && allChartData[key].title) || chart.title">{{ allChartData[key].title || chart.title }}</span></div> -->
@@ -48,7 +48,7 @@
         <!-- 柱状图、折线图 -->
         <div class="launch-statistics launch-statistics2" v-show="activeName === 'two' && showChart">
           <!-- <div class="unit-row" v-for="(row, index) in rowObj" :key="index"> -->
-            <div v-for="(chart, key) in rowObj" :key="key">
+            <div v-for="(chart, key) in rowObj" :key="key" class="unit-wrap">
               <div class="unit-box" >
 
                 <!-- <div class="unit-header clearfix"><span v-if="chart.title">{{ chart.title }}</span></div> -->
@@ -1213,17 +1213,34 @@ export default {
 // }
 .single-show-panel {
   .launch-statistics {
-    display grid
-    grid-template-columns: repeat(2, 1fr)
-    gap: 20px;
+    // display grid
+    display flex
+    // grid-template-columns: repeat(2, 1fr)
+    // width 50%
+    // gap: 20px;
+    flex-wrap: wrap;
+    margin-left: -10px;
+    margin-right: -10px;
+    .unit-wrap {
+      width: 50%
+      padding 10px
+    }
     .unit-box {
       background: #fff;
+      margin-bottom 0
     }
   }
   .launch-statistics2 {
-    grid-template-columns: repeat(3, 1fr)
+    display flex
+    // gap: 20px;
+    flex-wrap: wrap;
+    .unit-wrap {
+      width 33.3%
+      padding 10px
+    }
     .unit-box {
       background: #fff;
+      margin-bottom 0
     }
   }
 }
