@@ -584,8 +584,13 @@ export default {
     },
     // 历史记录查询数据
     hitHistory (item) {
+      const crowdIds = [item.crowdId].map(item => {
+        return {
+          value: item
+        }
+      })
       this.formInline = {
-        crowdId: item.crowdId,
+        crowdIds,
         sourceNameList: item.sourceNameStr.split(','),
         timeRange: [item.startDate, item.endDate],
         isDelCache: 0
@@ -617,9 +622,7 @@ export default {
 
       // 先查询人群是否存在，若存在，再去分
       try {
-        const aaa = await this.getCrowdInfo()
-        console.log('aaaaaaa--->', aaa)
-
+        await this.getCrowdInfo()
         this.fetchAllData(sourceName)
       } catch {
         this.loading = false
@@ -666,6 +669,7 @@ export default {
         for (const key in res) {
           const obj = this.crowdList.find(item => Number(item.crowdId) === Number(key))
           res[key].crowdName = obj.crowdName || ''
+          res[key].crowdId = obj.crowdId || ''
         }
 
         const isLoad = arr.every(item => item.status === 0)

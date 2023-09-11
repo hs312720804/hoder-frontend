@@ -8,7 +8,7 @@
         class="sticky-bar-item"
         :class="Object.keys(allCrowdData).length > 1 ? `d${key}-sticky-bar-item` : ''"
       >
-        {{ item.crowdId }}- {{ item.crowdName }}
+        {{ item.crowdId }} - {{ item.crowdName }}
       </div>
     </template>
   </div>
