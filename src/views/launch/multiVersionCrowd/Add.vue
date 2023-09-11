@@ -270,8 +270,9 @@
                 </el-form-item>
                 <el-form-item label="选择人群类型" class="form-width">
                     <el-radio-group
-                            v-model="crowdForm.crowdType"
-                            :disabled="disabledCrowdType"
+                      v-model="crowdForm.crowdType"
+                      :disabled="disabledCrowdType"
+                      style="white-space: nowrap;"
                     >
                         <el-radio :label="0">普通人群</el-radio> <!-- false -->
                         <el-radio :label="1">临时标签</el-radio><!-- true -->
@@ -999,6 +1000,7 @@ export default {
       this.crowdForm.policyCrowdIds = [] // 选择人群
       this.crowdForm.crowdId = '' // 大人群ID
       this.crowdData = [] // 选择人群列表
+      this.crowdForm.tempCrowdId = ''
     }
   },
 
