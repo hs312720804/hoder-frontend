@@ -120,7 +120,7 @@ export default {
         this.launchPlatform = data.biLists
         this.strategyPlatform = data.policies
         if (data.launchCrowd) {
-          let row = data.launchCrowd
+          const row = data.launchCrowd
           this.crowdForm.launchCrowdId = row.launchCrowdId
           this.crowdForm.dmpCrowdId = row.dmpCrowdId
           this.crowdForm.launchName = row.launchName
