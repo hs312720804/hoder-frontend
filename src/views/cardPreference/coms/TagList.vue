@@ -124,6 +124,7 @@ export default {
   },
   data () {
     return {
+      selectedRow: {},
       // 投放 params ---
       recordId: undefined,
       tempPolicyAndCrowd: {},
@@ -222,7 +223,11 @@ export default {
       this.checkList = val
     },
     dataList: 'updateTableSelected',
-    currentSelectedTags: 'updateTableSelected'
+    currentSelectedTags: 'updateTableSelected',
+    'selectedRow.id' (val) {
+      // 切换时，重置弹窗中的时间范围选择
+      this.monitorRangeTime = []
+    }
   },
   methods: {
     handleLaunch (row) {
