@@ -466,8 +466,8 @@ export default {
       }
       const echarts = require('echarts')
       const myChart = echarts.init(chartElement)
-      console.log('echarts--------->', echarts)
-      console.log('myChart--------->', myChart)
+      // console.log('echarts--------->', echarts)
+      // console.log('myChart--------->', myChart)
 
       myChart.setOption(option)
     },
@@ -752,8 +752,8 @@ export default {
           })
           legendData = legendData.concat(legendData2)
           linesData = linesData.concat(linesData2)
-          console.log('legendData===', legendData)
-          console.log('linesData===', linesData)
+          // console.log('legendData===', legendData)
+          // console.log('linesData===', linesData)
         }
         let yAxisObjName1 = ''
         let yAxisObjName2 = ''
@@ -785,7 +785,7 @@ export default {
     },
     //  环形图
     showPie (data, chartID) {
-      console.log('showBar======111>>>', data)
+      // console.log('showBar======111>>>', data)
       if (data && data.data) {
         const d = data.data.map((v, index) => {
           return {
@@ -794,8 +794,8 @@ export default {
             // name: '123'
           }
         })
-        console.log('d==------------------------>', d)
-        console.log('d==------------------------>', chartID)
+        // console.log('d==------------------------>', d)
+        // console.log('d==------------------------>', chartID)
         // showPie
         // console.log('')
         this.setPie(chartID, d)
@@ -804,7 +804,7 @@ export default {
 
     // 通用柱状图参数设置
     setBarEchart (element, title, xData, yData, xunit = '', yunit = '', dataaxis = []) {
-      console.log('element-->', element)
+      // console.log('element-->', element)
       const chartElement = document.getElementById(element)
       if (!chartElement) return
       // console.log('setBarEchart======111>>>', this.$refs)

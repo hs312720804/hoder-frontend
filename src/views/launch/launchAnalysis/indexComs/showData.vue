@@ -280,7 +280,7 @@ export default {
   //   }
   // },
   deactivated () {
-    console.log('deactivated - setTimeOutVal------->', this.setTimeOutVal)
+    // console.log('deactivated - setTimeOutVal------->', this.setTimeOutVal)
   },
   methods: {
 
@@ -396,7 +396,7 @@ export default {
     flex: 1 0 730px;
     color: #676a6c;
     display: grid;
-    grid-template-columns: repeat(3, auto);
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
     grid-gap: 20px
   }
   .ibox {

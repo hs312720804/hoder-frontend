@@ -15,7 +15,7 @@
       :key="index"
       :prop="'crowdIds.' + index + '.value'"
       :rules="{
-        required: true, message: '域名不能为空', trigger: 'blur'
+        required: true, message: '不能为空', trigger: 'blur'
       }">
       <el-input
         v-model="item.value"
@@ -372,6 +372,9 @@ export default {
 
     // 添加对比人群
     addContrastCrowd (list) {
+      if (list.length === 5) {
+        return this.$message.error('最多添加5条对比人群')
+      }
       list.push({
         value: ''
       })
@@ -383,7 +386,7 @@ export default {
     resetForm (formName) {
       // 重置数据
       this.pageStatus = 0
-      this.crowdName = ''
+      this.crowdName = '' // 查询出来的人群名
       this.checkAll = false
       this.$nextTick(() => {
         this.$refs[formName].resetFields()
@@ -564,23 +567,22 @@ export default {
       })
     },
     // 点击分析 或者 点击柱状图 触发
-    onSubmit (sourceName) {
+    async onSubmit (sourceName) {
       // console.log('submit!')
       // this.formInline.crowdId = 10013
       // this.formInline.sourceNameList = ['影视VIP', '奇异果VIP', '4K花园']
       // this.formInline.timeRange = ['2022-07-18', '2022-07-19']
+      const valid = await this.$refs.ruleForm.validate()
 
-      this.$refs.ruleForm.validate((valid) => {
-        if (valid) {
-          console.log('valid--->', valid)
-          this.loading = true
-          this.show = false
-          this.initChart(sourceName)
-          // this.$nextTick(() => {
-          //   this.show = true
-          // })
-        }
-      })
+      console.log('valid--->', valid)
+      if (valid) {
+        this.loading = true
+        this.show = false
+        this.initChart(sourceName)
+        // this.$nextTick(() => {
+        //   this.show = true
+        // })
+      }
     },
     // 历史记录查询数据
     hitHistory (item) {
@@ -625,6 +627,7 @@ export default {
         await this.getCrowdInfo()
         this.fetchAllData(sourceName)
       } catch {
+        console.log('error--->', 1111)
         this.loading = false
         this.$nextTick(() => {
           this.show = true
@@ -638,7 +641,7 @@ export default {
       const originParams = this.formInline
       this.radioType = 0 // 重置
       this.radioType2 = 0 // 重置
-      // console.log('originParams-->', originParams)
+      // console.log('111----->', originParams)
       const crowdIds = originParams.crowdIds.map(item => item.value).join(',') || ''
 
       const params = {
@@ -651,6 +654,8 @@ export default {
         isDelCache: originParams.isDelCache,
         sourceName: sourceName || '' // 点击柱状图查询单个业务数据
       }
+      // console.log('2222222222----->', params)
+
       // const params = {
       //   crowdId: 10013,
       //   sourceNameList: '优酷影视VIP,芒果全屏VIP,亲子VIP',
