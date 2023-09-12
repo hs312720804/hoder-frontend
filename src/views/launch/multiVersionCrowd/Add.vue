@@ -723,7 +723,7 @@
                 <el-button @click="showEstimate = false">取 消</el-button>
                 <el-button type="primary" @click="handleEstimate(estimateValue)">投 放</el-button>
               </span>
-              <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div>
+              <!-- <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div> -->
             </el-dialog>
         </div>
     </div>
@@ -1211,7 +1211,7 @@ export default {
     reParamsData () {
       const crowdForm = JSON.parse(JSON.stringify(this.crowdForm))
       crowdForm.biIds = crowdForm.biIds.join(',')
-      if (crowdForm.crowdType === 1) { // 临时人群
+      if (crowdForm.crowdType === 1 || crowdForm.crowdType === 2) { // 临时人群/本地人群
         crowdForm.abTest = false
         crowdForm.policyIds = undefined
         crowdForm.policyCrowdIds = undefined
@@ -1647,7 +1647,7 @@ export default {
         this.accountDefine = true
         this.estimateValue = ['0', '1', '2', '3']
       } else if (this.crowdForm.crowdType === 3) { // 行为人群push时，不支持选择数据类型，数据类型选择的其他选项置灰不可选，在类型下展示“Tips: 行为人群当前仅支持push设备类型”
-        this.accountDefine = true
+        this.accountDefine = false
         this.estimateValue = ['0']
       } else {
         this.accountDefine = false

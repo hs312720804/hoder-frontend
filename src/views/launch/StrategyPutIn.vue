@@ -244,7 +244,8 @@
                     ></el-time-picker>
                 </el-form-item>
                 <el-form-item label="数据类型" prop="calType">
-                    <el-checkbox-group v-model="crowdForm.calType" :disabled="crowdForm.crowdType === 3">
+                    <!-- <el-checkbox-group v-model="crowdForm.calType" :disabled="crowdForm.crowdType === 3"> -->
+                    <el-checkbox-group v-model="crowdForm.calType">
                       <!-- <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{ item }}</el-checkbox> -->
                       <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" @change="estimateValueChange(index)">
                         {{ item }}
@@ -270,7 +271,7 @@
 
                     </el-checkbox-group>
                 </el-form-item>
-                <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div>
+                <!-- <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div> -->
             </div>
             <!-- 一键投放故事线场景，不需要展示下面的 -->
             <el-form-item v-if="!hiddenButton">
