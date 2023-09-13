@@ -9,7 +9,7 @@
   <div class="temp-label-list">
     <div>
       <el-table ref="tempChangeTable" :data="tableData" border @select="handleSelectOrCancel" @select-all="handleSelectAllOrCancel">
-        <el-table-column type="selection" width="55" v-if="showSelection" :selectable="checkSelectable"
+        <el-table-column type="selection" width="55" v-if="showSelection"
         >
         </el-table-column>
         <el-table-column prop="tagId" label="ID" ></el-table-column>
