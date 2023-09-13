@@ -1,7 +1,6 @@
 <template>
   <div class="tag-list">
-    <el-table ref="changeTable" v-loading="loading" element-loading-text="拼命加载中"
-      element-loading-spinner="el-icon-loading" border :data="dataList" @select="handleSelectOrCancel"
+    <el-table ref="changeTable" border :data="dataList"
     >
       <el-table-column prop="launchCrowdId" label="卡种包ID">
       </el-table-column>
@@ -22,7 +21,7 @@
       </el-table-column>
       <el-table-column prop="updateTime" label="更新日期">
       </el-table-column>
-      <el-table-column prop="operation" label="操作" v-if="!showSelection">
+      <el-table-column prop="operation" label="操作">
         <template slot="header">
           操作
           <!-- <el-popover placement="top" trigger="click" class="popover-button">
@@ -74,53 +73,54 @@
         </pagination>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="showLaunchToBusiness">
+
+    <!-- <el-dialog :visible.sync="showLaunchToBusiness">
       <StrategyPutIn
         :recordId="recordId"
         :tempPolicyAndCrowd="tempPolicyAndCrowd"
         @closeDialog="handleCloseDialog"
       ></StrategyPutIn>
-    </el-dialog>
+    </el-dialog> -->
 
   </div>
 </template>
 
 <script>
-import StrategyPutIn from '@/views/launch/StrategyPutIn'
+// import StrategyPutIn from '@/views/launch/StrategyPutIn'
 
 export default {
   name: 'TagList',
   props: {
     dataList: {
       type: Array
-    },
-    checkListParent: {
-      type: Array
-    },
-    loading: {
-      type: Boolean
-    },
-    showSelection: {
-      type: Boolean
-    },
-    currentSelectedTags: {
-      type: Array
-    },
-    showDeleteBtn: {
-      type: Boolean,
-      default: false
-    },
-    showEditBtn: {
-      type: Boolean,
-      default: false
-    },
-    tabIndex: {
-      type: [String, Number],
-      default: ''
     }
+    // checkListParent: {
+    //   type: Array
+    // },
+    // loading: {
+    //   type: Boolean
+    // },
+    // showSelection: {
+    //   type: Boolean
+    // },
+    // currentSelectedTags: {
+    //   type: Array
+    // },
+    // showDeleteBtn: {
+    //   type: Boolean,
+    //   default: false
+    // },
+    // showEditBtn: {
+    //   type: Boolean,
+    //   default: false
+    // },
+    // tabIndex: {
+    //   type: [String, Number],
+    //   default: ''
+    // }
   },
   components: {
-    StrategyPutIn
+    // StrategyPutIn
   },
   data () {
     return {
@@ -207,43 +207,46 @@ export default {
           // }
         ],
         data: []
-      },
+      }
       // 监控 params ---end
 
-      multipleSelection: [],
-      tagId: undefined,
-      checkList: [],
-      showDetailDialog: false,
-      dataSourceEnum: {},
-      typeEnum: {}
+      // multipleSelection: [],
+      // tagId: undefined,
+      // checkList: [],
+      // showDetailDialog: false,
+      // dataSourceEnum: {},
+      // typeEnum: {}
     }
   },
   watch: {
-    checkListParent: function (val) {
-      this.checkList = val
-    },
-    dataList: 'updateTableSelected',
-    currentSelectedTags: 'updateTableSelected',
-    'selectedRow.id' (val) {
-      // 切换时，重置弹窗中的时间范围选择
-      this.monitorRangeTime = []
-    }
+    // checkListParent: function (val) {
+    //   this.checkList = val
+    // },
+    // dataList: 'updateTableSelected',
+    // currentSelectedTags: 'updateTableSelected',
+    // 'selectedRow.id' (val) {
+    //   // 切换时，重置弹窗中的时间范围选择
+    //   this.monitorRangeTime = []
+    //   console.log('this.monitorRangeTime22222--->', this.monitorRangeTime)
+    // }
   },
   methods: {
-    handleLaunch (row) {
-      this.showLaunchToBusiness = true
-      this.recordId = row.policyId
-      this.tempPolicyAndCrowd = row
-    },
+    // handleLaunch (row) {
+    //   this.showLaunchToBusiness = true
+    //   this.recordId = row.policyId
+    //   this.tempPolicyAndCrowd = row
+    // },
     handleCloseDialog () {
       this.showLaunchToBusiness = false
     },
     handleMonitor (row) {
       this.monitorDialog = true
       this.selectedRow = row
+      this.monitorRangeTime = [] // 重置选择时间
       this.getDataMonitor()
     },
     getDataMonitor () {
+      // console.log('this.monitorRangeTime-->', this.monitorRangeTime)
       const monitorRangeTime = this.monitorRangeTime || []
       const startDate = monitorRangeTime[0] || ''
       const endDate = monitorRangeTime[1] || ''
@@ -273,110 +276,9 @@ export default {
     handleMonitorCurrentChange (val) {
       this.monitorOutForm.pageNum = val
       this.handleGetMonitorTableList()
-    },
-    getDataSourceList () {
-      this.$service.getDatasource().then((data) => {
-        // const arr = Object.keys(data).map(value => ({ value: parseInt(value), label: data[value] }))
-        // this.dataSourceEnum = arr
-        this.dataSourceEnum = data || {}
-      })
-    },
-    getTagType () {
-      this.$service.getTagType().then((data) => {
-        // const arr = Object.keys(data).map(value => ({ value: parseInt(value), label: data[value] }))
-        // this.dataSourceEnum = arr
-        this.typeEnum = data || {}
-      })
-    },
-
-    handleCheckListChange (val) {
-      this.$emit('change-checkList', val)
-    },
-    handleSeeTagCategoryDetail (row) {
-      this.tagId = row.tagId
-
-      // 选中 tab 的 indedx, 构造 id
-      const id = `tab-content-${this.tabIndex}`
-      const target = document.getElementById(id)
-      const parent = document.querySelector('.el-main')
-      parent.scrollTop = target.offsetTop // 滚动条滑到可视位置
-    },
-    handleDelete (row) {
-      this.$emit('delete', row.tagId)
-    },
-    handleEdit (row) {
-      this.$emit('edit', row)
-    },
-    handleReadTagCancel () {
-      this.tagId = undefined
-    },
-    handleCollect (currentTag) {
-      const flag = currentTag.myCollect
-      const tagId = currentTag.tagId
-      if (flag) {
-        //    取消收藏
-        this.$service.cancelCollectTags({ tagId }, '已取消收藏！').then(() => {
-          this.$emit('fetch-data')
-        })
-      } else {
-        //    收藏
-        this.$service.collectTags({ tagId }, '已成功收藏！').then(() => {
-          this.$emit('fetch-data')
-        })
-      }
-    },
-    updateTableSelected () {
-      const arr = []
-      const currentSelectRows = this.currentSelectedTags
-      this.dataList.forEach((item, index) => {
-        currentSelectRows.forEach((i) => {
-          if (item.tagId === i.tagId) {
-            arr.push(this.dataList[index])
-          }
-        })
-      })
-      if (arr.length > 0) {
-        // 如果存在，则先清空选中，再赋值
-        this.$nextTick(() => {
-          this.$refs.changeTable.clearSelection()
-          arr.forEach(row => {
-            this.$refs.changeTable.toggleRowSelection(row, true)
-          })
-        })
-      } else {
-        this.$refs.changeTable.clearSelection()
-      }
-    },
-    handleSelectOrCancel (select, row) {
-      const selectedFlag = select.length && select.indexOf(row) !== -1
-      // true就是选中，0或者false是取消选中
-      if (selectedFlag) {
-        this.$refs.changeTable.toggleRowSelection(row, true)
-        this.$emit('table-selected', row, 'add')
-      } else {
-        this.$refs.changeTable.toggleRowSelection(row, false)
-        this.$emit('table-selected', row, 'del')
-      }
-    },
-    handleSelectAllOrCancel (select) {
-      // 当select长度为0，则是取消全选，否则是全选
-      const data = this.dataList
-      if (select.length === 0) {
-        for (let i = 0; i < data.length; i++) {
-          this.$emit('table-selected', data[i], 'del')
-        }
-      } else {
-        for (let j = 0; j < data.length; j++) {
-          this.$emit('table-selected', data[j], 'add')
-        }
-      }
     }
-  },
-  created () {
-    this.getDataSourceList()
-    this.getTagType()
-    this.checkList = this.checkListParent
   }
+
 }
 </script>
 
