@@ -16,12 +16,12 @@
 export default {
   props: {
     launchStatusEnum: {
-      type: Array,
+      type: Object,
       default: () => {}
     },
     status: {
-      type: Array,
-      default: () => {}
+      type: [Number, String],
+      default: ''
     }
   },
   components: {},
