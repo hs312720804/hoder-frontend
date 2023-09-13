@@ -15,23 +15,14 @@
       </div>
     </div> -->
     <tag-list
-      :data-list="dataList"
-      :check-list-parent="checkList"
-      :current-selected-tags="currentSelectTag"
-      :show-selection="showSelection"
-      :show-delete-btn="true"
-      :show-edit-btn="true"
-      @fetch-data="fetchData"
-
-      @delete="handleDelete"
-      @edit="handleEdit">
+      :data-list="dataList">
       <div align="right">
         <pagination :currentpage="filter.pageNum" :pagesize="filter.pageSize" :totalcount="totalCount"
           @handle-size-change="handleSizeChange" @handle-current-change="handleCurrentChange"></pagination>
       </div>
     </tag-list>
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500px">
+    <!-- <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500px">
       <el-form label-position="left" label-width="80px" :model="form">
         <el-form-item label="名称" required>
           <el-input v-model="form.tagName"></el-input>
@@ -48,7 +39,7 @@
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
 
   </div>
 </template>
