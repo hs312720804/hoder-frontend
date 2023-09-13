@@ -696,7 +696,13 @@
             <el-dialog :visible.sync="showEstimate">
               <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
               <el-checkbox-group v-model="estimateValue" :disabled="accountDefine" aria-required="true">
-                <el-checkbox v-for="(item, index) in estimateItems" :value="index" :label="index" :key="index" @change="estimateValueChange(index)">
+                <el-checkbox
+                  v-for="(item, index) in estimateItems"
+                  :value="index"
+                  :label="index"
+                  :key="index"
+                  @change="estimateValueChange(index)"
+                  :disabled="crowdForm.crowdType === 3 && (index == 1 || index == 2 || index == 3)">
                   {{item}}
                   <el-popover
                     v-if="index === '0'"
@@ -723,7 +729,7 @@
                 <el-button @click="showEstimate = false">取 消</el-button>
                 <el-button type="primary" @click="handleEstimate(estimateValue)">投 放</el-button>
               </span>
-              <!-- <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div> -->
+              <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持 push 设备类型、pushId 类型</div>
             </el-dialog>
         </div>
     </div>

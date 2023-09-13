@@ -164,7 +164,13 @@
                 </el-form-item>
                 <el-form-item label="数据类型" prop="calType">
                     <el-checkbox-group v-model="crowdForm.calType">
-                      <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" @change="estimateValueChange(index)">
+                      <el-checkbox
+                        v-for="(item,index) in estimateItems"
+                        :value="index"
+                        :label="index"
+                        :key="index"
+                        @change="estimateValueChange(index)"
+                        :disabled="isBehaviorCrowd && (index == 1 || index == 2 || index == 3)">
                         {{item}}
                         <el-popover
                           v-if="index === '0'"
@@ -187,6 +193,9 @@
                       </el-checkbox>
 
                     </el-checkbox-group>
+
+                    <div v-if="isBehaviorCrowd" class="tip">Tips: 行为人群当前仅支持 push 设备类型、pushId 类型</div>
+
                 </el-form-item>
             </div>
             <el-form-item>
@@ -210,6 +219,7 @@ export default {
   props: ['recordId', 'tempPolicyAndCrowd', 'routeSource', 'isDynamicPeople', 'policyId', 'crowdId', 'dynamicMode'],
   data () {
     return {
+      isBehaviorCrowd: false,
       // fullscreenLoading: false,
       crowdForm: {
         biIdsPull: [],
@@ -318,10 +328,10 @@ export default {
       })
     },
     /*
-                行为人群和普通人群不能混用；
-                行为人群只能选择一个；
-                普通人群可以多选；
-            */
+      行为人群和普通人群不能混用；
+      行为人群只能选择一个；
+      普通人群可以多选；
+    */
     handelCheckoutGroup (val, index, crowdData) {
       // console.log(val)
       // console.log(index)
@@ -333,6 +343,8 @@ export default {
         const flag = val.includes(policyId + '_' + item.tempCrowdId)
         return flag
       }) || []
+
+      this.isBehaviorCrowd = checkedList.length > 0 ? checkedList[0].isBehaviorCrowd : false
 
       // 若无选中，则全部恢复可选状态
       if (checkedList.length === 0) {

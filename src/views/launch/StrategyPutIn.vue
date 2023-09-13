@@ -247,7 +247,13 @@
                     <!-- <el-checkbox-group v-model="crowdForm.calType" :disabled="crowdForm.crowdType === 3"> -->
                     <el-checkbox-group v-model="crowdForm.calType">
                       <!-- <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{ item }}</el-checkbox> -->
-                      <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" @change="estimateValueChange(index)">
+                      <el-checkbox
+                        v-for="(item,index) in estimateItems"
+                        :value="index"
+                        :label="index"
+                        :key="index"
+                        @change="estimateValueChange(index)"
+                        :disabled="crowdForm.crowdType === 3 && (index == 1 || index == 2 || index == 3)">
                         {{ item }}
                         <el-popover
                           v-if="index === '0'"
@@ -271,7 +277,7 @@
 
                     </el-checkbox-group>
                 </el-form-item>
-                <!-- <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div> -->
+                <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持 push 设备类型、pushId 类型</div>
             </div>
             <!-- 一键投放故事线场景，不需要展示下面的 -->
             <el-form-item v-if="!hiddenButton">
