@@ -126,11 +126,17 @@
 
       <i @click.stop="deleteHistory(item.id)" class="delete-icon el-icon-close"></i>
       <!-- <span><i class="el-icon-search" style="color: #1ab394; font-size: 16px"></i></span> -->
-      <span>{{ item.crowdId }}</span>
-        <span>{{ item.crowdName }}</span>
+        <!-- <span>{{ item.crowdId }}</span> -->
+        <span>
+          <!-- {{ item.crowdName }} -->
+          <sapn v-for="(item, index) in item.crowdName.split('VS')" :key="item">
+            <span v-if="index !== 0" class="connector"> VS </span>
+            {{ item }}
+          </sapn>
+        </span>
         <span>{{ item.startDate }} 至 {{ item.endDate }}</span>
         <br/>
-        <span>{{ item.sourceNameStr }}</span>
+        <span>{{ item.sourceName }}</span>
 
         <!-- {{item.crowdId + '' + item.startDate + '-' + item.endDate + item.sourceNameStr"}} -->
         <span class="foot">
@@ -140,6 +146,8 @@
           <span>{{ item.updateTime }}</span>
         </span>
       </div>
+
+      <el-empty v-if="historys.length === 0"></el-empty>
     </div>
     <div class="bottom-delete-all">
       <el-popover
@@ -586,22 +594,27 @@ export default {
     },
     // 历史记录查询数据
     hitHistory (item) {
-      const crowdIds = [item.crowdId].map(item => {
+      let crowdIds = item.crowdIds ? item.crowdIds.split(',') : []
+      crowdIds = crowdIds.map(item => {
         return {
           value: item
         }
       })
       this.formInline = {
         crowdIds,
-        sourceNameList: item.sourceNameStr.split(','),
+        sourceNameList: item.sourceName.split(','),
         timeRange: [item.startDate, item.endDate],
         isDelCache: 0
       }
-      this.initChart()
+
+      const historyId = item.id
+      this.loading = true
+      this.show = false
+      this.initChart('', historyId)
     },
 
     // 手动点击分析调用 或者 点击历史记录分析调用
-    async initChart (sourceName) {
+    async initChart (sourceName, historyId) {
       // this.allChartData = {}
       this.crowdName = ''
       // 销毁定时器
@@ -625,7 +638,7 @@ export default {
       // 先查询人群是否存在，若存在，再去分
       try {
         await this.getCrowdInfo()
-        this.fetchAllData(sourceName)
+        this.fetchAllData(sourceName, historyId)
       } catch {
         console.log('error--->', 1111)
         this.loading = false
@@ -636,7 +649,7 @@ export default {
     },
 
     // 查询图表数据
-    fetchAllData (sourceName) {
+    fetchAllData (sourceName, historyId) {
       this.loading = true
       const originParams = this.formInline
       this.radioType = 0 // 重置
@@ -652,7 +665,8 @@ export default {
         startDate: originParams.timeRange[0],
         endDate: originParams.timeRange[1],
         isDelCache: originParams.isDelCache,
-        sourceName: sourceName || '' // 点击柱状图查询单个业务数据
+        sourceName: sourceName || '', // 点击柱状图查询单个业务数据
+        historyId
       }
       // console.log('2222222222----->', params)
 
@@ -832,6 +846,11 @@ export default {
   // font-size: 16px;
   margin-left: 6px;
 
+}
+.search-text .connector {
+  color: #ff0000;
+  margin: 0 8px;
+  font-weight: 800;
 }
 
 </style>
