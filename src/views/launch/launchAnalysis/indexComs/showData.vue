@@ -164,6 +164,10 @@ export default {
     isSingShowPanel: {
       type: Boolean,
       default: true
+    },
+    formInline: {
+      type: Object,
+      default: () => {}
     }
   },
   data () {
@@ -185,14 +189,14 @@ export default {
 
       isIndeterminate: false,
       isIndeterminate2: false,
-      formInline: {
-        crowdId: '',
-        crowdIds: [{ value: '' }],
-        sourceNameList: [],
-        // timeRange: ['2022-07-18', '2022-07-19']
-        timeRange: [],
-        isDelCache: 0
-      },
+      // formInline: {
+      //   crowdId: '',
+      //   crowdIds: [{ value: '' }],
+      //   sourceNameList: [],
+      //   // timeRange: ['2022-07-18', '2022-07-19']
+      //   timeRange: [],
+      //   isDelCache: 0
+      // },
       show: true,
       allCharts: {},
       timeRange: [],
@@ -287,7 +291,7 @@ export default {
     //  投后分析导出
     handleGxportRightsInterests () {
       const params = {
-        crowdId: this.formInline.crowdId,
+        crowdId: this.crowdId,
         sourceNameList: this.formInline.sourceNameList.join(','),
         startDate: this.formInline.timeRange[0],
         endDate: this.formInline.timeRange[1]

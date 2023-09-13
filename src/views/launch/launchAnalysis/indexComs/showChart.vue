@@ -135,6 +135,10 @@ export default {
     isSingShowPanel: {
       type: Boolean,
       default: true
+    },
+    formInline: {
+      type: Object,
+      default: () => {}
     }
   },
   data () {
@@ -162,14 +166,14 @@ export default {
       isIndeterminate: false,
       isIndeterminate2: false,
       // allData: {},
-      formInline: {
-        crowdId: '',
-        crowdIds: [{ value: '' }],
-        sourceNameList: [],
-        // timeRange: ['2022-07-18', '2022-07-19']
-        timeRange: [],
-        isDelCache: 0
-      },
+      // formInline: {
+      //   crowdId: '',
+      //   crowdIds: [{ value: '' }],
+      //   sourceNameList: [],
+      //   // timeRange: ['2022-07-18', '2022-07-19']
+      //   timeRange: [],
+      //   isDelCache: 0
+      // },
       show: true,
       allCharts: {},
       timeRange: [],
@@ -331,59 +335,21 @@ export default {
         this.$refs[formName].resetFields()
       })
     },
-    // 删除历史
-    deleteHistory (id) {
-      this.$service.delRightsInterestsSearchRecord({ id }, '删除成功').then(res => {
-        // 刷新、
-        // 历史搜索记录
-        this.handleGetRightsInterestsSearchRecord()
-      })
-    },
-    //  投后分析导出
-    handleGxportRightsInterests () {
-      const params = {
-        crowdId: this.formInline.crowdId,
-        sourceNameList: this.formInline.sourceNameList.join(','),
-        startDate: this.formInline.timeRange[0],
-        endDate: this.formInline.timeRange[1]
-      }
 
-      // const params = {
-      //   crowdId: 11731,
-      //   sourceNameList: '酷喵VIP',
-      //   startDate: '2022-08-01',
-      //   endDate: '2022-08-15'
-      // }
-      const urlParams = `crowdId=${params.crowdId}&startDate=${params.startDate}&endDate=${params.endDate}&sourceNameList=${params.sourceNameList}`
-      this.downloadUrl = '/api/exportRightsInterests?' + urlParams
-      this.$nextTick(() => {
-        this.$refs.download_Url.click()
-      })
-    },
-
-    // 历史记录查询
-    handleGetRightsInterestsSearchRecord () {
-      const params = {
-        condition: this.historysCondition
-      }
-      this.$service.getRightsInterestsSearchRecord(params).then(res => {
-        this.historys = res || []
-      })
-    },
-    handleCheckAllChange (val) {
-      this.formInline.sourceNameList = val ? cityOptions.concat(cityOptions2) : []
-    },
-    handleCheckAllChange2 (val) {
-      this.formInline.sourceNameList = val ? this.formInline.sourceNameList.concat(cityOptions2) : this.formInline.sourceNameList.filter(item => cityOptions2.indexOf(item) === -1)
-    },
-    handleClick (tab, event) {
-      this.$nextTick(() => {
-        for (const key of Object.keys(this.allCharts)) {
-          const chart = this.allCharts[key]
-          chart.resize()
-        }
-      })
-    },
+    // handleCheckAllChange (val) {
+    //   this.formInline.sourceNameList = val ? cityOptions.concat(cityOptions2) : []
+    // },
+    // handleCheckAllChange2 (val) {
+    //   this.formInline.sourceNameList = val ? this.formInline.sourceNameList.concat(cityOptions2) : this.formInline.sourceNameList.filter(item => cityOptions2.indexOf(item) === -1)
+    // },
+    // handleClick (tab, event) {
+    //   this.$nextTick(() => {
+    //     for (const key of Object.keys(this.allCharts)) {
+    //       const chart = this.allCharts[key]
+    //       chart.resize()
+    //     }
+    //   })
+    // },
 
     // 漏斗图
     showFunnel (element, data) {
@@ -493,61 +459,61 @@ export default {
     },
 
     // 设置初始化展示数据
-    setDefaultData () {
-      // 默认展示的数据参数
-      // this.formInline = {
-      //   crowdId: '18321',
-      //   sourceNameList: ['家庭影院VIP'],
-      //   timeRange: ['2023-04-25', '2023-04-30'],
-      //   isDelCache: 0
-      // }
+    // setDefaultData () {
+    // 默认展示的数据参数
+    // this.formInline = {
+    //   crowdId: '18321',
+    //   sourceNameList: ['家庭影院VIP'],
+    //   timeRange: ['2023-04-25', '2023-04-30'],
+    //   isDelCache: 0
+    // }
 
-      this.formInline = {
-        crowdIds: [{ value: '20101' }],
-        crowdId: ['20101'],
-        sourceNameList: ['优酷影视VIP'],
-        timeRange: ['2023-08-03', '2023-08-08'],
-        isDelCache: 0
-      }
-      this.$nextTick(() => {
-        this.onSubmit()
-      })
-    },
-    handleChange () {
-      this.formInline.timeRange = []
-      this.getCrowdInfo('setTime')
-    },
-    getCrowdInfo (type) {
-      const crowdId = this.formInline.crowdId
-      this.startTime = ''
-      this.endTime = ''
-      this.crowdName = ''
-      return new Promise((resolve, reject) => {
-        this.$service.crowdEdit({ crowdId }).then(res => {
-          const crowdInfo = res.policyCrowds
-          this.crowdName = crowdInfo.crowdName
-          this.startTime = crowdInfo.createTime || '' // 创建日期 就是可选最小时间
+    // this.formInline = {
+    //   crowdIds: [{ value: '20101' }],
+    //   crowdId: ['20101'],
+    //   sourceNameList: ['优酷影视VIP'],
+    //   timeRange: ['2023-08-03', '2023-08-08'],
+    //   isDelCache: 0
+    // }
+    //   this.$nextTick(() => {
+    //     this.onSubmit()
+    //   })
+    // },
+    // handleChange () {
+    //   this.formInline.timeRange = []
+    //   this.getCrowdInfo('setTime')
+    // },
+    // getCrowdInfo (type) {
+    //   const crowdId = this.formInline.crowdId
+    //   this.startTime = ''
+    //   this.endTime = ''
+    //   this.crowdName = ''
+    //   return new Promise((resolve, reject) => {
+    //     this.$service.crowdEdit({ crowdId }).then(res => {
+    //       const crowdInfo = res.policyCrowds
+    //       this.crowdName = crowdInfo.crowdName
+    //       this.startTime = crowdInfo.createTime || '' // 创建日期 就是可选最小时间
 
-          // 下架
-          const isOffShelf = crowdInfo.putway === 0 // 【 1：上架， 0：下架】
-          // 删除
-          const isDelete = crowdInfo.delFlag === 2 //  【 1: 正常， 2：删除】
+    //       // 下架
+    //       const isOffShelf = crowdInfo.putway === 0 // 【 1：上架， 0：下架】
+    //       // 删除
+    //       const isDelete = crowdInfo.delFlag === 2 //  【 1: 正常， 2：删除】
 
-          if (isOffShelf || isDelete) {
-            this.endTime = this.$moment(crowdInfo.updateTime).format('YYYY-MM-DD')
-          } else {
-            this.endTime = this.$moment().format('YYYY-MM-DD')
-          }
-          // 如果是 crowdID change 的时候调用的，就设置分析周期
-          if (this.startTime && this.endTime && type) {
-            this.formInline.timeRange = [this.startTime, this.endTime]
-          }
-          resolve(res)
-        }).catch((err) => {
-          reject(err)
-        })
-      })
-    },
+    //       if (isOffShelf || isDelete) {
+    //         this.endTime = this.$moment(crowdInfo.updateTime).format('YYYY-MM-DD')
+    //       } else {
+    //         this.endTime = this.$moment().format('YYYY-MM-DD')
+    //       }
+    //       // 如果是 crowdID change 的时候调用的，就设置分析周期
+    //       if (this.startTime && this.endTime && type) {
+    //         this.formInline.timeRange = [this.startTime, this.endTime]
+    //       }
+    //       resolve(res)
+    //     }).catch((err) => {
+    //       reject(err)
+    //     })
+    //   })
+    // },
     // 点击分析 或者 点击柱状图 触发
     onSubmit (sourceName) {
       // console.log('submit!')
@@ -567,15 +533,15 @@ export default {
       })
     },
     // 历史记录查询数据
-    hitHistory (item) {
-      this.formInline = {
-        crowdId: item.crowdId,
-        sourceNameList: item.sourceNameStr.split(','),
-        timeRange: [item.startDate, item.endDate],
-        isDelCache: 0
-      }
-      this.initChart()
-    },
+    // hitHistory (item) {
+    //   this.formInline = {
+    //     crowdId: item.crowdId,
+    //     sourceNameList: item.sourceNameStr.split(','),
+    //     timeRange: [item.startDate, item.endDate],
+    //     isDelCache: 0
+    //   }
+    //   this.initChart()
+    // },
 
     // 手动点击分析调用 或者 点击历史记录分析调用
     // async initChart (sourceName) {

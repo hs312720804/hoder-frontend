@@ -18,13 +18,14 @@
       <showData
         v-for="(item, key) in Object.values(allCrowdData)" :key="key"
         ref="domShowData"
-        :crowdId="key"
+        :crowdId="item.crowdId"
         :pageStatus="item.status"
         :overview="item.overview ? item.overview.data : {}"
         :allChartData="item"
         :class="Object.keys(allCrowdData).length > 1 ? `d${key}-color` : ''"
         :isSingShowPanel="Object.keys(allCrowdData).length === 1"
         :style="{width: 100 / Object.keys(allCrowdData).length + '%'}"
+        :formInline="formInline"
       >
       </showData>
     </div>
@@ -40,13 +41,14 @@
       <showChart
         v-for="(item, key) in Object.values(allCrowdData)" :key="key"
         :activeName="activeName"
-        :crowdId="key"
+        :crowdId="item.crowdId"
         :pageStatus="item.status"
         :overview="item.overview ? item.overview.data : {}"
         :allChartData="item"
         :class="Object.keys(allCrowdData).length > 1 ? `d${key}-color` : ''"
         :isSingShowPanel="Object.keys(allCrowdData).length === 1"
         :style="{width: 100 / Object.keys(allCrowdData).length + '%'}"
+        :formInline="formInline"
       >
       </showChart>
     </div>
@@ -77,6 +79,10 @@ export default {
       default: () => {}
     },
     allCrowdData: {
+      type: Object,
+      default: () => {}
+    },
+    formInline: {
       type: Object,
       default: () => {}
     }

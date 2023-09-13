@@ -88,6 +88,7 @@
   <ShowIndex
     v-if="show && pageStatus === 1"
     :allCrowdData="allCrowdData"
+    :formInline="formInline"
   >
   </ShowIndex>
   <!-- 初始页面 或者 查询为空 时 -->
