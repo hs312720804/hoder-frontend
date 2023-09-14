@@ -316,25 +316,25 @@ export default {
         })
       }
     },
-    // 添加对比人群
-    addContrastCrowd (list) {
-      list.push({
-        value: ''
-      })
-    },
-    // 删除对比人群
-    cutContrastCrowd (list, index) {
-      list.splice(index, 1)
-    },
-    resetForm (formName) {
-      // 重置数据
-      // this.pageStatus = 0
-      this.crowdName = ''
-      this.checkAll = false
-      this.$nextTick(() => {
-        this.$refs[formName].resetFields()
-      })
-    },
+    // // 添加对比人群
+    // addContrastCrowd (list) {
+    //   list.push({
+    //     value: ''
+    //   })
+    // },
+    // // 删除对比人群
+    // cutContrastCrowd (list, index) {
+    //   list.splice(index, 1)
+    // },
+    // resetForm (formName) {
+    //   // 重置数据
+    //   // this.pageStatus = 0
+    //   this.crowdName = ''
+    //   this.checkAll = false
+    //   this.$nextTick(() => {
+    //     this.$refs[formName].resetFields()
+    //   })
+    // },
 
     // handleCheckAllChange (val) {
     //   this.formInline.sourceNameList = val ? cityOptions.concat(cityOptions2) : []
