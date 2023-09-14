@@ -19,7 +19,7 @@
                     {{ allChartData[key].title }}
                   </span>
                   <span v-else>
-                    {{chart.title}}
+                    {{ chart.title }}
                   </span>
 
                 </div>
@@ -287,6 +287,18 @@ export default {
           chart.resize()
         })
       }
+    },
+    allChartData: {
+      handler (val) {
+        console.log('改变后的 allChartData----->', val)
+        // this.show = false
+        this.show = false
+        this.$nextTick(() => {
+          this.show = true
+          this.init()
+        })
+      },
+      deep: true
     }
   },
   // beforeDestroy () {
@@ -308,7 +320,6 @@ export default {
     init () {
       if (this.pageStatus === 1) { // 有数据
         // 概览 - 漏斗图
-        this.show = true
         this.$nextTick(() => {
           this.showFunnel(`${this.crowdId}_chart1`, this.overview)
           // 详情图表
@@ -521,16 +532,18 @@ export default {
       // this.formInline.sourceNameList = ['影视VIP', '奇异果VIP', '4K花园']
       // this.formInline.timeRange = ['2022-07-18', '2022-07-19']
 
-      this.$refs.ruleForm.validate((valid) => {
-        if (valid) {
-          this.loading = true
-          this.show = false
-          this.initChart(sourceName)
-          this.$nextTick(() => {
-            this.show = true
-          })
-        }
-      })
+      // this.$refs.ruleForm.validate((valid) => {
+      //   if (valid) {
+      //     this.loading = true
+      //     this.show = false
+      //     this.initChart(sourceName)
+      //     this.$nextTick(() => {
+      //       this.show = true
+      //     })
+      //   }
+      // })
+      // this.show = false
+      this.$emit('onSubmit', sourceName)
     },
     // 历史记录查询数据
     // hitHistory (item) {

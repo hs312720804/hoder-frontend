@@ -89,6 +89,7 @@
     v-if="show && pageStatus === 1"
     :allCrowdData="allCrowdData"
     :formInline="formInline"
+    @onSubmit="(sourceName) => onSubmit(sourceName)"
   >
   </ShowIndex>
   <!-- 初始页面 或者 查询为空 时 -->
@@ -576,6 +577,7 @@ export default {
       })
     },
     // 点击分析 或者 点击柱状图 触发
+    // sourceName 有传参时，代表是点击柱状图 触发
     async onSubmit (sourceName) {
       // console.log('submit!')
       // this.formInline.crowdId = 10013
@@ -586,7 +588,7 @@ export default {
       console.log('valid--->', valid)
       if (valid) {
         this.loading = true
-        this.show = false
+        if (!sourceName) this.show = false
         this.initChart(sourceName)
         // this.$nextTick(() => {
         //   this.show = true
@@ -724,8 +726,11 @@ export default {
         this.$nextTick(() => {
           this.show = true
         })
-        // 重新搜索历史记录，更新数据
-        this.handleGetRightsInterestsSearchRecord()
+
+        if (!params.sourceName) { // 点击柱状图查询单个业务数据时，不重新更新历史记录
+          // 重新搜索历史记录，更新数据
+          this.handleGetRightsInterestsSearchRecord()
+        }
       }).catch(e => {
         this.loading = false
         // 销毁定时器

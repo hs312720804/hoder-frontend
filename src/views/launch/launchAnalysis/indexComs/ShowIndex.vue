@@ -49,6 +49,7 @@
         :isSingShowPanel="Object.keys(allCrowdData).length === 1"
         :style="{width: 100 / Object.keys(allCrowdData).length + '%'}"
         :formInline="formInline"
+        @onSubmit="(sourceName) => $emit('onSubmit', sourceName)"
       >
       </showChart>
     </div>
