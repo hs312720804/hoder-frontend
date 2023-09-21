@@ -54,12 +54,22 @@ export default {
   props: {
     activeName: {
       type: String
+    },
+    radioType: {
+      type: [String, Number]
     }
   },
   watch: {
     activeName: function (val) {
       if (val !== undefined) {
-        this.filter.source = val
+        // this.filter.source = val
+        this.filter.pageNum = 1
+        this.filter.pageSize = 10
+        this.fetchData()
+      }
+    },
+    radioType: function (val) {
+      if (val !== undefined) {
         this.filter.pageNum = 1
         this.filter.pageSize = 10
         this.fetchData()
@@ -92,9 +102,11 @@ export default {
   methods: {
     fetchData () {
       // const filter = this.filter
+      const source = this.radioType === 1 ? `${this.activeName}|50%` : this.activeName
+
       const filter = {
         ...this.filter,
-        source: this.activeName
+        source
       }
       this.$service.getAiCrowd(filter).then(data => {
         // eslint-disable-next-line

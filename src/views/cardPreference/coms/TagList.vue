@@ -11,8 +11,8 @@
           {{ dataSourceEnum[scope.row.dataSource] }}
         </template>
       </el-table-column> -->
-      <el-table-column prop="will" label="付费意愿">
-      </el-table-column>
+      <!-- <el-table-column prop="will" label="付费意愿">
+      </el-table-column> -->
 
       <el-table-column prop="size" label="数量">
         <template slot-scope="scope">

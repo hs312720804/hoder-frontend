@@ -1,12 +1,16 @@
 <template>
-  <div class="label-content">
+  <div class="card-preference">
+    <el-radio-group v-model="radioType" class="radio-type">
+      <el-radio :label="0">全概率用户</el-radio>
+      <el-radio :label="1">购买概率50%以上</el-radio>
+    </el-radio-group>
     <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-content-wrap">
-
       <el-tab-pane v-for="item in tabList" :label="item.label" :name="item.value" :key="item.value" >
       </el-tab-pane>
 
       <BehaviorTag
         :activeName="activeName"
+        :radioType="radioType"
       >
       </BehaviorTag>
 
@@ -44,6 +48,7 @@ export default {
   },
   data () {
     return {
+      radioType: 0,
       tabList: [{
         label: '爱奇艺',
         value: 'iqiyi'
@@ -80,4 +85,14 @@ export default {
 
 <style lang="stylus" scoped>
 @import './common.styl'
+.radio-type {
+  position: absolute;
+  top: 12px;
+  right: 0;
+  z-index 9
+}
+.card-preference {
+  position relative
+}
+
 </style>

@@ -7,6 +7,10 @@
  -->
 
   <div class="temp-label-list">
+    <el-radio-group v-model="radioType" class="radio-type">
+      <el-radio :label="0">全概率用户</el-radio>
+      <el-radio :label="1">购买概率50%以上</el-radio>
+    </el-radio-group>
     <div>
       <el-table ref="tempChangeTable" :data="tableData" border @select="handleSelectOrCancel" @select-all="handleSelectAllOrCancel">
         <el-table-column type="selection" width="55" v-if="showSelection"
@@ -14,7 +18,7 @@
         </el-table-column>
         <el-table-column prop="tagId" label="ID" ></el-table-column>
         <el-table-column prop="tagName" label="名称"></el-table-column>
-        <el-table-column prop="will" label="付费意愿"></el-table-column>
+        <!-- <el-table-column prop="will" label="付费意愿"></el-table-column> -->
         <el-table-column prop="size" label="数量">
           <template slot-scope="scope">
             {{ cc_format_number(scope.row.size) }}
@@ -53,6 +57,7 @@ export default {
   },
   data () {
     return {
+      radioType: 0,
       myself: 1,
       tableData: [],
       filter: {},
@@ -86,6 +91,15 @@ export default {
     currentSelectTag: 'updateTableSelected',
     checkListParent: function (val) {
       this.checkList = val
+    },
+    radioType: function (val) {
+      if (val !== undefined) {
+        // this.filter.pageNum = 1
+        // this.filter.pageSize = 10
+        this.pageSize = 10
+        this.currentPage = 1
+        this.fetchData()
+      }
     }
   },
   methods: {
@@ -99,7 +113,8 @@ export default {
       const filter = {
         pageNum: this.currentPage,
         pageSize: this.pageSize,
-        crowdType: 6
+        crowdType: 6,
+        sourceType: this.radioType === 1 ? '50%' : undefined
       }
 
       this.$service.getTempCrowdList(filter).then(data => {
@@ -271,4 +286,12 @@ export default {
         cursor pointer
     .monitor-time
         margin-bottom 30px
+
+    .radio-type {
+      top: 12px;
+      right: 0;
+      z-index 9
+      float right
+      margin-bottom 10px
+    }
 </style>
