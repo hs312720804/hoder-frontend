@@ -76,9 +76,12 @@ export default {
       // 图表默认配置
       graphSet: {
         container: 'graph-container',
+        fitView: true,
+        maxZoom: 2, // 最大缩放比例
+        // minZoom: 0.8, // 最小缩放比例
         defaultNode: {
           shape: 'circle-node',
-          size: 30,
+          size: 25,
           style: {
             fill: '#DEE9FF',
             stroke: '#5B8FF9'
@@ -105,10 +108,11 @@ export default {
         defaultEdge: {
           // shape: 'polyline',
           style: {
-            radius: 20,
-            offset: 30,
+            // radius: 50,
+            // offset: 50,
             endArrow: true,
-            stroke: '#F6BD16'
+            stroke: '#F6BD16',
+            lineWidth: 2
           }
         },
         modes: {
@@ -154,18 +158,25 @@ export default {
         ...this.graphSet,
         width,
         height,
+        // layout: {
+        //   // type: 'fruchterman', // 推荐
+        //   type: 'force', // 推荐
+        //   // type: 'circular',
+        //   // type: 'concentric',
+        //   // workerEnabled: true,
+        //   begin: [20, 20],
+        //   nodeSize: 100,
+        //   width: width - 20,
+        //   height: height - 20,
+        //   preventOverlap: true
+        //   // sortBy: 'cluster'
+        // },
         layout: {
-          // type: 'fruchterman', // 推荐
-          type: 'force', // 推荐
-          // type: 'circular',
-          // type: 'concentric',
-          // workerEnabled: true,
+          type: 'dagre',
           begin: [20, 20],
-          nodeSize: 100,
-          width: width - 20,
-          height: height - 20,
-          preventOverlap: true
-          // sortBy: 'cluster'
+          nodeSize: [10, 10],
+          nodesep: 1,
+          ranksep: 1
         }
       })
 
@@ -186,12 +197,15 @@ export default {
       //   console.log('item------->', item)
       //   // this.graph.setItemState(item, 'selected', true)
       // })
-      // 双击
+      // 双击 跳转选中接待员
       this.graph.on('node:dblclick', evt => {
         const { item } = evt
         this.dblClick(item)
         // this.graph.setItemState(item, 'selected', true)
       })
+
+      // 监听节点上的click事件
+      this.graph.on('node:click', this.handleNodeClick)
     },
     dblClick (item) {
       console.log('item------->', item._cfg.id)
@@ -272,7 +286,7 @@ export default {
         const nodes = cloneData.nodes.map(item => {
           return {
             receptionist: item.receptionist,
-            id: item.id
+            id: item.id.toString()
           }
         })
         cloneData.nodes = nodes
@@ -301,6 +315,43 @@ export default {
         endTime: this.dateRange[1]
       }
       return filter
+    },
+    handleNodeClick (event) {
+      const graph = this.graph
+      const item = event.item
+      // 聚焦当前点击的节点（把节点放到视口中心）
+
+      const matrix = item.get('group').getMatrix()
+      const point = {
+        x: matrix[6],
+        y: matrix[7]
+      }
+      const width = graph.get('width')
+      const height = graph.get('height')
+      // 找到视口中心
+      const viewCenter = {
+        x: width / 2,
+        y: height / 2
+      }
+      const modelCenter = graph.getPointByCanvas(viewCenter.x, viewCenter.y)
+      const viewportMatrix = graph.get('group').getMatrix()
+      // 画布平移的目标位置，最终目标是graph.translate(dx, dy);
+      const dx = (modelCenter.x - point.x) * viewportMatrix[0]
+      const dy = (modelCenter.y - point.y) * viewportMatrix[4]
+      let lastX = 0
+      let lastY = 0
+      let newX = 0
+      let newY = 0
+      // 动画每次平移一点，直到目标位置
+      graph.get('canvas').animate({
+        onFrame: function onFrame (ratio) {
+          newX = dx * ratio
+          newY = dy * ratio
+          graph.translate(newX - lastX, newY - lastY)
+          lastX = newX
+          lastY = newY
+        }
+      }, 300, 'easeCubic')
     }
     // handleSearch () {
     //   // 清空数据、清空图表

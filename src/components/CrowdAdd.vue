@@ -545,7 +545,6 @@ export default {
           // this.setSeq()
         }
       }
-      // console.log('122222222222222222------------>', this.inputValue)
     },
     emitInputValue (val) {
       this.hasMoveBehaviorTagRule() // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”

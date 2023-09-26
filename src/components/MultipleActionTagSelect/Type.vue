@@ -97,8 +97,7 @@ export default {
       handler (val) {
         this.typeFormRules = {
           value: [
-            { required: val, message: '请输入值', trigger: 'blur' },
-            { required: val, message: '请输入值', trigger: 'change' }
+            { required: val, message: '请输入值', trigger: ['blur', 'change'] }
           ],
           type: [
             { required: true, message: '请选择', trigger: 'change' }

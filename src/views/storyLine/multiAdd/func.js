@@ -65,18 +65,18 @@ function confirmMultiAddServicerFn ({ allPerSetRef }) {
 
       // 所有的入口和出口
       Promise.all([...entryValidPromise, ...exportValidPromise]).then(res => {
-        console.log('start===============最终数据============>')
+        // console.log('start===============最终数据============>')
         console.log(res)
-        console.log('end=================最终数据==========')
+        // console.log('end=================最终数据==========')
 
         allEntryArr = res.filter(item => item.type === 'entry')
         allExportArr = res.filter(item => item.type === 'export')
-        console.log('')
-        console.log('allEntryArr===========================>', allEntryArr)
-        console.log('')
-        console.log('allExportArr===========================>', allExportArr)
+        // console.log('')
+        // console.log('allEntryArr===========================>', allEntryArr)
+        // console.log('')
+        // console.log('allExportArr===========================>', allExportArr)
 
-        console.log('需要提交的数据======》', allPerSetRef.allRuleForm)
+        // console.log('需要提交的数据======》', allPerSetRef.allRuleForm)
 
         const returnReceptionists = restoreData(allPerSetRef.allRuleForm, allEntryArr, allExportArr)
 

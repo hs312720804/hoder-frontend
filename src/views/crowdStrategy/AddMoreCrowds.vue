@@ -649,7 +649,8 @@ export default {
             }
             // 多选的值，保存的时候需要转成字符串 2222
             if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
-              rulesItem.value = rulesItem.value.join(',')
+              // rulesItem.value = typeof rulesItem.value === 'string' ? rulesItem.value : rulesItem.value.join(',')
+              rulesItem.value = Array.isArray(rulesItem.value) ? rulesItem.value.join(',') : rulesItem.value
             }
           })
           return item
@@ -662,7 +663,8 @@ export default {
             // 多选的值，保存的时候需要转成字符串 2222
             if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
             // if (rulesItem.tagType === 'string') {
-              rulesItem.value = rulesItem.value.join(',')
+              // rulesItem.value = rulesItem.value.join(',')
+              rulesItem.value = Array.isArray(rulesItem.value) ? rulesItem.value.join(',') : rulesItem.value
             }
 
             if (rulesItem.bav && rulesItem.bav.rang.newValue && rulesItem.bav.rangeType === 'fixed') { // 固定周期 日期多选

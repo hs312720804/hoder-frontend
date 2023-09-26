@@ -47,7 +47,8 @@
             <template v-if="(childItem.dataSource === 20)">
               <span class="txt">{{ childItem.tagName }}</span>
 
-              <RuleCom class="rule-wrap" :childItem="childItem" :index="index" :n="n"></RuleCom>
+              <RuleCom class="rule-wrap" :childItem="childItem" :index="index" :n="n" :stopType="stopType"></RuleCom>
+
               <span class="i" @click="handleRemoveRule(item, childItem)">
                 <i class="icon iconfont el-icon-cc-delete"></i>
               </span>
@@ -71,14 +72,14 @@
                 >
                   <el-option
                     v-for="item in getTagAttrChild[childItem.tagId]"
-                    :key="item.attrId"
+                    :key="item.attrValue"
                     :value="item.attrValue"
                     :label="item.attrName">
                   </el-option>
                 </el-select>
               </span>
               <span class="sel">
-
+                <!-- {{ childItem.tagType }} -->
                 <!-- 是时间（time）类型的下拉框 -->
                 <template v-if="childItem.tagType === 'time'">
 
@@ -161,8 +162,9 @@
                   </template>
 
                   <!-- boolean 类型 -->
-                  <template v-if="childItem.tagType === 'boolean'">
+                  <template v-if="childItem.tagType === 'boolean' || childItem.tagType === 'bool'">
                     <el-option value="=" label="="></el-option>
+                    <el-option value="null" label="为空"></el-option>
                   </template>
 
                   <!-- collect 类型 -->
@@ -367,7 +369,7 @@
                       >
                         <el-option
                           v-for="item in cache[childItem.tagId].list"
-                          :key="index + item.attrValue + item.attrId"
+                          :key="index + item.attrValue"
                           :label="item.attrName"
                           :value="item.attrValue"
                         ></el-option>
@@ -398,13 +400,23 @@
                 <el-select v-else
                   v-model="childItem.value"
                   :disabled="
-                    childItem.tagType === 'string' &&
-                    childItem.operator === 'null'
+                    (childItem.tagType === 'string' &&
+                    childItem.operator === 'null')||
+                    (childItem.tagType === 'boolean' &&
+                    childItem.operator === 'null')
                   "
                 >
                   <template
                     v-if="
                       childItem.tagType === 'string' &&
+                      childItem.operator === 'null'
+                    "
+                  >
+                    <el-option label="空" value="nil"></el-option>
+                  </template>
+                  <template
+                    v-if="
+                      childItem.tagType === 'boolean' &&
                       childItem.operator === 'null'
                     "
                   >
@@ -755,7 +767,7 @@
                   >
                     <el-option
                       v-for="item in cache[childItem.tagId].list"
-                      :key="index + item.attrValue + item.attrId"
+                      :key="index + item.attrValue"
                       :label="item.attrName"
                       :value="item.attrValue"
                     ></el-option>
@@ -980,6 +992,10 @@ export default {
     crowd: {
       type: Object,
       default: () => {}
+    },
+    stopType: { // 故事线 - 出口 - 选择则视为（就是下一跳...）
+      type: [Number, String],
+      default: undefined
     }
   },
   computed: {
@@ -1560,6 +1576,8 @@ export default {
     },
     handleOperatorChange (item) {
       if (item.tagType === 'string' && item.operator === 'null') {
+        item.value = 'nil'
+      } else if (item.tagType === 'boolean' && item.operator === 'null') {
         item.value = 'nil'
       } else if (item.tagType === 'string') { // string 类型的标签可多选 value值是数组
         item.value = []

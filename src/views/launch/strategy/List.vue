@@ -59,16 +59,18 @@
             <el-form :model="formData" :rules="rulesData" ref="formData">
                 <el-form-item label="投放平台" prop="biIds" class="multipleSelect">
                     <el-select
-                            v-model="formData.biIds"
-                            multiple
+                      ref="multipleSelectRef"
+                      v-model="formData.biIds"
+                      multiple
+                      @change="multipleSelectChange"
                     >
-                        <el-option
-                                v-for="(platform,index) in Platforms"
-                                :label="platform.biName"
-                                :value="platform.biId"
-                                :key="index"
-                        >
-                        </el-option>
+                      <el-option
+                        v-for="(platform,index) in Platforms"
+                        :label="platform.biName"
+                        :value="platform.biId"
+                        :key="index"
+                      >
+                      </el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="选择策略" prop="policyIds" class="multipleSelect">
@@ -169,16 +171,20 @@ export default {
         // selected: [],
         // selectionType: 'multiple'
       },
-      launchStatusEnum: { '1': '投放中' }
+      launchStatusEnum: { 1: '投放中' }
     }
   },
   props: ['parentSource', 'showAllParent'],
   watch: {
-    'showAllParent': function () {
+    showAllParent: function () {
       this.fetchData(this.biId)
     }
   },
   methods: {
+    multipleSelectChange () {
+      // 改变选中值后，自动收起下拉框
+      this.$refs.multipleSelectRef.blur()
+    },
     getPolicyList () {
       this.$service.launchPolicyIndex().then(data => {
         this.launchPlatformData = data.biLists

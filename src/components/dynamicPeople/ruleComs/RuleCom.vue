@@ -1,5 +1,11 @@
 <template>
   <div class="label-item">
+    <!-- {{childItem.tagKey}}<br/>
+    childItem.sourceSign --- {{childItem.sourceSign}}<br/>
+    childItem.count --- {{childItem.count}}<br/>
+    {{childItem.coupon}}<br/>
+    stopType---{{stopType}}<br/>
+    recommendedValue---{{ recommendedValue }}<br/> -->
     <template v-if="childItem.tagKey === 'exposeDays' || childItem.tagKey === 'exposeTimes' || childItem.tagKey === 'payAmount'">
       <!-- 选择产品包 -->
       <SourceSign :childItem="childItem" :index="index" :n="n"></SourceSign>
@@ -8,7 +14,7 @@
       <Operator :childItem="childItem" :index="index" :n="n"></Operator>
 
       <!-- 输入 value -->
-      <Value :childItem="childItem" :index="index" :n="n"></Value>
+      <Value :childItem="childItem" :index="index" :n="n" :recommendedValue="recommendedValue"></Value>
     </template>
 
     <!-- 模块活跃 -->
@@ -118,7 +124,7 @@
         }"
         class="form-item-styl"
       >
-        <el-select style="width: 100px" name="oxve" v-model="childItem.count" clearable class="input-inline" >
+        <el-select style="width: 100px" name="oxve" v-model="childItem.count" clearable class="input-inline">
           <template>
             <el-option v-for="item in countOptions" :key="item.value" :value="item.value" :label="item.label"></el-option>
 
@@ -135,7 +141,7 @@
       <Operator :childItem="childItem" :index="index" :n="n"></Operator>
 
       <!-- 输入 value -->
-      <Value :childItem="childItem" :index="index" :n="n"></Value>
+      <Value :childItem="childItem" :index="index" :n="n" :recommendedValue="recommendedValue"></Value>
     </template>
 
     <!-- 产品包下单 -->
@@ -165,7 +171,7 @@
       <Operator :childItem="childItem" :index="index" :n="n"></Operator>
 
       <!-- 输入 value -->
-      <Value :childItem="childItem" :index="index" :n="n"></Value>
+      <Value :childItem="childItem" :index="index" :n="n" :recommendedValue="recommendedValue"></Value>
     </template>
 
     <!-- 试看二维码 -->
@@ -225,7 +231,7 @@
       <Operator :childItem="childItem" :index="index" :n="n"></Operator>
 
       <!-- 输入 value -->
-      <Value :childItem="childItem" :index="index" :n="n"></Value>
+      <Value :childItem="childItem" :index="index" :n="n" :recommendedValue="recommendedValue"></Value>
     </template>
 
     <!-- 影视模型 -->
@@ -264,7 +270,10 @@
       <!-- {{ filmModelTagValue }} -->
 
     </template>
-
+    <div class="tip-text" style="line-height: 18px;" v-if="childItem.value === recommendedValue">
+      <i class="el-icon-warning-outline"></i>
+      推荐值是分析师经过多次实验分析对比得出的转化最高的值，建议采纳
+    </div>
   </div>
 </template>
 
@@ -290,6 +299,10 @@ export default {
     n: {
       type: Number,
       default: 0
+    },
+    stopType: { // 故事线 - 出口条件 - 则视为选择的值
+      type: [Number, String],
+      default: undefined
     }
   },
   data () {
@@ -363,7 +376,7 @@ export default {
   watch: {
     'childItem.tagKey': {
       handler (val) {
-        if (val === 'filmModelTag') {
+        if (val === 'filmModelTag') { // 影视模型
           this.filmModelTagValue = {
             tagCode: this.childItem.tagCode,
             tagCnName: this.childItem.tagCnName,
@@ -372,8 +385,98 @@ export default {
         }
       },
       immediate: true
+    },
+    recommendedValue: {
+      handler (val, oldV) {
+        // 开始有推荐值展示，切换后无推荐值，这种情况需要将 value 清空
+        if (this.childItem.value === oldV && !val) {
+          this.childItem.value = ''
+        }
+      }
     }
+  },
+  computed: {
+    // 根据【选择标签】、【产品包】和【次数天数】获取当前推荐值
+    // 故事线 - 出口 - 选择则视为（就是下一跳...）才有这个
+    recommendedValue () {
+      const { tagKey, sourceSign, count, coupon } = this.childItem
+      const matchSourceSignList1 = ['yinhe', '6', 'youku', 'shaoervip'] // 爱奇艺、腾讯、酷喵、亲子
+      const matchSourceSignList2 = ['yinhe', '6', 'youku'] // 爱奇艺、腾讯、酷喵
+      const matchSourceSignList3 = ['shaoervip'] // 亲子
 
+      const stopTypeEnum = {
+        4: 'uninterest', // 不感兴趣
+        1: 'interest', // 感兴趣，换方案继续种草
+        2: 'converted' // 已转化
+      }
+
+      let rValue
+
+      // 只有【继续种草】、【不感兴趣】有推荐值
+      if (stopTypeEnum[this.stopType] === 'uninterest' || stopTypeEnum[this.stopType] === 'interest') {
+        switch (tagKey) {
+          // 详情页曝光
+          case 'detailPageView': {
+            const isDay = count === 'detailPageViewDays' // 天数
+            const isPv = count === 'detailPageViewPv' // 次数
+
+            if (matchSourceSignList1.includes(sourceSign) && isDay) {
+              rValue = 2
+            } else if (matchSourceSignList2.includes(sourceSign) && isPv) {
+              rValue = 10
+            } else if (matchSourceSignList3.includes(sourceSign) && isPv) {
+              rValue = 15
+            }
+            break
+          }
+          // 优惠券活跃
+          case 'couponsActive': {
+            const isDay = coupon === 'couponShowPv' && count === 'days' // 曝光天数
+            const isPv = coupon === 'couponShowPv' && count === 'pv' // 曝光次数
+
+            if (matchSourceSignList2.includes(sourceSign) && isDay) {
+              rValue = 1
+            } else if (matchSourceSignList2.includes(sourceSign) && isPv) {
+              if (stopTypeEnum[this.stopType] === 'interest') {
+                rValue = 2
+              } else if (stopTypeEnum[this.stopType] === 'uninterest') {
+                rValue = 1
+              }
+            }
+            break
+          }
+
+          // 产品包曝光天数
+          case 'exposeDays': {
+            if (matchSourceSignList1.includes(sourceSign)) {
+              rValue = 1
+            }
+            break
+          }
+
+          // 产品包曝光天数
+          case 'exposeTimes': {
+            if (matchSourceSignList2.includes(sourceSign)) {
+              rValue = 2
+            } else if (matchSourceSignList3.includes(sourceSign)) {
+              rValue = 3
+            }
+            break
+          }
+
+          // 产品包下单
+          case 'productOrder': {
+            const isPv = count === 'orderNum' // 次数
+            if (matchSourceSignList1.includes(sourceSign) && isPv) {
+              rValue = 2
+            }
+            break
+          }
+        }
+        this.childItem.value = rValue || this.childItem.value
+      }
+      return rValue
+    }
   },
   methods: {
 
@@ -400,4 +503,6 @@ export default {
   text-align center
   font-size 12px
 }
+.tip-text
+  max-width 250px
 </style>

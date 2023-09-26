@@ -5,8 +5,6 @@
         <!-- <el-button type="text" icon="el-icon-plus" @click="editTargetKey">编辑绩效目标</el-button> -->
         <div>
           效果指标
-          <!-- <el-radio v-model="radio1" label="1" style="margin-right: 15px">仅当前接待员</el-radio>
-                        <el-radio v-model="radio1" label="2">按分组统计</el-radio> -->
           <!-- <span class="tip-text">当接待员属于分组时，展示分组的绩效目标</span> -->
         </div>
         <!-- <i v-if="selectedServicer.id && canUse" @click="editTargetKey" class="el-icon-edit position-right" title="编辑绩效目标" ></i> -->
@@ -30,9 +28,26 @@
           </el-dropdown-menu>
         </el-dropdown>
 
+        <el-radio-group v-model="radio1" @input="refreshChart" class="kpi-wrap-radio">
+
+          <span>
+            <el-radio :label="0" >每天</el-radio>
+            <el-tooltip class="item" effect="dark" content="每天仅当天的指标" placement="top-start">
+              <i class="el-icon-question el-icon-question-tip"></i>
+            </el-tooltip>
+          </span>
+
+          <span>
+            <el-radio :label="1">累计</el-radio>
+            <el-tooltip class="item" effect="dark" content="投放开始到当天的统计指标" placement="top-start">
+              <i class="el-icon-question el-icon-question-tip"></i>
+            </el-tooltip>
+          </span>
+        </el-radio-group>
+
         <div>
-          <!-- {{ selectedServicerId }} -->
-          <!-- {{ overview }} -->
+          <!-- {{ selectedServicerId }}
+          {{ overview }} -->
           <span class="reception-uv-span">
             <span style="font-size: 12px">命中用户数：</span>
             {{ selectedServicerOverView.receptionUv || '-' }}
@@ -45,6 +60,7 @@
               <div class="unit-box">
                 <div v-if="(item.title)">
                   <div class="chart-title">各接待员{{ item.title.split('-')[1] }} 对比</div>
+                  <!-- {{ allChartData[key] }} -->
                   <div
                     v-if="allChartData[key] &&
                       allChartData[key].data &&
@@ -130,6 +146,7 @@ export default {
 
   data () {
     return {
+      radio1: 0,
       overview: {},
       dialogVisible: false,
       selectTargetChartKey: '',
@@ -150,6 +167,7 @@ export default {
         },
       allCharts: {}, // echart 实例
       allChartsOption: {}, // echart option
+      allRadioChartData: {},
       allChartData: {},
       getGoalDataLoading: false,
       targetValue: '',
@@ -409,35 +427,59 @@ export default {
       // }
       this.getGoalDataLoading = true
       this.$service.getPerformanceGoalData(params).then(res => {
-        if (res && res.data && res.data.overview) {
+        if (res && res.data) {
           const tableData = res.data || {}
-          this.allChartData = tableData || {}
-          this.overview = tableData.overview ? tableData.overview.data : {}
-          // 图表没有数据的就不展示了
-          for (const key in this.rowObj) {
-            if (tableData[key] && tableData[key].data && tableData[key].data.series && tableData[key].data.series.length > 0) {
-              this.rowObj[key].isShow = true
-            } else {
-              this.rowObj[key].isShow = false
-            }
-          }
-          this.$nextTick(() => {
-            this.drawChart()
-          })
+          this.allRadioChartData = tableData || {}
+          this.overview = tableData.everyDayView.overview ? tableData.everyDayView.overview.data : {}
+
+          this.drawChart()
         }
         this.getGoalDataLoading = false
       }).catch(() => {
         this.getGoalDataLoading = false
       })
     },
+
+    // 生成图表
     drawChart () {
-      const rowObj = this.rowObj
-      // key 是代表 ref 值
-      for (const key in rowObj) {
-        if (rowObj[key].type === 'line' && this.allChartData[key] && this.allChartData[key].data) {
-          this.showLine(this.allChartData[key].data, key)
+      this.allChartData = {}
+      if (this.radio1 === 0) {
+        this.allChartData = this.allRadioChartData.everyDayView
+      } else {
+        const obj = {}
+        const dataObj = this.allRadioChartData.accumulateView
+        for (const key in dataObj) {
+          // const key2 = key.slice(5)
+          // const key3 = key2.replace(key2[0], key2[0].toLowerCase()) // 首字母小写
+          // console.log('key2--->', key2)
+          obj[key] = dataObj[key]
+        }
+
+        // 测试数据
+        // obj.payRate.data.series[0].value = [11, 12, 13, 14, 15, 16]
+        // obj.payNum.data.series[0].value = [11, 12, 13, 14, 15, 16]
+
+        this.allChartData = obj
+      }
+
+      // 图表没有数据的就不展示了
+      for (const key in this.rowObj) {
+        if (this.allChartData[key] && this.allChartData[key].data && this.allChartData[key].data.series && this.allChartData[key].data.series.length > 0) {
+          this.rowObj[key].isShow = true
+        } else {
+          this.rowObj[key].isShow = false
         }
       }
+
+      this.$nextTick(() => {
+        const rowObj = this.rowObj
+        // key 是代表 ref 值
+        for (const key in rowObj) {
+          if (rowObj[key].type === 'line' && this.allChartData[key] && this.allChartData[key].data) {
+            this.showLine(this.allChartData[key].data, key)
+          }
+        }
+      })
 
       // rowObj.forEach(item => {
       //   // key 是代表 ref 值
@@ -619,7 +661,7 @@ export default {
         },
         yAxis: [yAxisObj],
         series: yData.map(item => {
-          const crowdId = Number(item.name.split('-')[1])
+          const crowdId = Number(item.name.split('-')[1]) // 当前 select 的接待员ID
           return {
             ...item,
             // stack: 'Total',
@@ -729,5 +771,17 @@ export default {
 
 ::v-deep .el-empty__description p {
   font-size 12px
+}
+.kpi-wrap-radio {
+  display flex
+  justify-content: space-around
+  margin-top: 10px
+  white-space nowrap
+  ::v-deep .el-radio {
+    margin-right 2px
+  }
+  span + span {
+    margin-left: 15px
+  }
 }
 </style>

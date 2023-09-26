@@ -103,7 +103,8 @@
           <span class="checkbox--orange2">棕色</span>为组合标签,
           <span class="checkbox--cyan">青色</span>为行为标签,
           <span class="checkbox--gray">灰色</span>为人群标签,
-          <span class="checkbox--pink">粉色</span>为实时标签[大数据]）
+          <span class="checkbox--pink">粉色</span>为实时标签[大数据],
+          <span class="checkbox--gradient">渐变色</span>为营销研发标签
           )
         </template>
         <template slot-scope="scope">
@@ -146,14 +147,19 @@
 
       <el-table-column prop="past7Active" label="7日是否有命中及命中次数" width="110" sortable="custom">
         <template slot-scope="scope">
-          <span v-if="scope.row.past7Active === 1" style="color: red"> 是 &nbsp;&nbsp;{{ cc_format_number(scope.row.past7ActiveSize) }}</span>
+          <span v-if="scope.row.past7Active === 1" style="color: red"> 是
+            <br/>
+            {{ cc_format_number(scope.row.past7ActiveSize) }}
+          </span>
           <span v-else> 否 </span>
         </template>
       </el-table-column>
 
       <el-table-column prop="past7Req" label="7日是否有请求及请求次数" width="110" sortable="custom">
         <template slot-scope="scope">
-          <span v-if="scope.row.past7Req === 1" style="color: red"> 是 &nbsp;&nbsp;{{ cc_format_number(scope.row.past7ReqSize) }}</span>
+          <span v-if="scope.row.past7Req === 1" style="color: red"> 是
+            <br/>
+            {{ cc_format_number(scope.row.past7ReqSize) }}</span>
           <span v-else> 否 </span>
         </template>
       </el-table-column>
@@ -301,7 +307,8 @@
           <span class="checkbox--orange2">棕色为组合标签</span>,
           <span class="checkbox--cyan">青色为行为标签</span>,
           <span class="checkbox--gray">灰色为人群标签</span>,
-          <span class="checkbox--pink">粉色为实时标签[大数据]</span>
+          <span class="checkbox--pink">粉色为实时标签[大数据]</span>,
+          <span class="checkbox--gradient">渐变色为营销研发标签</span>
         </div>
         <el-form-item label="策略维度" prop="conditionTagIds" >
           <el-tabs tab-position="top" style="height: 200px;">
@@ -1317,8 +1324,10 @@ export default {
   margin-right 20px
 .tags-tips
   font-size 12px
-  text-align: center;
-  white-space nowrap
+  // text-align: center;
+  // white-space nowrap
+  width: 84%;
+  margin: 0 auto;
 .page-num
   width 30px
   height 30px

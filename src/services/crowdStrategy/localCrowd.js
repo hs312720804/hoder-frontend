@@ -137,3 +137,21 @@ export function deleteCrowdHitAlert (params) {
     params
   })
 }
+
+// 本地标签 - 异常导出
+export function checkErrorMacFileIsExist (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tempCrowd/checkErrorMacFileIsExist',
+    params
+  })
+}
+
+// 本地标签 - 异常导出
+export function downloadErrorMacFile (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tempCrowd/downloadErrorMacFile',
+    params
+  })
+}

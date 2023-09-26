@@ -30,15 +30,21 @@
                             </el-input>
                         </el-form-item>
                         <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
-                            <el-select v-model="crowdDefineForm.biIds" multiple placeholder="请选择投放平台">
-                                <el-option
-                                        v-for="(item,index) in launchPlatform"
-                                        :key="index"
-                                        :label="item.biName"
-                                        :value="item.biId+''"
-                                >
-                                    <!-- {{item.biName}} -->
-                                </el-option>
+                            <el-select
+                              ref="multipleSelectRef"
+                              v-model="crowdDefineForm.biIds"
+                              multiple
+                              placeholder="请选择投放平台"
+                              @change="multipleSelectChange"
+                            >
+                              <el-option
+                                v-for="(item,index) in launchPlatform"
+                                :key="index"
+                                :label="item.biName"
+                                :value="item.biId+''"
+                              >
+                                  <!-- {{item.biName}} -->
+                              </el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="数据有效期" prop="expiryDay">
@@ -213,11 +219,12 @@
                 </el-form-item>
                 <el-form-item label="投放平台" class="multipleSelect form-width" prop="biIds">
                     <el-select
+                      ref="multipleSelectRef"
                       v-model="crowdForm.biIds"
-                      @change="handleBiIdChange"
                       multiple
                       placeholder="请选择投放平台"
                       :disabled="status!==undefined && (status === 2 || status === 3)"
+                      @change="handleBiIdChange"
                     >
                         <el-option
                                 v-for="item in launchPlatform"
@@ -236,7 +243,7 @@
                     </el-checkbox>
                 </el-form-item>
 
-                <!-- 只有当选择了【消息楚触达】才显示【投放应用】 -->
+                <!-- 只有当选择了【消息触达】才显示【投放应用】 -->
                 <el-form-item v-if="crowdForm.biIds.includes('7')" label="投放应用" class="multipleSelect form-width" prop="packageName">
                   <el-select
                     v-model="crowdForm.packageName"
@@ -261,8 +268,8 @@
                 <!--</el-form-item>-->
                 <!-- {{ crowdForm.crowdType }} -->
 
-                <!-- 普通人群 、 行为人群 可以选择是否投放子人群 -->
-                <el-form-item label="是否投放子人群" class="form-width" v-if="crowdForm.crowdType === 0 || crowdForm.crowdType === 3">
+                <!-- 【普通人群】 、 【行为人群】 、【设备投放】 可以选择是否投放子人群 -->
+                <el-form-item label="是否投放子人群" class="form-width" v-if="crowdForm.crowdType === 0 || crowdForm.crowdType === 3 || crowdForm.crowdType === 4">
                     <el-radio-group v-model="crowdForm.abTest" @change="handleAbTestChange" :disabled="status!==undefined && (status === 2 || status === 3)">
                         <el-radio :label="false">否</el-radio>
                         <el-radio :label="true">是</el-radio>
@@ -270,12 +277,21 @@
                 </el-form-item>
                 <el-form-item label="选择人群类型" class="form-width">
                     <el-radio-group
-                            v-model="crowdForm.crowdType"
-                            :disabled="disabledCrowdType"
+                      v-model="crowdForm.crowdType"
+                      :disabled="disabledCrowdType"
+                      style="white-space: nowrap;"
                     >
                         <el-radio :label="0">普通人群</el-radio> <!-- false -->
-                        <el-radio :label="1">临时标签/本地标签</el-radio><!-- true -->
+                        <el-radio :label="1">临时标签</el-radio><!-- true -->
                         <el-radio :label="3">行为人群</el-radio>
+                        <el-radio :label="4">
+                          混合标签投放
+                          <el-tooltip class="item" effect="dark" content="只有使用了行为标签/本地标签/临时标签/设备标签的人群，才可进行混合标签投放" placement="top-start">
+                            <i class="el-icon-question el-icon-question-tip"></i>
+                          </el-tooltip>
+
+                        </el-radio>
+                        <el-radio :label="2">本地标签</el-radio>
                     </el-radio-group>
                 </el-form-item>
 
@@ -414,6 +430,57 @@
                     <!--</div>-->
                 </el-form-item>
 
+                <!-- 选择本地人群 -->
+                <el-form-item v-if="crowdForm.crowdType === 2"
+                  label="选择人群"
+                  prop="tempCrowdId"
+                >
+                    <el-select
+                        filterable
+                        remote
+                        clearable
+                        v-model="crowdForm.tempCrowdId"
+                        v-loadmore="{'methord': handelLoadmore}"
+                        :remote-method="getTempCrowdList2"
+                        :disabled="status!==undefined && (status === 2 || status === 3)"
+                    >
+                        <el-option
+                            v-for="item in tempCrowdList2"
+                            :key="item.launchCrowdId+''"
+                            :label="item.launchName"
+                            :value="item.launchCrowdId"
+                        >
+                        {{item.launchName}}
+                        </el-option>
+                    </el-select>
+                    <!--<div v-if="!crowdForm.abTest">-->
+                        <!--<el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">-->
+                            <!--<el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">-->
+                                <!--<el-checkbox-->
+                                        <!--v-for="item in v.childs"-->
+                                        <!--:label="v.policyId+'_'+item.crowdId"-->
+                                        <!--:key="item.crowdId+''"-->
+                                        <!--:disabled="item.canLaunch === false"-->
+                                <!--&gt;{{item.crowdName}}-->
+                                <!--</el-checkbox>-->
+                            <!--</el-checkbox-group>-->
+                        <!--</el-form-item>-->
+                    <!--</div>-->
+                    <!--<div v-else>-->
+                        <!--<el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">-->
+                            <!--<el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">-->
+                                <!--<el-checkbox-->
+                                        <!--v-for="item in v.childs"-->
+                                        <!--:label="item.policyId+'_'+item.crowdId"-->
+                                        <!--:key="item.crowdId+''"-->
+                                        <!--:disabled="item.canLaunch === false"-->
+                                <!--&gt;{{item.crowdName}}-->
+                                <!--</el-checkbox>-->
+                            <!--</el-checkbox-group>-->
+                        <!--</el-form-item>-->
+                    <!--</div>-->
+                </el-form-item>
+
                 <!-- 选择行为人群 & 投放子人群 -->
                 <template v-if="crowdForm.crowdType === 3 && crowdForm.abTest">
                 <!-- crowdForm.policyIds 111=={{crowdForm.policyIds}} -->
@@ -502,6 +569,60 @@
                       </el-select>
                   </el-form-item>
                 </template>
+
+                <!-- 选择设备投放 -->
+                <template v-if="crowdForm.crowdType === 4">
+                  <el-form-item
+                    label="选择策略"
+                    prop="policyIds"
+                    class="multipleSelect form-width"
+                  >
+                  <!-- {{ crowdForm.policyIds }} -->
+                    <el-select
+                      v-model="crowdForm.policyIds"
+                      :key="crowdForm.abTest + 4"
+                      :multiple="!crowdForm.abTest"
+                      placeholder="请选择策略"
+                      @change="getCrowd"
+                      @remove-tag="removeTag"
+                      :disabled="status!==undefined && (status === 2 || status === 3)"
+                      :loading="bitmapRemoteLoading"
+                      filterable
+                      remote
+                      v-loadmore="{'methord': handeBitmapPushPolicyListLoadmore}"
+                      :remote-method="bitmapRemoteMethod"
+                    >
+                      <el-option
+                        v-for="item in bitmapPushPolicyList"
+                        :key="item.policyId+''"
+                        :label="item.policyName"
+                        :value="item.policyId+''"
+                      >{{ item.policyName }}
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+
+                  <el-form-item
+                      label="选择人群"
+                      prop="policyCrowdIds"
+                  >
+
+                      <el-form-item v-for="(v,index) in crowdData" :label="crowdForm.abTest ? v.Pid: v.policyName" :key="v.policyId+'_'+index">
+                        <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
+                            <el-checkbox
+                              v-for="item in v.childs"
+                              :label="item.policyId+'_'+item.crowdId"
+                              :key="item.crowdId+''"
+                              :disabled="item.canLaunch === false"
+                            >
+                            {{ item.crowdName }}
+                            </el-checkbox>
+                        </el-checkbox-group>
+                      </el-form-item>
+
+                  </el-form-item>
+                </template>
+
                 <!--<el-form-item label="数据有效期" prop="expiryDay" class="form-width">-->
                     <!--<el-select-->
                             <!--v-model="crowdForm.expiryDay"-->
@@ -517,7 +638,7 @@
                     <!--</el-select>-->
                 <!--</el-form-item>-->
                 <el-form-item
-                  v-if="crowdForm.crowdType === 0"
+                  v-if="crowdForm.crowdType === 0 || crowdForm.crowdType === 4"
                   label="每天是否更新"
                   prop="autoVersion"
                   class="form-width"
@@ -530,7 +651,7 @@
                     <el-option label="否" :value="0"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1 && crowdForm.crowdType === 0" class="form-width">
+                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1 && (crowdForm.crowdType === 0 || crowdForm.crowdType === 4)" class="form-width">
                   <el-time-picker
                     v-model="crowdForm.autoLaunchTime"
                     value-format="HH:mm:ss"
@@ -543,7 +664,8 @@
             </el-form>
             <div slot="footer" class="footer">
               <el-button @click="cancelAdd">返回</el-button>
-              <el-button type="primary" @click="addSubmit">保存</el-button>
+              <!-- 只有【设备投放】 不显示【保存】按钮 -->
+              <el-button v-if="crowdForm.crowdType !== 4" type="primary" @click="addSubmit">保存</el-button>
               <!-- 需要投放提示 -->
               <!-- <el-button
                       v-if="!(status!==undefined && (status === 2 || status === 3))"
@@ -574,7 +696,13 @@
             <el-dialog :visible.sync="showEstimate">
               <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
               <el-checkbox-group v-model="estimateValue" :disabled="accountDefine" aria-required="true">
-                <el-checkbox v-for="(item, index) in estimateItems" :value="index" :label="index" :key="index" @change="estimateValueChange(index)">
+                <el-checkbox
+                  v-for="(item, index) in estimateItems"
+                  :value="index"
+                  :label="index"
+                  :key="index"
+                  @change="estimateValueChange(index)"
+                  :disabled="crowdForm.crowdType === 3 && (index == 1 || index == 2 || index == 3)">
                   {{item}}
                   <el-popover
                     v-if="index === '0'"
@@ -601,7 +729,7 @@
                 <el-button @click="showEstimate = false">取 消</el-button>
                 <el-button type="primary" @click="handleEstimate(estimateValue)">投 放</el-button>
               </span>
-              <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div>
+              <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持 push 设备类型、pushId 类型</div>
             </el-dialog>
         </div>
     </div>
@@ -676,6 +804,7 @@ export default {
       }
     }
     return {
+      // 人群类型为【普通人群】的 策略列表参数
       remoteLoading: false,
       totalPages: 0,
       remoteMethodParams: {
@@ -683,9 +812,20 @@ export default {
         pageSize: 30,
         keyword: ''
       },
-      // 表格当前页数据
       strategyPlatform: [],
-      launchPlatform: [],
+      // -------人群类型为【普通人群】的 策略列表参数 end-------
+      // 人群类型为【设备投放】的 策略列表
+      bitmapRemoteLoading: false,
+      bitmapTotalPages: 0,
+      bitmapMethodParams: {
+        pageNum: 1,
+        pageSize: 30,
+        keyword: ''
+      },
+      bitmapPushPolicyList: [],
+      // --------人群类型为【设备投放】的 策略列表 - end------
+
+      launchPlatform: [], // 投放平台
       getStrategyCrowds: [],
       title: '',
       basicLineErrorText: '',
@@ -807,6 +947,7 @@ export default {
       videoSourceList: [],
       showAccountRelative: false,
       tempCrowdList: [],
+      tempCrowdList2: [],
       disabledCrowdType: false,
       isTempCrowd: false,
       showEstimate: false,
@@ -823,6 +964,12 @@ export default {
         pageSize: 10
       },
       tempListpages: 0,
+      tempListFilter2: {
+        crowdType: 2,
+        pageNum: 1,
+        pageSize: 10
+      },
+      tempListpages2: 0,
       behaviorPolicyList: [], // 行为人群 - 策略列表
       behaviorCrowdList: [], // 行为人群 - 所选策略下的人群列表
       behaviorCrowdListFilter: {
@@ -866,10 +1013,15 @@ export default {
       this.crowdForm.policyCrowdIds = [] // 选择人群
       this.crowdForm.crowdId = '' // 大人群ID
       this.crowdData = [] // 选择人群列表
+      this.crowdForm.tempCrowdId = ''
     }
   },
 
   methods: {
+    multipleSelectChange () {
+      // 改变选中值后，自动收起下拉框
+      this.$refs.multipleSelectRef.blur()
+    },
     handePushListLoadmore () {
       if (this.remoteMethodParams.pageNum < this.totalPages) {
         this.remoteMethodParams.pageNum++ // 滚动加载翻页
@@ -904,6 +1056,42 @@ export default {
         this.remoteLoading = false
       })
     },
+
+    handeBitmapPushPolicyListLoadmore () {
+      if (this.bitmapMethodParams.pageNum < this.bitmapTotalPages) {
+        this.bitmapMethodParams.pageNum++ // 滚动加载翻页
+        this.bitmapRemoteMethod()
+      }
+    },
+
+    bitmapRemoteMethod (query) {
+      // 是否是加载更多
+      const isLoadMore = query === undefined
+
+      // 下拉框搜索，需要重置
+      if (!isLoadMore) {
+        this.bitmapMethodParams.pageNum = 1
+        this.bitmapPushPolicyList = []
+        this.bitmapMethodParams.keyword = query
+      }
+
+      this.bitmapRemoteLoading = true
+
+      const params = {
+        ...this.bitmapMethodParams
+      }
+
+      this.$service.getBitmapPushPolicyList(params).then(res => {
+        this.bitmapTotalPages = res.pages // 总页数
+        this.bitmapPushPolicyList = !isLoadMore ? res.rows : this.bitmapPushPolicyList.concat(res.rows)
+
+        this.bitmapRemoteLoading = false
+      }).catch(() => {
+        this.bitmapPushPolicyList = []
+        this.bitmapRemoteLoading = false
+      })
+    },
+
     getPushPackageList () {
       const parmas = {
         pageNum: 0,
@@ -920,6 +1108,13 @@ export default {
         if (this.tempListFilter.pageNum < this.tempListpages) {
           this.tempListFilter.pageNum++ // 滚动加载翻页
           this.getTempCrowdList()
+        }
+      } else if (crowdType === 2 && !this.loading) { // 临时人群
+        console.log('this.tempListpages2', this.tempListpages2)
+        console.log('this.his.tempListFilter2.pageNum', this.tempListFilter2.pageNum)
+        if (this.tempListFilter2.pageNum < this.tempListpages2) {
+          this.tempListFilter2.pageNum++ // 滚动加载翻页
+          this.getTempCrowdList2()
         }
       } else if (crowdType === 3 && !this.loading) { // 行为人群
         if (this.behaviorCrowdListFilter.pageNum < this.behaviorCrowdListpages) {
@@ -949,7 +1144,7 @@ export default {
         if (v.split('_')[0] != policyId) { return v }
       })
     },
-    // 普通人群 - 获取选择的策略下的人群
+    // 【普通人群】、【设备投放】 - 获取选择的策略下的人群
     getCrowd () {
       let policyId = null
       if (this.crowdForm.abTest) {
@@ -957,25 +1152,29 @@ export default {
       } else {
         policyId = this.crowdForm.policyIds.join(',')
       }
-      return this.$service.getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
-        .then(data => {
-          if (this.crowdForm.abTest) {
-            // 重置
-            this.crowdForm.policyCrowdIds = [] // 选择人群
-            this.crowdForm.crowdId = '' // 大人群ID
+      // this.crowdForm.crowdType === 0 代表【普通人群】
 
-            const newDataForm = []
-            const pid = Object.keys(data[0].childs)
-            pid.forEach((item) => {
-              newDataForm.push({ Pid: item, childs: data[0].childs[item] })
-            })
-            console.log('newDataForm====', newDataForm)
-            this.crowdData = newDataForm
-          } else {
-            this.crowdData = data
-          }
-        })
-        .catch(() => {})
+      const fetchMethod = this.crowdForm.crowdType === 0
+        ? this.$service.getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
+        : this.$service.getBitmapPushCrowdList({ policyIds: policyId, abTest: this.crowdForm.abTest })
+
+      return fetchMethod.then(data => {
+        if (this.crowdForm.abTest) {
+          // 重置
+          this.crowdForm.policyCrowdIds = [] // 选择人群
+          this.crowdForm.crowdId = '' // 大人群ID
+
+          const newDataForm = []
+          const pid = Object.keys(data[0].childs)
+          pid.forEach((item) => {
+            newDataForm.push({ Pid: item, childs: data[0].childs[item] })
+          })
+
+          this.crowdData = newDataForm
+        } else {
+          this.crowdData = data
+        }
+      })
     },
 
     // 行为人群 - 获取选择的策略下的人群
@@ -1018,7 +1217,7 @@ export default {
     reParamsData () {
       const crowdForm = JSON.parse(JSON.stringify(this.crowdForm))
       crowdForm.biIds = crowdForm.biIds.join(',')
-      if (crowdForm.crowdType === 1) { // 临时人群
+      if (crowdForm.crowdType === 1 || crowdForm.crowdType === 2) { // 临时人群/本地人群
         crowdForm.abTest = false
         crowdForm.policyIds = undefined
         crowdForm.policyCrowdIds = undefined
@@ -1253,8 +1452,12 @@ export default {
           this.tagsList = data
         })
       } else { // 新增
-        // 获取 strategyPlatform
+        // 获取人群类型为【普通人群】的 策略列表
         this.remoteMethod()
+
+        // 获取人群类型为【设备投放】的 策略列表
+        this.bitmapRemoteMethod()
+
         // if (this.showAllParent) {
         //   this.$service.addMyMultiVersionCrowd(this.model).then(data => {
         //     this.launchPlatform = data.biLists
@@ -1300,6 +1503,9 @@ export default {
       })
     },
     handleBiIdChange (val) {
+      // 改变选中值后，自动收起下拉框
+      this.$refs.multipleSelectRef.blur()
+
       if (val) {
         if (val.join(',') === '7') {
           this.showAccountRelative = true
@@ -1312,7 +1518,7 @@ export default {
         this.crowdForm.setCalculate = false
       }
     },
-    // 临时标签/本地标签 下拉列表
+    // 临时标签 下拉列表
     getTempCrowdList (query = '') {
       this.tempListFilter.launchName = query
       if (query !== '') { // 重置
@@ -1323,6 +1529,25 @@ export default {
       this.$service.getTempLaunchList(this.tempListFilter).then(data => {
         this.tempListpages = data.pageInfo.pages // 总页数
         this.tempCrowdList = this.tempCrowdList.concat(data.pageInfo.list)
+        this.loading = false
+        // this.launchStatusEnum = data.launchStatusEnum
+        // this.tableData = data.pageInfo.list
+        // this.totalCount = data.pageInfo.total
+      }).catch(() => {
+        this.loading = false
+      })
+    },
+    // 本地标签 下拉列表
+    getTempCrowdList2 (query = '') {
+      this.tempListFilter2.launchName = query
+      if (query !== '') { // 重置
+        this.tempListFilter2.pageNum = 1
+        this.tempCrowdList2 = []
+      }
+      this.loading = true
+      this.$service.getTempLaunchList(this.tempListFilter2).then(data => {
+        this.tempListpages2 = data.pageInfo.pages // 总页数
+        this.tempCrowdList2 = this.tempCrowdList2.concat(data.pageInfo.list)
         this.loading = false
         // this.launchStatusEnum = data.launchStatusEnum
         // this.tableData = data.pageInfo.list
@@ -1403,11 +1628,15 @@ export default {
 
     // 直接投放，没有投放提示
     launchDirectly () {
-      console.log('this.crowdForm==>', this.crowdForm)
       // 先进行保存校验
       this.$refs.crowdForm.validate(valid => {
         if (valid) {
-          this.showEstimatePop()
+          // <!-- 【设备投放】 是直接调用特殊的投放方法 -->
+          if (this.crowdForm.crowdType === 4) {
+            this.handleEstimateBitmapPush()
+          } else {
+            this.showEstimatePop()
+          }
         } else {
           return false
         }
@@ -1424,7 +1653,7 @@ export default {
         this.accountDefine = true
         this.estimateValue = ['0', '1', '2', '3']
       } else if (this.crowdForm.crowdType === 3) { // 行为人群push时，不支持选择数据类型，数据类型选择的其他选项置灰不可选，在类型下展示“Tips: 行为人群当前仅支持push设备类型”
-        this.accountDefine = true
+        this.accountDefine = false
         this.estimateValue = ['0']
       } else {
         this.accountDefine = false
@@ -1453,56 +1682,79 @@ export default {
         this.estimateValue = [...new Set(['0', ...this.estimateValue])]
       }
     },
+    // 选择了【设备投放】radio, 的投放方法
+    async handleEstimateBitmapPush () {
+      const valid = await this.$refs.crowdForm.validate
 
-    handleEstimate (calTypes) {
+      if (valid) {
+        // 获取接口所需参数
+        const crowdForm = this.reParamsData(this.crowdForm)
+        // 编辑
+        if (this.editLaunchCrowdId != null && this.editLaunchCrowdId !== undefined) {
+          // this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then(() => {
+          //   this.currentLaunchId = this.editLaunchCrowdId
+          //   this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
+          //     this.showEstimate = false
+          //     this.callback()
+          //   })
+          // })
+        } else {
+          // 新增
+          this.$service.bitmapPush(crowdForm, '新增成功').then((data) => {
+            // this.currentLaunchId = data.launchCrowdId
+            this.callback()
+          })
+        }
+      }
+    },
+    async handleEstimate (calTypes) {
       if (calTypes.length === 0) {
         this.$message.error('请至少选择一个要投放的人群')
         return
       }
+
       const calIdType = calTypes.map((item) => item).join(',')
 
-      this.$refs.crowdForm.validate(valid => {
-        if (valid) {
-          // 获取接口所需参数
-          const crowdForm = this.reParamsData(this.crowdForm)
+      const valid = await this.$refs.crowdForm.validate
 
-          if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
-            this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then(() => {
-              this.currentLaunchId = this.editLaunchCrowdId
-              this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
-                // 行为人群需要 lua 一下
-                // if (crowdForm.crowdType === 3) {
-                //     this.$service.freshCache({policyId: crowdForm.policyIds}).then(() => {
-                //         this.showEstimate = false
-                //         this.callback()
-                //     })
-                // } else {
-                this.showEstimate = false
-                this.callback()
-                // }
-              })
+      if (valid) {
+        // 获取接口所需参数
+        const crowdForm = this.reParamsData(this.crowdForm)
+
+        if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
+          this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then(() => {
+            this.currentLaunchId = this.editLaunchCrowdId
+            this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
+              // 行为人群需要 lua 一下
+              // if (crowdForm.crowdType === 3) {
+              //     this.$service.freshCache({policyId: crowdForm.policyIds}).then(() => {
+              //         this.showEstimate = false
+              //         this.callback()
+              //     })
+              // } else {
+              this.showEstimate = false
+              this.callback()
+              // }
             })
-          } else {
-            this.$service.saveAddMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '新增成功').then((data) => {
-              this.currentLaunchId = data.launchCrowdId
-              this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
-                // 行为人群需要 lua 一下
-                // if (crowdForm.crowdType === 3) {
-                //     this.$service.freshCache({policyId: crowdForm.policyIds}).then(() => {
-                //         this.showEstimate = false
-                //         this.callback()
-                //     })
-                // } else {
-                this.showEstimate = false
-                this.callback()
-                // }
-              })
-            })
-          }
+          })
         } else {
-          return false
+          this.$service.saveAddMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '新增成功').then((data) => {
+            this.currentLaunchId = data.launchCrowdId
+            this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
+              // 行为人群需要 lua 一下
+              // if (crowdForm.crowdType === 3) {
+              //     this.$service.freshCache({policyId: crowdForm.policyIds}).then(() => {
+              //         this.showEstimate = false
+              //         this.callback()
+              //     })
+              // } else {
+              this.showEstimate = false
+              this.callback()
+              // }
+            })
+          })
         }
-      })
+      }
     },
     async setEdit () {
       // 编辑
@@ -1650,10 +1902,14 @@ export default {
     this.tempCrowdList = []
     this.tempListpages = 0
 
+    this.tempCrowdList2 = []
+    this.tempListpages2 = 0
+
     this.setEdit() // 初始化编辑数据
 
     this.getAddList(this.model) // 普通人群策略列表
-    this.getTempCrowdList() // 临时人群/本地人群列表
+    this.getTempCrowdList() // 临时人群列表
+    this.getTempCrowdList2() // 本地人群列表
     this.getBehaviorPolicyList() // 行为人群 - 策略列表
     this.getBehaviorCrowdList() // 行为人群 - 人群列表
     this.handleGetVideoList() // 人群圈定 视频源枚举

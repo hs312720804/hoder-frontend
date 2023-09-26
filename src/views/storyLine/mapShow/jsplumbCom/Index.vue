@@ -4,17 +4,20 @@
     class="jtk-demo-canvas canvas-wide flowchart-demo jtk-surface jtk-surface-nopan"
   >
 <!-- {{ relations }}
-{{ groupServicer }} -->
+  {{ groupServicer }} -->
+  <!-- :style="{
+    left: positionObj[`${idPer}${index}`].x + 'px',
+    top: positionObj[`${idPer}${index}`].y + 'px'}" -->
     <div
       v-for="(group, index) in groupServicer"
       :key="group.groupId ? group.groupId : group.id"
       class="item-container window"
-      :style="{left: positionObj[`${idPer}${index}`].x + 'px', top: positionObj[`${idPer}${index}`].y + 'px'}"
+      :style="{
+        left: positionObj[`${idPer}${index}`].x + 'px',
+        top: positionObj[`${idPer}${index}`].y + 'px'}"
       :id="idPer + index"
     >
-      <!-- {{ positionObj[`c${index}`] }} -->
-      <!-- :style="{left: getXY(index).x + 'px', top: getXY(index).y + 'px'}" -->
-      <div v-if="group.groupId" class="group-container">
+      <div v-if="group.groupId" class="group-container" :style="{ width: group.child.length === 1  ? '150px': '425px' }">
         <div v-for="item in group.child" :key="item.id">
           <!-- {{ item.receptionist }} -->
           <!-- {{ item.id }} -->
@@ -47,6 +50,7 @@ import { jsPlumb } from 'jsplumb'
 import servicerCom from './servicerCom'
 // import myMinix from './minix'
 import setMoveAndDrag from './setMoveAndDrag'
+import { DagreLayout } from '@antv/layout'
 
 export default {
   name: 'js-group',
@@ -70,6 +74,7 @@ export default {
   },
   data () {
     return {
+      dagreModel: {},
       idPer: 'ccc',
       // jsPlumb 实例
       j: '',
@@ -84,7 +89,7 @@ export default {
         Endpoint: ['Dot', { radius: 2 }],
         // Endpoint: 'Blank',
         // 绘制连线
-        PaintStyle: { stroke: '#1890ff80', strokeWidth: 1 },
+        PaintStyle: { stroke: '#1890ff80', strokeWidth: 2 },
         // EndpointStyle: { radius: 5, fill: 'gray' },
         // hover 上去的样式
         // HoverPaintStyle: { stroke: 'blue', strokeWidth: 2 },
@@ -121,43 +126,152 @@ export default {
       this.$set(this.positionObj, id, obj)
     })
 
-    // console.log('groupServicer-->', this.groupServicer)
     // console.log('relations-->', this.relations)
   },
   mounted () {
-    const _this = this
-    jsPlumb.ready(() => {
-      // 创建实例
-      this.j = (window.j = jsPlumb.getInstance(this.setJsplumbObj))
-      const j = this.j
+    // 通过 @antv/layout 获取元素节点的位置信息
+    this.getLocationByAntvLayout()
 
-      j.registerConnectionType('basic', {
-        anchor: 'Continuous',
-        connector: 'StateMachine'
-      })
-
-      j.batch(() => {
-        const windows = jsPlumb.getSelector('.flowchart-demo .window')
-        // 可拖动
-        for (let i = 0; i < windows.length; i++) {
-          _this.initNode(windows[i], j)
-        }
-
-        // j.repaintEverything()
-      })
-      // 获取节点的位置, 然后将元素设为绝对定位元素
-      this.adjust()
-      this.$nextTick(() => {
-        // 创建所有节点连接
-        this.createConnections(this.relations)
-      })
-    })
-    // j.draggable(jsPlumb.getSelector('.flowchart-demo .window'))
+    // 1、创建 jsPlumb 实例
+    // 2、将元素的位置信息统一保存在一个对象里，将元素设为绝对定位元素
+    // 3、创建所有节点连接
+    this.initJsPlumb()
 
     // 设置画布可拖拽，滚动放大缩小
     setMoveAndDrag('#wrap', '#canvas')
   },
   methods: {
+    // 通过 @antv/layout 获取元素节点
+    getLocationByAntvLayout () {
+      const IndexRelationsForDagreLayout = this.getParentIndexRelations(this.relations)
+      console.log('1111111111111->>>>', IndexRelationsForDagreLayout)
+
+      const nodes = this.groupServicer.map((item, index) => {
+        return {
+          id: `${this.idPer}${index}`,
+          // comboId: `${this.idPer}${index}`,
+          width: 400,
+          height: 100
+        }
+      })
+
+      const edges = IndexRelationsForDagreLayout.map(item => {
+        return {
+          source: `${this.idPer}${item[0]}`,
+          target: `${this.idPer}${item[1]}`
+        }
+      })
+
+      const model = {
+        nodes,
+        edges
+      }
+
+      const dagreLayout = new DagreLayout({
+        type: 'dagre',
+        rankdir: 'TB',
+        // align: "UL",
+        // ranksep: 7,
+        // nodesep: 5,
+        // rankdir: 'LR',
+        // align: 'UL',
+        nodesepFunc: () => 50,
+        ranksepFunc: () => 70,
+        controlPoints: true,
+        sortByCombo: false
+      })
+
+      const dagreModel = dagreLayout.layout(model)
+      console.log('333333333333333dagreModel--->', dagreModel)
+      this.dagreModel = dagreModel
+    },
+    // 1、创建 jsPlumb 实例
+    // 2、将元素的位置信息统一保存在一个对象里，将元素设为绝对定位元素
+    // 3、创建所有节点连接
+    initJsPlumb () {
+      const _this = this
+      jsPlumb.ready(() => {
+      // 1、创建 jsPlumb 实例
+        this.j = (window.j = jsPlumb.getInstance(this.setJsplumbObj))
+        const j = this.j
+
+        j.registerConnectionType('basic', {
+          anchor: 'Continuous',
+          connector: 'StateMachine'
+        })
+
+        j.batch(() => {
+          const windows = jsPlumb.getSelector('.flowchart-demo .window')
+          // 可拖动
+          for (let i = 0; i < windows.length; i++) {
+            _this.initNode(windows[i], j)
+          }
+
+        // j.repaintEverything()
+        })
+        // 2、将元素的位置信息统一保存在一个对象里，将元素设为绝对定位元素
+        this.adjust()
+
+        this.$nextTick(() => {
+        // 3、创建所有节点连接
+          this.createConnections(this.relations)
+        })
+      })
+    // j.draggable(jsPlumb.getSelector('.flowchart-demo .window'))
+    },
+
+    // getLeftTop (id, type) {
+    //   this.$nextTick(() => {
+
+    //   })
+    //   const nodes = this.dagreModel.nodes
+    //   const obj = nodes.find(item => item.id === id)
+    //   return type === 'left' ? obj.x + 'px' : obj.y + 'px'
+    // },
+    getParentIndexRelations (edges) {
+      console.log('relations-->', edges)
+      return edges.map(itemArr => {
+        console.log('itemArr', itemArr)
+        const source = itemArr[0]
+        const target = itemArr[1]
+        const sourceParentIndex = this.getParentIndex(source)
+        const targetParentIndex = this.getParentIndex(target)
+        return [sourceParentIndex, targetParentIndex]
+      })
+    },
+    getParentIndex (id) {
+      let returnId
+      const currertId = Number(id)
+      const nodes = this.groupServicer
+      console.log('groupServicer-->', nodes)
+      const len = nodes.length
+      for (let i = 0; i < len; i++) {
+        const node = nodes[i]
+        // 分组的
+        if (node.groupId) {
+          const servicerList = node.child
+          for (let y = 0; y < servicerList.length; y++) {
+            const servicer = servicerList[y]
+            const conditions = [...servicer.entryConditions, ...servicer.exportConditions]
+            const findIndex = conditions.findIndex(item => Number(item.id) === currertId)
+
+            if (Number(servicer.id) === currertId || findIndex > -1) {
+              returnId = i
+              break
+            }
+          }
+        } else {
+          const conditions = [...node.entryConditions, ...node.exportConditions]
+
+          const findIndex = conditions.findIndex(item => Number(item.id) === currertId)
+
+          if (Number(node.id) === currertId || findIndex > -1) {
+            returnId = i
+          }
+        }
+      }
+      return returnId
+    },
     initNode (el, instance) {
       // initialise draggable elements.
       instance.draggable(el)
@@ -194,9 +308,21 @@ export default {
     },
     adjust () {
       // 获取元素位置
-      this.groupServicer.forEach((item, index) => {
-        this.getXY(index)
+      // this.groupServicer.forEach((item, index) => {
+      //   this.getXY(index)
+      // })
+
+      const nodes = this.dagreModel.nodes
+      nodes.forEach(item => {
+        const obj = {
+          x: item.x,
+          y: item.y
+        }
+        // this.$set(this.positionObj, id, obj)
+        this.positionObj[item.id] = obj
       })
+      // obj.x + 'px' : obj.y + 'px'
+
       // 统一将元素设为绝对定位元素
       const items = document.getElementsByClassName('item-container')
       for (let i = 0, len = items.length; i < len; i++) {
@@ -218,36 +344,34 @@ export default {
       const sourceDom = document.getElementById(sourceId)
       const targetDom = document.getElementById(targetId)
 
-      console.log('sourceDom-->', sourceDom)
-      console.log('targetDom-->', targetDom)
-
       this.j.connect({ source: sourceDom, target: targetDom, type: 'basic' })
-    },
-    getXY (index) {
-      // debugger
-      const id = `${this.idPer}${index}`
-      const dom = document.getElementById(id)
-      const poOffsetLeft = dom.offsetLeft
-      const poOffsetTop = dom.offsetTop
-      const initialPosition = [30, 50] // 起点位置
-      const obj = {
-        x: poOffsetLeft + initialPosition[0],
-        y: poOffsetTop + initialPosition[1]
-      }
-      // this.$set(this.positionObj, id, obj)
-      this.positionObj[id] = obj
-      console.log(' positionObj--->', this.positionObj)
-      // console.log('poOffsetLeft-->', 'poOffsetTop--->', poOffsetLeft, poOffsetTop)
-      // const numer = index + 1
-      // const rowTotal = 3
-      // const size = [500, 300]
-
-      // const x = (index % rowTotal) * size[0]
-      // const y = (Math.ceil(numer / rowTotal) - 1) * size[1]
-      // return {
-      //   x, y
-      // }
     }
+
+    // getXY (index) {
+    //   // debugger
+    //   const id = `${this.idPer}${index}`
+    //   const dom = document.getElementById(id)
+    //   const poOffsetLeft = dom.offsetLeft
+    //   const poOffsetTop = dom.offsetTop
+    //   const initialPosition = [30, 50] // 起点位置
+    //   const obj = {
+    //     x: poOffsetLeft + initialPosition[0],
+    //     y: poOffsetTop + initialPosition[1]
+    //   }
+    //   // this.$set(this.positionObj, id, obj)
+    //   this.positionObj[id] = obj
+    //   console.log(' positionObj--->', this.positionObj)
+    //   // console.log('poOffsetLeft-->', 'poOffsetTop--->', poOffsetLeft, poOffsetTop)
+    //   // const numer = index + 1
+    //   // const rowTotal = 3
+    //   // const size = [500, 300]
+
+    //   // const x = (index % rowTotal) * size[0]
+    //   // const y = (Math.ceil(numer / rowTotal) - 1) * size[1]
+    //   // return {
+    //   //   x, y
+    //   // }
+    // }
 
   }
 }

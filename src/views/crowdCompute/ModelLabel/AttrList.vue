@@ -50,25 +50,27 @@
               <template slot-scope="scope">
                 <!-- {{ scope.row.history.status }} -->
                 <div v-if="scope.row.history.status">
-                  <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
+                  <template v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
                     计算完成
-                  </div>
+                  </template>
                   <!-- 新增计算中时是否是人群派对中 -->
-                  <div
+                  <template
                     v-else-if="((launchStatusEnum[scope.row.history.status]).code === 2 && (launchStatusEnum[scope.row.history.status]).childrenCode === 23)">
                     {{ (launchStatusEnum[scope.row.history.status]).childrenName }}
-                  </div>
-                  <div
+                  </template>
+                  <template
                     v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7">
                     <span v-if="crowdType === 4">计算</span>
                     <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
-                  </div>
+                  </template>
                   <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
                     计算失败
                   </div>
-                  <div v-else>
+                  <template v-else>
                     {{ (launchStatusEnum[scope.row.history.status]).name }}
-                  </div>
+                  </template>
+
+                  <TipPopover :launchStatusEnum="launchStatusEnum" :status="scope.row.history.status"></TipPopover>
                 </div>
               </template>
             </el-table-column>
@@ -95,7 +97,7 @@
                 {{ cc_format_number(scope.row.history.totalWxOpenid) }}
               </template>
             </el-table-column> -->
-            <el-table-column label="总体耗时">
+            <el-table-column label="总体耗时（min）">
               <template slot-scope="scope">
                 {{ scope.row.spentTotalTime }}
               </template>
@@ -243,13 +245,14 @@
 
 </template>
 <script>
+import TipPopover from '../components/tipPopover.vue'
+
 // import TagUpsert from './Upsert.vue'
 
 // import BatchUpload from './batchUpload.vue'
 export default {
   components: {
-    // TagUpsert,
-    // BatchUpload
+    TipPopover
   },
   data () {
     return {
@@ -321,7 +324,7 @@ export default {
             prop: 'total_user'
           },
           {
-            label: '临时人群es index',
+            label: '人群位文件名称',
             prop: 'es_index'
           },
           {
@@ -331,15 +334,15 @@ export default {
           {
             label: '临时人群同步日期',
             prop: 'update_time'
-          },
-          {
-            label: '版本是否删除',
-            render: (h, params) => {
-              return h('div', {}, [
-                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
-              ])
-            }
           }
+          // {
+          //   label: '版本是否删除',
+          //   render: (h, params) => {
+          //     return h('div', {}, [
+          //       h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+          //     ])
+          //   }
+          // }
         ],
         data: []
       }
@@ -427,11 +430,11 @@ export default {
       // 当select长度为0，则是取消全选，否则是全选
       const data = this.itemList
       if (select.length === 0) {
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           this.$emit('table-selected', data[i], 'del')
         }
       } else {
-        for (var j = 0; j < data.length; j++) {
+        for (let j = 0; j < data.length; j++) {
           this.$emit('table-selected', data[j], 'add')
         }
       }
@@ -467,10 +470,10 @@ export default {
       this.initParams()
       this.launchCrowdId = null // 编辑时的标签id
       this.dialogVisible = true
-      this.$refs['attrFormRef'] && this.$refs['attrFormRef'].resetFields()
+      this.$refs.attrFormRef && this.$refs.attrFormRef.resetFields()
     },
     handleAddOrEdit () {
-      this.$refs['attrFormRef'].validate((valid) => {
+      this.$refs.attrFormRef.validate((valid) => {
         if (valid) {
           if (this.launchCrowdId) { // 编辑
             const params = {
@@ -502,7 +505,7 @@ export default {
           this.attrForm.crowdSql = data.crowdSql
           this.dialogVisible = true
           this.$nextTick(() => {
-            this.$refs['attrFormRef'].clearValidate()
+            this.$refs.attrFormRef.clearValidate()
           })
         })
     },

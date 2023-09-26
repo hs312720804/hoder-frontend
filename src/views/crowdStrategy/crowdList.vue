@@ -1224,25 +1224,28 @@
             <el-table-column label="状态" width="150">
               <template slot-scope="scope">
                   <div v-if="scope.row.history.status">
-                      <div v-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 3">
+                      <template v-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 3">
                           计算完成
-                      </div>
+                      </template>
                       <!-- 新增计算中时是否是人群派对中 -->
-                      <div v-else-if="((independentLaunchStatusEnum[scope.row.history.status]).code === 2 && (independentLaunchStatusEnum[scope.row.history.status]).childrenCode === 23)">
+                      <template v-else-if="((independentLaunchStatusEnum[scope.row.history.status]).code === 2 && (independentLaunchStatusEnum[scope.row.history.status]).childrenCode === 23)">
                           {{ (independentLaunchStatusEnum[scope.row.history.status]).childrenName }}
-                      </div>
-                      <div v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 1 || (independentLaunchStatusEnum[scope.row.history.status]).code === 4 || (independentLaunchStatusEnum[scope.row.history.status]).code === 7"
+                      </template>
+                      <template v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 1 || (independentLaunchStatusEnum[scope.row.history.status]).code === 4 || (independentLaunchStatusEnum[scope.row.history.status]).code === 7"
                       >
                           <span v-if="crowdType === 4">计算</span>
                           <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
-                      </div>
+                      </template>
                       <div v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
                           计算失败
                           <!-- <el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
                       </div>
-                      <div v-else>
+                      <template v-else>
                           {{ (independentLaunchStatusEnum[scope.row.history.status]).name }}
-                      </div>
+                      </template>
+
+                      <TipPopover :launchStatusEnum="launchStatusEnum" :status="scope.row.history.status"></TipPopover>
+
                   </div>
               </template>
           </el-table-column>
@@ -1606,7 +1609,7 @@
 
         <el-form-item label="如果命中设备量(去重)：" prop="compareType">
 
-          <el-select v-model="hitForm.compareType" style="width: 105px">
+          <el-select v-model="hitForm.compareType" style="width: 75px">
             <el-option value="="></el-option>
             <el-option value=">="></el-option>
             <el-option value="<="></el-option>
@@ -1614,7 +1617,14 @@
             <el-option value="<"></el-option>
           </el-select>
           <el-form-item label="" prop="hitSize">
-            <el-input v-model="hitForm.hitSize" placeholder="请输入" clearable style="width: 105px; margin: 0 10px"></el-input>
+            <el-input-number
+              v-model="hitForm.hitSize"
+              placeholder="请输入"
+              clearable
+              min="0"
+              max="1000000"
+              style="width: 142px; margin: 0 10px">
+            </el-input-number>
             则告警到飞书
           </el-form-item>
 
@@ -1652,6 +1662,7 @@ import numOrTextEdit from '../../components/EditNumOrText'
 import viewEffectDialog from '../launch/viewEffectDialog'
 import LinkAnalysis from './LinkAnalysis/Index'
 import { dataSourceColorEnum } from '@/utils/tags.js'
+import TipPopover from '@/views/crowdCompute/components/tipPopover.vue'
 
 export default {
   components: {
@@ -1661,7 +1672,8 @@ export default {
     CommitHistoryDialog,
     numOrTextEdit,
     viewEffectDialog,
-    LinkAnalysis
+    LinkAnalysis,
+    TipPopover
   },
   data () {
     const checkFinanceCode = (rule, value, callback) => {
@@ -1982,7 +1994,7 @@ export default {
             prop: 'total_user'
           },
           {
-            label: '临时人群es index',
+            label: '人群位文件名称',
             prop: 'es_index'
           },
           {
@@ -1992,15 +2004,15 @@ export default {
           {
             label: '临时人群同步日期',
             prop: 'update_time'
-          },
-          {
-            label: '版本是否删除',
-            render: (h, params) => {
-              return h('div', {}, [
-                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
-              ])
-            }
           }
+          // {
+          //   label: '版本是否删除',
+          //   render: (h, params) => {
+          //     return h('div', {}, [
+          //       h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+          //     ])
+          //   }
+          // }
         ],
         data: []
       },
@@ -3277,7 +3289,7 @@ export default {
           break
         case 'dynamicReport':
           // 动态实验报告
-          this.goToDynamicCrowdReport(this.currentCid, row.crowdName)
+          this.goToDynamicCrowdReport(this.currentCid, row.crowdName, row.launchTime)
           break
         case 'nomalyMonitoring':
           // 流转异常监控
@@ -3288,9 +3300,9 @@ export default {
           break
       }
     },
-    goToDynamicCrowdReport (crowdId, crowdName) {
+    goToDynamicCrowdReport (crowdId, crowdName, launchTime) {
       // 跳转到操作指引
-      this.$router.push({ path: '/operate', query: { comName: 'dynamicCrowdReport', crowdId, crowdName } })
+      this.$router.push({ path: '/operate', query: { comName: 'dynamicCrowdReport', crowdId, crowdName, launchTime } })
       // this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName } })
     },
     goToNomalyMonitoring (crowdId, crowdName) {

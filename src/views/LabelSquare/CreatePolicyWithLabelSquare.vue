@@ -86,6 +86,17 @@
         >
         </CrowdLabel>
       </el-tab-pane>
+      <el-tab-pane label="算法标签" name="aiLabel">
+        <AILabel
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          :checkList="tempCheckList"
+          :crowdType=2
+          @get-table-selected="handleGetTableSelectedData"
+          @change-checkList="handleCheckListChange"
+        >
+        </AILabel>
+      </el-tab-pane>
 
     </el-tabs>
 
@@ -105,7 +116,8 @@
         <span class="checkbox--orange2">棕色</span>为组合标签,
         <span class="checkbox--cyan">青色</span>为行为标签,
         <span class="checkbox--gray">灰色</span>为人群标签,
-        <span class="checkbox--pink">粉色</span>为实时标签[大数据]
+        <span class="checkbox--pink">粉色</span>为实时标签[大数据],
+        <span class="checkbox--gradient">渐变色</span>为营销研发标签
       </div>
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
@@ -128,6 +140,7 @@ import BigDataTag from './bigDataTag/Index.vue'
 import ThirdPartyTag from './thirdTag/Index.vue'
 import CustomTag from './customTag/Index.vue'
 import CrowdLabel from './crowdLabel/Index.vue'
+import AILabel from './AILabel/Index.vue'
 import { dataSourceColorEnum } from '@/utils/tags.js'
 import MyTopMax30 from './MyTopMax30'
 import tagList from './coms/TagList'
@@ -141,7 +154,8 @@ export default {
     CustomTag,
     MyTopMax30,
     tagList,
-    CrowdLabel
+    CrowdLabel,
+    AILabel
   },
   props: ['recordId', 'initTagList', 'policyId'],
   computed: {

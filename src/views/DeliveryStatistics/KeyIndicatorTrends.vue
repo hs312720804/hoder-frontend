@@ -502,13 +502,29 @@ export default {
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
       const chartElement = document.getElementById(element)
       if (!chartElement) return
+      const _this = this
 
       const option = {
         title: {
           text: title
         },
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            crossStyle: {
+              color: '#999'
+            }
+          },
+          formatter: function (parmas) {
+            // let str = parmas[0].marker + parmas[0].name + '<br/>'
+            let str = parmas[0].name + '<br/>'
+            for (const item of parmas) {
+              str = str + item.marker + item.seriesName + ': ' + _this.cc_format_number(item.value) + yunit + '<br/>'
+            }
+            // return _this.cc_format_number(a.data)
+            return str
+          }
           // formatter: function (parmas) {
           //   let str = parmas[0].name + '<br/>'
           //   for (let item of parmas) {

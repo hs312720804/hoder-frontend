@@ -154,6 +154,21 @@ export default {
   },
   created () {},
   methods: {
+    // 【购买行为】 中选择了任意产品包， 任意产品包重复添加多次
+    addBAV0003ChildItem (item, index, arr) {
+      const obj = {
+        ...item,
+        extraAdd: true,
+        child: [],
+        childCheckedVal: ''
+      }
+      arr.splice(index + 1, 0, obj)
+    },
+    // 【购买行为】 中选择了任意产品包， 任意产品包重复添加多次
+    // 删除任意产品包
+    cutBAV0003ChildItem (index, arr) {
+      arr.splice(index, 1)
+    },
     handleOperatorChange (item) {
       item.value = ''
       item.value1 = ''
@@ -187,9 +202,9 @@ export default {
       }
     },
     handelInputBetween (val, item, key) {
-      console.log('val===', val)
-      console.log('item===', item)
-      console.log('key===', key)
+      // console.log('val===', val)
+      // console.log('item===', item)
+      // console.log('key===', key)
 
       this.$set(item, key, val)
       item[key] = val
@@ -329,6 +344,8 @@ export default {
     },
 
     // 获取指定id值
+    // nodes - 所有的数据（树状父子层级）
+    // id - 查找的 ID
     getParentVal (nodes, id, operator) {
       const nodeTree = this.childItem.tagCode === 'BAV0016' || this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011' ? this.childItem.bav.showBehaviorValue : this.childItem.bav.behaviorValue
       if (!nodes || !id) {
@@ -339,10 +356,13 @@ export default {
       const countArray = ['mac', 'dt', 'day_play_time', 'play_nums', 'day_movie_play_time', 'product_price', 'product_id']
       for (let i = 0; i < nodes.length; i++) {
         const item = nodes[i]
-        console.log(item.id === id)
-        console.log('item===', item)
+        // console.log(item.id === id)
+        // console.log('item===', item)
         if (item.id === id) {
-          if (item.value && item.field && !countArray.includes(item.field)) { // 不是指标的属性
+          const hasVal = item.value && item.field // 是否有value 值
+          const flag = this.childItem.tagCode === 'BAV0003' && item.field // BAV0003【购买行为】比较特殊，有空值
+          // if (item.value && item.field && !countArray.includes(item.field)) { // 不是指标的属性
+          if ((flag || hasVal) && !countArray.includes(item.field)) { // 不是指标的属性
             // 起播行为第三级特殊处理
             if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
               item.operator = operator === '=' ? 'like' : 'not like'
@@ -696,6 +716,16 @@ export default {
     },
 
     getDefaultChildObj () {
+      if (this.childItem.tagCode === 'BAV0013' || this.childItem.tagCode === 'BAV0014') {
+        this.defaultChildObj.perCountValue = {
+          name: '',
+          value: '',
+          field: '',
+          operator: '=',
+          type: '',
+          multipleSelect: false
+        }
+      }
       return JSON.parse(JSON.stringify(this.defaultChildObj))
     },
 
@@ -707,9 +737,10 @@ export default {
        * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
        * @param {String} selectPropKeyValue = 'value' 下拉框的 value 和 key 字段的 key 值
        * @param {Boolean} isValueClear = 'false' 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
+       * @param {Boolean} reverseSelectAttr = 'false' 是否为可反选元素
        */
     handelBehavirSelectChange (params = {}) {
-      // 改变数据时将所有的checkbox归位false
+      // 改变数据时将所有的checkbox重置false
       this.$set(this.childItem.bav, 'reverseSelect', false)
       const { hasChild = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, reverseSelectAttr } = params
       const childItem = this.childItem
@@ -763,6 +794,7 @@ export default {
        * @param {String} selectPropKeyValue = 'value' 下拉框的 value 和 key 字段的 key 值
        * @param {Boolean} isValueClear = 'false' 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
        * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
+       * @param {Boolean} reverseSelectAttr = 'false' 是否为可反选元素
        */
     handelChildBehavirSelectChange (params = {}) {
       // 改变数据时将所有的checkbox归位false
@@ -898,22 +930,23 @@ export default {
           }]
         }
       }
-
-      const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false // 反选
+      // 之前的功能，不需要了
+      // const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false // 反选
 
       vals.forEach(val => {
-        if (!val) return
+        // 【购买行为】BAV0003 中有的选项的 value 为空，因此这里 不拦截【购买行为】
+        if (!val && this.childItem.tagCode !== 'BAV0003') return
         let obj = {}
         let lastNumberObj = {}
         if (this.childItem.tagCode === 'BAV0013' || this.childItem.tagCode === 'BAV0014') {
           // 【续费包签约状态 - BAV0013】、【连续包签约-续费-解约次数 - BAV0014】 最后一级不给默认 value
           lastNumberObj = [
             {
-              name: '',
+              name: '产品包ID',
               value: '',
-              field: '',
+              field: 'product_id',
               operator: '=',
-              type: '',
+              type: 'string',
               multipleSelect: false
             }
           ]
@@ -929,31 +962,40 @@ export default {
             }
           ]
         }
-        // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
+
+        // 先从已选列表里面进行查找（已有），找不到再从所有列表里面查找（新增），获取原值
         const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val || item.value === val || item.name === val)
         const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val || item.value === val || item.name === val)
+
         obj = matchObj || matchObj2
         if (!obj) return
 
-        // 清空对象中的 value（【模块活跃 004】特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
+        // 清空对象中的 value（  BAV00004【模块活跃】特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
         if (isValueClear) obj.value = ''
 
-        if (reverseSelect) { // 反选
-          if (this.childItem.tagCode === 'BAV0012') {
-            if ((level === 7 && vals[5] === obj.value) || (level === 3 && vals[1] === obj.value) || (level === 3 && vals[4] === obj.value)) { // 切换歌曲 或者 切换影片
-              obj.operator = '!='
-            } else {
-              obj.operator = '='
-            }
-          } else { // 其他属性切换正常操作
-            obj.operator = '!='
-          }
-        }
+        // 之前的功能，不需要了
+        // if (reverseSelect) { // 反选
+        //   if (this.childItem.tagCode === 'BAV0012') {
+        //     if ((level === 7 && vals[5] === obj.value) || (level === 3 && vals[1] === obj.value) || (level === 3 && vals[4] === obj.value)) { // 切换歌曲 或者 切换影片
+        //       obj.operator = '!='
+        //     } else {
+        //       obj.operator = '='
+        //     }
+        //   } else { // 其他属性切换正常操作
+        //     obj.operator = '!='
+        //   }
+        // }
 
-        // 模块活跃，默认 child 值特殊处理
+        /* ----------------------------- 默认 child 值特殊处理 -start-------------------------
+        需处理：
+         - BAV0002【应用活跃】
+         - BAV0006
+         - BAV0003【购买行为】
+         - BAV0004【模块活跃】
+         - BAV0010【用户活跃】
+        ----- */
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
 
-        /* ------------------------------------------------------------ */
         if (this.childItem.tagCode === 'BAV0002') { // 【应用活跃】, 切换数据时，下一级清空，下下级保持存在
           if (extra.levelOneValue === '安装') { // 仅当选择【安装应用】后可输入应用版本号，为可选项
             switch (level) {
@@ -1041,7 +1083,7 @@ export default {
           }
         }
 
-        if (this.childItem.tagCode === 'BAV0003' && level === 5) { // 【购买行为】
+        if (this.childItem.tagCode === 'BAV0003' && level === 5) { // BAV0003【购买行为】 选择价格区间、产品包ID、不区分
           defaultchild = [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }]
         }
 
@@ -1059,13 +1101,13 @@ export default {
           obj.childCheckedVal = '0' // 序号默认值为 0
         }
 
-        if (this.childItem.tagCode === 'BAV0009' && level === 2) { // 【应用状态】 选择了第 2 级的时候添加属性: "multipleSelect":"true"
+        if (this.childItem.tagCode === 'BAV0009' && level === 2) { // BAV0009【应用状态】 选择了第 2 级的时候添加属性: "multipleSelect":"true"
           obj.multipleSelect = true
-        } else if (this.childItem.tagCode === 'BAV0010' && level === 1) { // 【用户活跃】 选择了第 1 级的时候添加属性: "multipleSelect":"true"
+        } else if (this.childItem.tagCode === 'BAV0010' && level === 1) { // BAV0010【用户活跃】 选择了第 1 级的时候添加属性: "multipleSelect":"true"
           obj.multipleSelect = true
         }
+        /* ----------------------------- 默认 child 值特殊处理 - end ------------------------------ */
 
-        /* ------------------------------------------------------------ */
         obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild) // 根据是否最后一级，添加不同的 child
 
         obj.childCheckedVal = obj.childCheckedVal || (typeof (obj.childCheckedVal) === 'string' ? '' : [])
@@ -1074,12 +1116,24 @@ export default {
           obj.childCheckedVal = typeof (obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
         }
 
-        if (this.childItem.tagCode === 'BAV0002' && level === 2) { // 应用活跃
+        if (this.childItem.tagCode === 'BAV0002' && level === 2) { // BAV0002 【应用活跃】
           obj.childCheckedVal = []
         }
 
         const obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
-        list.push(obj2)
+
+        if (this.childItem.tagCode === 'BAV0003') { // BAV0003【购买行为】
+          // 相同的 value 有多组数据
+          const arr = behaviorValue.filter(item => item[selectPropKeyValue] === val || item.value === val || item.name === val)
+          console.log('arr----->', arr)
+          if (arr.length > 1) {
+            list = list.concat(arr)
+          } else {
+            list.push(obj2)
+          }
+        } else {
+          list.push(obj2)
+        }
       })
 
       // 动态设置子集的id与parentId
@@ -1314,7 +1368,7 @@ export default {
     handelQiBoChildBehavirSelectChange (params = {}) {
       const { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [], reverseSelectAttr } = params
 
-      // 改变数据时将所有的checkbox归位false
+      // 改变数据时将所有的 checkbox 重置为 false
       this.$set(this.childItem.bav, 'reverseSelect', false)
       this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
 

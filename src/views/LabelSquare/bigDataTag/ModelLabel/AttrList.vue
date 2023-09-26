@@ -33,25 +33,27 @@
           <template slot-scope="scope">
             <!-- {{ scope.row.history.status }} -->
             <div v-if="scope.row.history.status">
-              <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
+              <template v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
                 计算完成
-              </div>
+              </template>
               <!-- 新增计算中时是否是人群派对中 -->
-              <div
+              <template
                 v-else-if="((launchStatusEnum[scope.row.history.status]).code === 2 && (launchStatusEnum[scope.row.history.status]).childrenCode === 23)">
                 {{ (launchStatusEnum[scope.row.history.status]).childrenName }}
-              </div>
-              <div
+              </template>
+              <template
                 v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7">
                 <span v-if="crowdType === 4">计算</span>
                 <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
-              </div>
+              </template>
               <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
                 计算失败
               </div>
-              <div v-else>
+              <template v-else>
                 {{ (launchStatusEnum[scope.row.history.status]).name }}
-              </div>
+              </template>
+
+              <TipPopover :launchStatusEnum="launchStatusEnum" :status="scope.row.history.status"></TipPopover>
             </div>
           </template>
         </el-table-column>
@@ -68,7 +70,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="总体耗时">
+        <el-table-column label="总体耗时（min）">
           <template slot-scope="scope">
             {{ scope.row.spentTotalTime }}
           </template>
@@ -147,9 +149,11 @@
 </template>
 <script>
 
+import TipPopover from '@/views/crowdCompute/components/tipPopover.vue'
 export default {
-  components: {
 
+  components: {
+    TipPopover
   },
   data () {
     return {
@@ -221,7 +225,7 @@ export default {
             prop: 'total_user'
           },
           {
-            label: '临时人群es index',
+            label: '人群位文件名称',
             prop: 'es_index'
           },
           {
@@ -231,15 +235,15 @@ export default {
           {
             label: '临时人群同步日期',
             prop: 'update_time'
-          },
-          {
-            label: '版本是否删除',
-            render: (h, params) => {
-              return h('div', {}, [
-                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
-              ])
-            }
           }
+          // {
+          //   label: '版本是否删除',
+          //   render: (h, params) => {
+          //     return h('div', {}, [
+          //       h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+          //     ])
+          //   }
+          // }
         ],
         data: []
       }

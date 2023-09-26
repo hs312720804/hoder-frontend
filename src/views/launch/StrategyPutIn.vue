@@ -11,8 +11,10 @@
                 <div class="tips">投放模式(pull):针对主页、产品包、广告、活动、弹窗、媒资</div>
                 <el-form-item label="投放平台" prop="biIdsPull" class="multipleSelect">
                     <el-select
+                      ref="multipleSelectRef"
                       v-model="crowdForm.biIdsPull"
                       multiple
+                      @change="multipleSelectChange"
                     >
                         <el-option
                           v-for="(platform, index) in Platforms"
@@ -66,12 +68,17 @@
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
-                    <el-select v-model="crowdForm.biIds" multiple placeholder="请选择投放平台">
+                    <el-select
+                      ref="multipleSelectRef2"
+                      v-model="crowdForm.biIds"
+                      multiple
+                      placeholder="请选择投放平台"
+                      @change="multipleSelectChange2">
                         <el-option
-                                v-for="item in launchPlatform"
-                                :key="item.biId+''"
-                                :label="item.biName"
-                                :value="item.biId+''"
+                          v-for="item in launchPlatform"
+                          :key="item.biId+''"
+                          :label="item.biName"
+                          :value="item.biId+''"
                         >
                         </el-option>
                     </el-select>
@@ -237,9 +244,16 @@
                     ></el-time-picker>
                 </el-form-item>
                 <el-form-item label="数据类型" prop="calType">
-                    <el-checkbox-group v-model="crowdForm.calType" :disabled="crowdForm.crowdType === 3">
+                    <!-- <el-checkbox-group v-model="crowdForm.calType" :disabled="crowdForm.crowdType === 3"> -->
+                    <el-checkbox-group v-model="crowdForm.calType">
                       <!-- <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{ item }}</el-checkbox> -->
-                      <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" @change="estimateValueChange(index)">
+                      <el-checkbox
+                        v-for="(item,index) in estimateItems"
+                        :value="index"
+                        :label="index"
+                        :key="index"
+                        @change="estimateValueChange(index)"
+                        :disabled="crowdForm.crowdType === 3 && (index == 1 || index == 2 || index == 3)">
                         {{ item }}
                         <el-popover
                           v-if="index === '0'"
@@ -263,7 +277,7 @@
 
                     </el-checkbox-group>
                 </el-form-item>
-                <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div>
+                <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持 push 设备类型、pushId 类型</div>
             </div>
             <!-- 一键投放故事线场景，不需要展示下面的 -->
             <el-form-item v-if="!hiddenButton">
@@ -351,6 +365,14 @@ export default {
     }
   },
   methods: {
+    multipleSelectChange () {
+      // 改变选中值后，自动收起下拉框
+      this.$refs.multipleSelectRef.blur()
+    },
+    multipleSelectChange2 () {
+      // 改变选中值后，自动收起下拉框
+      this.$refs.multipleSelectRef2.blur()
+    },
     // 选项之间互斥
     estimateValueChange (val) {
       const arr1 = ['0', '1', '2', '3']

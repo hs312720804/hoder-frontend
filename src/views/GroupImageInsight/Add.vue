@@ -10,7 +10,7 @@
             <el-form-item label="">
                 <input style="display: none" @change="handleSelectFile" type="file" ref="upload" />
                 <el-button @click="handleUploadFile">上传</el-button>
-                <span>【请上传只包含mac地址的单列文件】</span>
+                <span>【请上传只包含 vaid 和 mac 地址的单列文件】</span>
                 <slot name="temlDownload"></slot>
                 <!-- <div v-if="form.originFileName">{{ form.originFileName }} 上传成功</div> -->
                 <div v-if="selectedFile !== ''">{{ selectedFile.name }} 上传成功</div>

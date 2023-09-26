@@ -105,7 +105,8 @@ export default {
       // 时间戳
       const start = +new Date(putTime)
       const range30 = +new Date(putTime) + 3600 * 1000 * 24 * 30
-      const now = +new Date()
+      const now = +new Date() // 今天
+      const before7 = +new Date() - 3600 * 1000 * 24 * 7 // 过去一个星期
       const putEnd = +new Date(putTimeEnd)
       let end = 0
 
@@ -113,8 +114,10 @@ export default {
       end = this.getMin([range30, putEnd])
       console.log('111--->', end)
 
-      const startDate = this.formatDate(start)
-      const endDate = this.formatDate(end)
+      // const startDate = this.formatDate(start)
+      // const endDate = this.formatDate(end)
+      const startDate = this.formatDate(before7)
+      const endDate = this.formatDate(now)
 
       this.timeRange = [startDate, endDate]
     },

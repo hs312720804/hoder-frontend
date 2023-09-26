@@ -13,6 +13,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@antv/layout": "^0.3.23",
     "@antv/x6": "^1.18.1",
     "@ccms/cms-engine": "^0.1.7",
     "@ccprivate/admin-toolkit": "^1.2.9",
