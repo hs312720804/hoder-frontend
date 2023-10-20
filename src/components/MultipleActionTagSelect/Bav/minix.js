@@ -144,7 +144,10 @@ export default {
       singerList: [], // K歌
       albumOptions1: [], // 音乐 搜歌曲
       albumOptions2: [], // 音乐 搜歌手
-      albumOptions4: [] // 音乐 搜专辑
+      albumOptions4: [], // 音乐 搜专辑
+      themeNamesList: [], // 主题名
+      operateNamesList: [], // 标题名
+      operateIdsList: [] // 搜运营ID list
     }
   },
   computed: {
@@ -425,6 +428,96 @@ export default {
           }
         }
       })
+    },
+    // BAV0017 搜索主题名称
+    getThemeNames (keywords, channel = '') {
+      const params = {
+        keywords,
+        channel,
+        page: 1,
+        pageSize: 200
+      }
+
+      if (keywords !== '') {
+        this.loading2 = true
+
+        this.$service.getThemeNames(params).then(res => {
+          this.loading2 = false
+          let list = res.data || []
+
+          list = list.map(obj => {
+            return {
+              name: obj.themeName,
+              value: obj.themeName
+            }
+          })
+          this.themeNamesList = list
+        }).catch(() => {
+          this.loading2 = false
+        })
+      } else {
+        this.themeNamesList = []
+      }
+    },
+    // BAV0017 搜索标题名
+    getOperateNames (keywords, channel = '') {
+      const params = {
+        keywords,
+        channel,
+        page: 1,
+        pageSize: 200
+      }
+
+      if (keywords !== '') {
+        this.loading2 = true
+
+        this.$service.getOperateNames(params).then(res => {
+          this.loading2 = false
+          let list = res.data || []
+
+          list = list.map(obj => {
+            return {
+              name: obj.operateName,
+              value: obj.operateName
+            }
+          })
+          this.operateNamesList = list
+        }).catch(() => {
+          this.loading2 = false
+        })
+      } else {
+        this.operateNamesList = []
+      }
+    },
+    // BAV0017 搜索运营ID
+    getOperateIds (keywords, channel = '') {
+      const params = {
+        keywords,
+        channel,
+        page: 1,
+        pageSize: 200
+      }
+
+      if (keywords !== '') {
+        this.loading2 = true
+
+        this.$service.getOperateIds(params).then(res => {
+          this.loading2 = false
+          let list = res.data || []
+
+          list = list.map(obj => {
+            return {
+              name: obj.operateId,
+              value: obj.operateId
+            }
+          })
+          this.operateIdsList = list
+        }).catch(() => {
+          this.loading2 = false
+        })
+      } else {
+        this.operateIdsList = []
+      }
     },
 
     GetVideo (keywords, businessType = '', source = '') {
@@ -748,7 +841,7 @@ export default {
       const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
       const behaviorAttrList = this.getBehaviorAttrList(level)
 
-      if (childItem.tagCode === 'BAV0016' || childItem.tagCode === 'BAV0012' || childItem.tagCode === 'BAV0011') { // 【综合起播】 【起播活跃】 的数据放在 showBehaviorValue 字段中， 需要特殊处理
+      if (childItem.tagCode === 'BAV0017' || childItem.tagCode === 'BAV0016' || childItem.tagCode === 'BAV0012' || childItem.tagCode === 'BAV0011') { // 【综合起播】 【起播活跃】 的数据放在 showBehaviorValue 字段中， 需要特殊处理
         this.videoOptions = [] // 【综合起播】 切换了业务类型 影片列表需要清除掉
         this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
           name: '',
@@ -799,7 +892,7 @@ export default {
     handelChildBehavirSelectChange (params = {}) {
       // 改变数据时将所有的checkbox归位false
       this.$set(this.childItem.bav, 'reverseSelect', false)
-      if (this.childItem.tagCode === 'BAV0016' || this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011') {
+      if (this.childItem.tagCode === 'BAV0017' || this.childItem.tagCode === 'BAV0016' || this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011') {
         this.childItem.bav.showBehaviorValue = this.setRecoveryItem(this.childItem.bav.showBehaviorValue)
       } else if (
         this.childItem.tagCode === 'BAV0002' ||
@@ -1699,6 +1792,20 @@ export default {
             attrlist = dict.coupon_action || []
           } else if (level === 5) { // 券方式
             attrlist = dict.coupon_type || []
+          }
+        } else if (childItem.tagCode === 'BAV0017') { // 渠道行为
+          if (extra.listMapName) {
+            attrlist = dict[extra.listMapName]
+          } else if (level === 1) {
+            attrlist = dict.business_type
+          } else if (level === 3) {
+            return this.themeNamesList
+          } else if (level === 4) {
+            return this.operateNamesList
+          } else if (level === 5) {
+            return this.operateIdsList
+          } else if (level === 6) {
+            attrlist = dict.attrFunc
           }
         } else {
           attrlist = [
