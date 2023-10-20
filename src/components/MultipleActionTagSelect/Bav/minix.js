@@ -448,7 +448,8 @@ export default {
           list = list.map(obj => {
             return {
               name: obj.themeName,
-              value: obj.themeName
+              value: obj.themeName,
+              field: obj.field
             }
           })
           this.themeNamesList = list
@@ -478,7 +479,8 @@ export default {
           list = list.map(obj => {
             return {
               name: obj.operateName,
-              value: obj.operateName
+              value: obj.operateName,
+              field: obj.field
             }
           })
           this.operateNamesList = list
@@ -508,7 +510,8 @@ export default {
           list = list.map(obj => {
             return {
               name: obj.operateId,
-              value: obj.operateId
+              value: obj.operateId,
+              field: obj.field
             }
           })
           this.operateIdsList = list

@@ -347,6 +347,7 @@
                         v-loadmore="{'methord': handelLoadmore}"
                         :remote-method="getTempCrowdList"
                         :disabled="status!==undefined && (status === 2 || status === 3)"
+                        @change="event => crowdSelectChange(event, tempCrowdList)"
                     >
                         <el-option
                             v-for="item in tempCrowdList"
@@ -991,13 +992,17 @@ export default {
 
   methods: {
     crowdRadioChange (selectedV, list) {
-      // console.log('value-->', selectedV)
       const policyCrowdIds = selectedV.split('_')[1]
       const obj = list.find(item => {
         return Number(item.crowdId) === Number(policyCrowdIds)
       }) || {}
       this.crowdForm.saveMode = obj.saveMode
-      // console.log('this.crowdForm.saveMode-->', this.crowdForm.saveMode)
+    },
+    crowdSelectChange (selectedV, list) {
+      const obj = list.find(item => {
+        return Number(item.launchCrowdId) === Number(selectedV)
+      }) || {}
+      this.crowdForm.saveMode = obj.isFxFullSql
     },
     multipleSelectChange () {
       // 改变选中值后，自动收起下拉框
@@ -1231,7 +1236,7 @@ export default {
           const crowdForm = this.reParamsData()
 
           if (this.editLaunchCrowdId !== null && this.editLaunchCrowdId !== undefined) {
-            this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then((data) => {
+            this.$service.saveEditMultiVersionCrowd({ model: crowdForm.saveMode, data: crowdForm }, '编辑成功').then((data) => {
               this.callback()
               if (crowdForm.crowdType === 3 && this.islaunchDirectly) { // 行为人群
                 // if (crowdForm.crowdType === 3) { // 行为人群
@@ -1241,7 +1246,7 @@ export default {
               }
             })
           } else {
-            this.$service.saveAddMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '新增成功').then((data) => {
+            this.$service.saveAddMultiVersionCrowd({ model: crowdForm.saveMode, data: crowdForm }, '新增成功').then((data) => {
               this.callback()
               if (crowdForm.crowdType === 3 && this.islaunchDirectly) { // 行为人群
                 // if (crowdForm.crowdType === 3) { // 行为人群
@@ -1696,7 +1701,7 @@ export default {
         const crowdForm = this.reParamsData(this.crowdForm)
 
         if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
-          this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then(() => {
+          this.$service.saveEditMultiVersionCrowd({ model: crowdForm.saveMode, data: crowdForm }, '编辑成功').then(() => {
             this.currentLaunchId = this.editLaunchCrowdId
             this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
               // 行为人群需要 lua 一下
@@ -1712,7 +1717,7 @@ export default {
             })
           })
         } else {
-          this.$service.saveAddMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '新增成功').then((data) => {
+          this.$service.saveAddMultiVersionCrowd({ model: crowdForm.saveMode, data: crowdForm }, '新增成功').then((data) => {
             this.currentLaunchId = data.launchCrowdId
             this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
               // 行为人群需要 lua 一下
