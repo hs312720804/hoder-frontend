@@ -237,7 +237,7 @@ export function getBitmapPushCrowdList (params) {
 export function bitmapPush (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/bitmap/bitmapPush/0',
+    url: `/api/bitmap/bitmapPush/${data.saveMode}`,
     data,
     isJSON: true
   })
