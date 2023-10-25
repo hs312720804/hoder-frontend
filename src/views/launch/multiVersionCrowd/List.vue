@@ -278,9 +278,10 @@
                             </el-button>
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item
-                                        :command="['edit',scope.row]"
-                                        v-permission="'hoder:launch:crowd:ver:modify'"
-                                >编辑
+                                  :command="['edit',scope.row]"
+                                  v-permission="'hoder:launch:crowd:ver:modify'"
+                                >
+                                 {{ scope.row.pushLaunchStatus === 0 || scope.row.pushLaunchStatus === 2 ? '编辑' : '查看'}}
                                 </el-dropdown-item>
                                  <el-dropdown-item
                                         v-if="scope.row.isFxFullSql === 1 && (launchStatusEnum[scope.row.history.status]).code === 91"
