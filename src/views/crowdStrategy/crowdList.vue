@@ -1515,16 +1515,18 @@
           type="success">
         </el-alert> -->
         <!-- AB 子人群进行神策分析才显示 -->
+        <!-- :title="'可选范围为实验有效期内：' + abStartTimeFormat + ' ~ ' + after30Days" -->
         <el-alert
           v-if="currentCrowd.abStartTime"
           style="margin-bottom: 10px"
-          :title="'可选范围为实验有效期内：' + currentCrowd.abStartTime + ' ~ ' + currentCrowd.abEndTime + '       ,开始时间和结束时间不超过30天'"
+          :title="'实验有效期：' + currentCrowd.abStartTime + ' 至 ' + currentCrowd.abEndTime"
           type="info">
         </el-alert>
 
         <el-alert
+          v-if="currentCrowd.launchTime"
           style="margin-bottom: 10px"
-          title="结束时间必须大于投放时间"
+          :title="'投放时间：' + currentCrowd.launchTime "
           type="info">
         </el-alert>
 
@@ -1541,7 +1543,7 @@
             { required: true, message: '起止时间不能为空' },
           ]"
         >
-          <!-- 神策时间范围限制：  [人群的 launchTime, 未来30天内] 、并且范围在30天内 -->
+          <!-- 神策时间范围限制：  [人群的 launchTime, 未来30天内] -->
           <el-date-picker
             v-model="shenCeForm.dateRange"
             type="daterange"
@@ -2065,6 +2067,17 @@ export default {
     dataSourceColorEnum () {
       return dataSourceColorEnum
     }
+    // abStartTimeFormat () {
+    //   const time = this.currentCrowd.abStartTime || ''
+    //   // if (time) {
+    //   return this.$moment(time).format('YYYY-MM-DD')
+    //   // } else {
+    //   // return ''
+    //   // }
+    // },
+    // after30Days () {
+    //   return this.$moment().add(30, 'days').format('YYYY-MM-DD')
+    // }
   },
   created () {
     // 高阶函数
@@ -2214,12 +2227,12 @@ export default {
         //   }
         // },
         disabledDate: (time) => {
-          const day1 = 720 * 24 * 3600 * 1000 // 2 年
-          let minTime = Date.now() - day1 // 最小值是过去 2 年内
-          // 如果有设定起始日期，那最小日期就是设定的起始日期
-          if (startTime) {
-            minTime = new Date(startTime) - 1 * 24 * 3600 * 1000
-          }
+          // const day1 = 720 * 24 * 3600 * 1000 // 2 年
+          // let minTime = Date.now() - day1 // 最小值是过去 2 年内
+          // // 如果有设定起始日期，那最小日期就是设定的起始日期
+          // if (startTime) {
+          //   minTime = new Date(startTime) - 1 * 24 * 3600 * 1000
+          // }
 
           const maxTime = Date.now() + 30 * 24 * 3600 * 1000 // 最大值是未来 30 天内
 
@@ -2228,7 +2241,8 @@ export default {
           // if (_minTime && _maxTime) {
           //   return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
           // } else {
-          return time.getTime() > maxTime || time.getTime() < minTime
+          // return time.getTime() > maxTime || time.getTime() < minTime
+          return time.getTime() > maxTime
           // }
         }
       }
