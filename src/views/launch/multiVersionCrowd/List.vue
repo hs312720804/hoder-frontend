@@ -1045,22 +1045,44 @@ export default {
     //     })
     // },
 
-    // 修改状态
+    // // 修改状态
+    // lanuch (index, row) {
+    //   console.log('row', row)
+    //   this.currentLaunchRow = row
+    //   this.currentLaunchId = row.launchCrowdId
+    //   this.showEstimate = true
+    //   // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+    //   if (row.setCalculate) {
+    //     this.accountDefine = true
+    //     this.estimateValue = ['0', '1', '2', '3']
+    //   } else {
+    //     this.accountDefine = false
+    //     this.estimateValue = ['0']
+    //   }
+    //   this.$service.getEstimateType().then((data) => {
+    //     this.estimateItems = data
+    //   })
+    // },
     lanuch (index, row) {
       this.currentLaunchRow = row
       this.currentLaunchId = row.launchCrowdId
-      this.showEstimate = true
-      // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
-      if (row.setCalculate) {
-        this.accountDefine = true
-        this.estimateValue = ['0', '1', '2', '3']
-      } else {
-        this.accountDefine = false
-        this.estimateValue = ['0']
-      }
-      this.$service.getEstimateType().then((data) => {
-        this.estimateItems = data
+      const calIdType = row.calType
+      const fetchMethod = Number(row.isFxFullSql) === 0
+
+        ? this.$service.bitmapPush // 普通人群 投放 - bitmap
+        : this.$service.LaunchMultiVersionCrowd // 其他人群
+      fetchMethod({ launchCrowdId: this.currentLaunchId, calIdType }, '投放成功').then(() => {
+        this.callback()
       })
+      // if (Number(row.isFxFullSql) === 0) {
+      //   this.$service.bitmapPush({ launchCrowdId: this.currentLaunchId, calIdType }, '投放成功').then(() => {
+      //     this.callback()
+      //   })
+      // } else {
+      //   this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType }, '投放成功').then(() => {
+      //     this.callback()
+      //   })
+      // }
     },
 
     handleEstimate (calTypes) {

@@ -7,13 +7,13 @@
       ref="list">
     </list>
     <add v-if="!isShowList"
-      @changeStatus="changeStatus"
       :model="addModel"
-      @goBack="goBack"
       :showAllParent="showAllParent"
       :editLaunchCrowdId="editLaunchCrowdId"
       :editStatus="editStatus"
       :parentSource="parentSource"
+      @changeStatus="changeStatus"
+      @goBack="goBack"
     ></add>
   </div>
 </template>
@@ -40,7 +40,11 @@ export default {
       this.isShowList = state
       this.addModel = model
       if (state) { this.$refs.list.loadData() }
-      if (launchCrowdId) { this.editLaunchCrowdId = launchCrowdId } else { this.editLaunchCrowdId = null }
+      if (launchCrowdId) {
+        this.editLaunchCrowdId = launchCrowdId
+      } else {
+        this.editLaunchCrowdId = null
+      }
       if (editStatus) { this.editStatus = editStatus }
     },
     goBack () {
