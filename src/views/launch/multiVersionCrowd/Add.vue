@@ -802,17 +802,20 @@ export default {
     },
     // 【普通人群】、【设备投放】 - 获取选择的策略下的人群
     getCrowd () {
-      let policyId = null
+      // let policyId = null
       // if (this.crowdForm.abTest) {
-      policyId = this.crowdForm.policyIds
+      // policyId = this.crowdForm.policyIds
       // } else {
       // policyId = this.crowdForm.policyIds.join(',')
       // }
       // this.crowdForm.crowdType === 0 代表【普通人群】
 
-      const fetchMethod = this.crowdForm.crowdType === 0
-        ? this.$service.getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
-        : this.$service.getBitmapPushCrowdList({ policyIds: policyId, abTest: this.crowdForm.abTest, calIdType: this.estimateValue.join(',') })
+      // this.$service.getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
+      const fetchMethod = this.$service.getBitmapPushCrowdList({
+        policyIds: this.crowdForm.policyIds,
+        abTest: this.crowdForm.abTest,
+        calIdType: this.crowdForm.calIdType.join(',')
+      })
 
       return fetchMethod.then(data => {
         // if (this.crowdForm.abTest) {
