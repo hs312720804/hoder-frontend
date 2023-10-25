@@ -649,6 +649,15 @@ export default {
       this.crowdForm.crowdId = '' // 大人群ID
       this.crowdData = [] // 选择人群列表
       this.crowdForm.tempCrowdId = ''
+    },
+    'crowdForm.calIdType' () { // 估算字段 切换时置空
+      // 重置
+      this.crowdForm.policyCrowdIds = '' // 选择人群
+      this.crowdForm.crowdId = '' // 大人群ID
+      this.crowdForm.tempCrowdId = ''
+      this.crowdData = [] // 选择人群列表
+      // 重刷人群列表
+      this.getCrowd()
     }
   },
 
