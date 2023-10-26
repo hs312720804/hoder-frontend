@@ -3395,7 +3395,7 @@
 
         <!-- 综合起播的数据特殊处理 使用 showBehaviorValue 而不是 behaviorValue-->
         <span
-          v-for="item in childItem.bav.showBehaviorValue"
+          v-for="(item, index) in childItem.bav.showBehaviorValue"
           :key="item.value"
           class="flex-row child"
         >
@@ -3531,25 +3531,30 @@
 
           <span class="flex-row" >
             <!-- 第 5 级 -->
-            <el-select
-              v-model="item.childCheckedVal[4]"
-              style="width: 100px"
-              name="oxve"
-              class="input-inline"
-              clearable
-              @change="handelChildBehavirSelectChange({
-                childItem: item,
-                level: 6,
-              })"
+            <el-form-item
+              :prop="`bav.showBehaviorValue[${index}].childCheckedVal[4]`"
+              :rules="{ required: true, message: '请选择', trigger: 'change' }"
             >
-              <template v-for="item in getBehaviorAttrList(6)">
-                <el-option
-                  :value="item.value"
-                  :label="item.name"
-                  :key="item.name"
-                ></el-option>
-              </template>
-            </el-select>
+              <el-select
+                v-model="item.childCheckedVal[4]"
+                style="width: 100px"
+                name="oxve"
+                class="input-inline"
+                clearable
+                @change="handelChildBehavirSelectChange({
+                  childItem: item,
+                  level: 6,
+                })"
+              >
+                <template v-for="item in getBehaviorAttrList(6)">
+                  <el-option
+                    :value="item.value"
+                    :label="item.name"
+                    :key="item.name"
+                  ></el-option>
+                </template>
+              </el-select>
+            </el-form-item>
           </span>
           <!-- {{ item.childCheckedVal[1] }} ---  -->
           <!-- {{ item.child }} ---  -->
