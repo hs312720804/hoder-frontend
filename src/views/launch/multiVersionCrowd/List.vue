@@ -281,9 +281,9 @@
                                   :command="['edit',scope.row]"
                                   v-permission="'hoder:launch:crowd:ver:modify'"
                                 >
-                                 {{ scope.row.pushLaunchStatus === 0 || scope.row.pushLaunchStatus === 2 ? '编辑' : '查看'}}
+                                  {{ !(row.pushLaunchStatus === 0 || row.pushLaunchStatus === 2) || row.crowdType !== 0 ? '查看' : '编辑' }}
                                 </el-dropdown-item>
-                                 <el-dropdown-item
+                                <el-dropdown-item
                                         v-if="scope.row.isFxFullSql === 1 && (launchStatusEnum[scope.row.history.status]).code === 91"
                                         :command="['adjust',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:index'"

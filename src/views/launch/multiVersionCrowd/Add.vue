@@ -3,10 +3,13 @@
         <el-row>
             <el-col :span="24">
                 <div class="title">{{title}}</div>
-                <!-- <div>{{ crowdForm }}</div> <br/>
-                policyIds - {{ this.crowdForm.policyIds }} // 选择策略<br/>
-                policyCrowdIds - {{ crowdForm.policyCrowdIds }} // 选择人群<br/>
-                crowdId - {{ this.crowdForm.crowdId }} // 大人群ID<br/>
+                <!-- <div> crowdForm - {{ crowdForm }}</div> <br/>
+                policyIds - {{ this.crowdForm.policyIds }} // 选择策略
+                <br/>
+                policyCrowdIds - {{ crowdForm.policyCrowdIds }} // 选择人群
+                <br/>
+                crowdId - {{ this.crowdForm.crowdId }} // 大人群ID
+                <br/>
                 this.editLaunchCrowdId -- {{ editLaunchCrowdId }} -->
             </el-col>
         </el-row>
@@ -74,7 +77,7 @@
                     </el-radio-group>
                 </el-form-item>
 
-                <el-form-item ref="crowdFormItem" label="估算字段" class="form-width" prop="calIdType" required>
+                <el-form-item label="估算字段" key="calIdType" class="form-width" prop="calIdType">
                   <!-- <br/>
                   {{ crowdForm }}
                   <br/>
@@ -121,192 +124,100 @@
                     </el-radio-group>
                 </el-form-item>
 
-                <!-- 选择本地人群 -->
-                <!-- <el-form-item v-if="crowdForm.crowdType === 2"
-                  label="选择人群"
-                  prop="tempCrowdId"
-                >
-                    <el-select
+                <!-- 策略型人群 -->
+                <template v-if="crowdForm.crowdType === 0">
+
+                    <el-form-item
+                      label="选择策略"
+                      prop="policyIds"
+                      class="multipleSelect form-width"
+                      key="policyIds"
+                    >
+                    <!-- {{ crowdForm.policyIds }} -->
+                    <!-- :multiple="!crowdForm.abTest" -->
+                      <el-select
+                        v-model="crowdForm.policyIds"
+                        placeholder="请选择策略"
+                        :loading="bitmapRemoteLoading"
+                        filterable
+                        remote
+                        v-loadmore="{'methord': handeBitmapPushPolicyListLoadmore}"
+                        :remote-method="bitmapRemoteMethod"
+                        @change="getCrowd"
+                        @remove-tag="removeTag"
+                      >
+                        <el-option
+                          v-for="item in bitmapPushPolicyList"
+                          :key="item.policyId+''"
+                          :label="item.policyName"
+                          :value="item.policyId+''"
+                        >{{ item.policyName }}
+                        </el-option>
+                        <el-option
+                          v-if="defaultPolicyList.policyId"
+                          :key="defaultPolicyList.policyId+''"
+                          :label="defaultPolicyList.policyName"
+                          :value="defaultPolicyList.policyId+''">
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+
+                    <el-form-item
+                      label="选择人群"
+                      prop="policyCrowdIds"
+                      key="policyCrowdIds"
+                    >
+                        <!-- {{ crowdForm.policyCrowdIds }} -->
+                        <!-- :label="crowdForm.abTest ? v.Pid: v.policyName" -->
+                        <el-form-item
+                          v-for="(v,index) in crowdData"
+                          :key="v.policyId+'_'+index">
+                          <el-radio-group
+                            v-model="crowdForm.policyCrowdIds"
+                            @input="event => crowdRadioChange(event, v.childs)"
+                          >
+                              <el-radio
+                                v-for="item in v.childs"
+                                :label="item.policyId+'_'+item.crowdId"
+                                :key="item.crowdId+''"
+                                :disabled="item.canLaunch === false"
+                                style="line-height: 32px;"
+                              >
+                              {{ item.crowdName }}
+                              </el-radio>
+                          </el-radio-group>
+                        </el-form-item>
+
+                    </el-form-item>
+                </template>
+                 <!-- 标签型人群 -->
+                <template v-else>
+                  <el-form-item
+                    label="选择标签"
+                    prop="tempCrowdId"
+                    key="tempCrowdId"
+                  >
+                      <el-select
                         filterable
                         remote
                         clearable
                         v-model="crowdForm.tempCrowdId"
                         v-loadmore="{'methord': handelLoadmore}"
-                        :remote-method="getTempCrowdList2"
-                        :disabled="status!==undefined && (status === 2 || status === 3)"
-                    >
-                        <el-option
-                            v-for="item in tempCrowdList2"
-                            :key="item.launchCrowdId+''"
-                            :label="item.launchName"
-                            :value="item.launchCrowdId"
-                        >
-                        {{item.launchName}}
-                        </el-option>
-                    </el-select>
-
-                </el-form-item> -->
-
-                <!-- 选择行为人群 & 投放子人群 -->
-                <!-- <template v-if="crowdForm.crowdType === 3 && crowdForm.abTest">
-                  <el-form-item
-                    label="选择策略"
-                    prop="policyIds"
-                    class="multipleSelect form-width"
-                  >
-                    <el-select
-                      filterable
-                      v-model="crowdForm.policyIds"
-                      placeholder="请选择策略"
-                      @change="getABChildByPolicyId"
-                      @remove-tag="removeTag"
-                      :disabled="status!==undefined && (status === 2 || status === 3)"
-                    >
-                      <el-option
-                        v-for="item in behaviorPolicyList"
-                        :key="item.policyId+''"
-                        :label="item.policyName"
-                        :value="item.policyId+''"
-                      >{{ item.policyName }}
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-
-                  <el-form-item
-                    label="选择人群"
-                    prop="policyCrowdIds"
-                  >
-
-                    <el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="v.policyId+'_'+index">
-
-                        <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
-                            <el-checkbox
-                                v-for="item in v.childs"
-                                :label="item.policyId+'_'+item.crowdId+'_'+item.pid"
-                                :key="item.crowdId+''"
-                                :disabled="item.canLaunch === false"
-                            >
-                            {{ item.crowdName }}
-                            </el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
-
-                  </el-form-item>
-                </template> -->
-
-                <!-- 选择行为人群 & 不投放子人群 -->
-                <!-- <template v-else-if="crowdForm.crowdType === 3">
-                  <el-form-item
-                    label="选择人群"
-                    prop="tempCrowdId"
-                  >
-                      <el-select
-                          filterable
-                          remote
-                          clearable
-                          v-model="crowdForm.policyCrowdIds[0]"
-                          @change="handelBehaviorCrowdSelectChange($event, crowdForm.policyCrowdIds[0], behaviorCrowdList)"
-                          v-loadmore="{'methord': handelLoadmore}"
-                          :remote-method="getBehaviorCrowdList"
-                          @clear="getBehaviorCrowdList"
-                          :disabled="status!==undefined && (status === 2 || status === 3)"
+                        :remote-method="getTempCrowdList"
+                        @change="event => crowdSelectChange(event, tempCrowdList)"
                       >
                           <el-option
-                              v-for="item in behaviorCrowdList"
+                              v-for="item in tempCrowdList"
+                              :key="item.launchCrowdId+''"
                               :label="item.launchName"
-                              :value="item.policyIds+'_'+item.policyCrowdIds"
-                              :key="item.policyCrowdIds"
+                              :value="item.launchCrowdId"
                           >
-                              {{ item.launchName }} -- {{ item.launchCrowdId }}
+                          {{item.launchName }}
                           </el-option>
-
                       </el-select>
-                  </el-form-item>
-                </template> -->
-
-                <!-- 策略型人群 -->
-                <template v-if="crowdForm.crowdType === 0">
-                  <el-form-item
-                    label="选择策略"
-                    prop="policyIds"
-                    class="multipleSelect form-width"
-                  >
-                  <!-- {{ crowdForm.policyIds }} -->
-                  <!-- :multiple="!crowdForm.abTest" -->
-                    <el-select
-                      v-model="crowdForm.policyIds"
-                      :key="crowdForm.abTest + 4"
-                      placeholder="请选择策略"
-                      :loading="bitmapRemoteLoading"
-                      filterable
-                      remote
-                      v-loadmore="{'methord': handeBitmapPushPolicyListLoadmore}"
-                      :remote-method="bitmapRemoteMethod"
-                      @change="getCrowd"
-                      @remove-tag="removeTag"
-                    >
-                      <el-option
-                        v-for="item in bitmapPushPolicyList"
-                        :key="item.policyId+''"
-                        :label="item.policyName"
-                        :value="item.policyId+''"
-                      >{{ item.policyName }}
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-
-                  <el-form-item
-                    label="选择人群"
-                    prop="policyCrowdIds"
-                  >
-                      <!-- {{ crowdForm.policyCrowdIds }} -->
-                      <!-- :label="crowdForm.abTest ? v.Pid: v.policyName" -->
-                      <el-form-item
-                        v-for="(v,index) in crowdData"
-                        :key="v.policyId+'_'+index">
-                        <el-radio-group
-                          v-model="crowdForm.policyCrowdIds"
-                          @input="event => crowdRadioChange(event, v.childs)"
-                        >
-                            <el-radio
-                              v-for="item in v.childs"
-                              :label="item.policyId+'_'+item.crowdId"
-                              :key="item.crowdId+''"
-                              :disabled="item.canLaunch === false"
-                              style="line-height: 32px;"
-                            >
-                            {{ item.crowdName }}
-                            </el-radio>
-                        </el-radio-group>
-                      </el-form-item>
 
                   </el-form-item>
                 </template>
-                 <!-- 标签型人群 -->
-                <el-form-item v-else
-                    label="选择标签"
-                    prop="tempCrowdId"
-                  >
-                    <el-select
-                      filterable
-                      remote
-                      clearable
-                      v-model="crowdForm.tempCrowdId"
-                      v-loadmore="{'methord': handelLoadmore}"
-                      :remote-method="getTempCrowdList"
-                      @change="event => crowdSelectChange(event, tempCrowdList)"
-                    >
-                        <el-option
-                            v-for="item in tempCrowdList"
-                            :key="item.launchCrowdId+''"
-                            :label="item.launchName"
-                            :value="item.launchCrowdId"
-                        >
-                        {{item.launchName }}
-                        </el-option>
-                    </el-select>
-
-                </el-form-item>
 
                 <el-form-item
                   v-if="crowdForm.crowdType === 0 || crowdForm.crowdType === 4"
@@ -426,6 +337,7 @@ export default {
       }
     }
     return {
+      defaultPolicyList: [],
       crowdTypeMapping: 0,
       isEdit: false,
       isPushed: false,
@@ -519,7 +431,7 @@ export default {
           { required: true, message: '请选择每天更新时间点', trigger: 'blur' }
         ],
         tempCrowdId: [
-          { required: true, message: '请选择人群', trigger: 'blur' }
+          { required: true, message: '请选择', trigger: ['change', 'blur'] }
         ],
         packageName: [
           { required: true, message: '请选择投放应用', trigger: 'blur' }
@@ -583,7 +495,7 @@ export default {
       showLaunchTip: false,
       launchTip: '',
       currentLaunchRow: {},
-      estimateValue: ['0'],
+      // estimateValue: ['0'],
       accountDefine: false,
       currentLaunchId: undefined,
       islaunchDirectly: false,
@@ -613,14 +525,14 @@ export default {
   },
   props: ['editLaunchCrowdId', 'model', 'editStatus', 'parentSource', 'showAllParent'],
   watch: {
-    estimateValue: {
-      handler (val) {
-        this.crowdForm.calIdType = val
-        // console.log('this.$refs.crowdFormItem-->', this.$refs.crowdFormItem)
-        // this.$refs.crowdFormItem.$emit('el.form.change')
-      },
-      immediate: true
-    },
+    // estimateValue: {
+    //   handler (val) {
+    //     this.crowdForm.calIdType = val
+    //     // console.log('this.$refs.crowdFormItem-->', this.$refs.crowdFormItem)
+    //     // this.$refs.crowdFormItem.$emit('el.form.change')
+    //   },
+    //   immediate: true
+    // },
     // 'crowdForm.abTest': function (val, oldVal) {
     //     // 根第一次加载的时候不判断，当值变的时候再触发
     //     if (oldVal && this.firstTimeLoad) {
@@ -1471,7 +1383,7 @@ export default {
       if (this.isEdit) { // 编辑 或 查看
         const data = await this.$service.editMultiVersionCrowd(this.editLaunchCrowdId)
         const row = data.launchCrowd
-        this.isPushed = !(row.pushLaunchStatus === 0 || row.pushLaunchStatus === 2) // 已投放
+        this.isPushed = !(row.pushLaunchStatus === 0 || row.pushLaunchStatus === 2) || row.crowdType !== 0// 已投放
 
         if (this.isPushed) {
           this.title = '查看'
@@ -1501,6 +1413,8 @@ export default {
         this.crowdForm.packageName = Number(row.packageName) // 投放应用
         this.crowdForm.setCalculate = row.setCalculate
 
+        this.crowdForm.calIdType = row.calType.split(',') // 估算字段
+
         this.status = this.editStatus
         // if (row.tempCrowdId) {
         if (this.crowdForm.crowdType === 0) { // 普通人群
@@ -1511,6 +1425,14 @@ export default {
             this.crowdForm.policyIds = row.policyIds
             // 等待获取所选策略下的人群列表
             await this.getCrowd()
+
+            // 构建默认option,便于回显
+            if (data.respcl && data.respcl[0]) {
+              this.defaultPolicyList = {
+                policyId: data.respcl[0].policyId,
+                policyName: data.respcl[0].policyName
+              }
+            }
             data.respcl && data.respcl.forEach(element => {
               element.childs.forEach(v => {
                 if (v.choosed) {
@@ -1530,9 +1452,11 @@ export default {
             this.crowdForm.policyCrowdIds = `${row.policyIds}_${row.policyCrowdIds}`
           })
         } else { // 【标签型人群】 - 其他
-          this.crowdForm.tempCrowdId = row.tempCrowdId
-          this.crowdForm.policyIds = undefined
-          this.crowdForm.policyCrowdIds = undefined
+          this.$nextTick(async () => {
+            this.crowdForm.tempCrowdId = row.tempCrowdId
+            this.crowdForm.policyIds = undefined
+            this.crowdForm.policyCrowdIds = undefined
+          })
         }
       } else {
         this.title = '新增'
