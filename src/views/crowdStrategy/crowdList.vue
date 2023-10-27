@@ -3616,10 +3616,17 @@ export default {
       this.shenCeForm.dateRange = [] // 清空
 
       this.shenCeForm.crowdId = row.crowdId
+      // console.log('this.row------>', row)
+
       this.shenCeDialog = true
       // 重置表单
       this.$nextTick(() => {
         this.$refs.shenCeForm.resetFields()
+        // 回显数据
+        if (row.sensorEndTime && row.sensorEndTime) {
+          this.shenCeForm.dateRange = [row.sensorEndTime, row.sensorEndTime]
+        }
+        this.shenCeForm.autoVersion = row.jobId > 0
       })
     },
     ConfirmShenCeAnalysis (row) {
@@ -3631,7 +3638,14 @@ export default {
       }
       this.$service.sensorHitData(parmas).then(res => {
         console.log('res', res)
-
+        // 同步修改列表中的数据
+        this.tableData.forEach(item => {
+          if (parmas.crowdId === item.crowdId) {
+            item.sensorStartTime = parmas.startDate
+            item.sensorEndTime = parmas.endDate
+            item.jobId = parmas.autoVersion ? 1 : 0
+          }
+        })
         // 人群已经发送到神策平台，请前往神策继续分析
         if (res.result.indexOf('成功') > 0 || res.result.indexOf('已经发送') > 0) {
           this.$message.success(res.result)
