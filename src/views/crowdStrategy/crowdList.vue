@@ -3623,8 +3623,8 @@ export default {
       this.$nextTick(() => {
         this.$refs.shenCeForm.resetFields()
         // 回显数据
-        if (row.sensorEndTime && row.sensorEndTime) {
-          this.shenCeForm.dateRange = [row.sensorEndTime, row.sensorEndTime]
+        if (row.sensorStartTime && row.sensorEndTime) {
+          this.shenCeForm.dateRange = [row.sensorStartTime, row.sensorEndTime]
         }
         this.shenCeForm.autoVersion = row.jobId > 0
       })
