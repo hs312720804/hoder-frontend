@@ -1201,7 +1201,7 @@ export default {
     margin-left: -10px;
     margin-right: -10px;
     .unit-wrap {
-      width: 50%
+      width: 48%
       padding 10px
     }
     .unit-box {
@@ -1214,7 +1214,7 @@ export default {
     // gap: 20px;
     flex-wrap: wrap;
     .unit-wrap {
-      width 33.3%
+      width 31.3%
       padding 10px
     }
     .unit-box {
