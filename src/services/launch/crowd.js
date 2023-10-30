@@ -234,12 +234,11 @@ export function getBitmapPushCrowdList (params) {
 }
 
 // 新增 bitmap push 投放
-export function bitmapPush (data) {
+export function bitmapPush (params) {
   return this.fetch({
-    method: 'post',
-    url: '/api/bitmap/bitmapPush/0',
-    data,
-    isJSON: true
+    method: 'GET',
+    url: '/api/bitmap/bitmapPush',
+    params
   })
 }
 

@@ -1514,22 +1514,24 @@
           type="success">
         </el-alert> -->
         <!-- AB 子人群进行神策分析才显示 -->
+        <!-- :title="'可选范围为实验有效期内：' + abStartTimeFormat + ' ~ ' + after30Days" -->
         <el-alert
           v-if="currentCrowd.abStartTime"
           style="margin-bottom: 10px"
-          :title="'可选范围为实验有效期内：' + currentCrowd.abStartTime + ' ~ ' + currentCrowd.abEndTime + '       ,开始时间和结束时间不超过30天'"
+          :title="'实验有效期：' + currentCrowd.abStartTime + ' 至 ' + currentCrowd.abEndTime"
           type="info">
         </el-alert>
 
         <el-alert
+          v-if="currentCrowd.launchTime"
           style="margin-bottom: 10px"
-          title="结束时间必须大于投放时间"
+          :title="'投放时间：' + currentCrowd.launchTime "
           type="info">
         </el-alert>
 
         <el-alert
           style="margin-bottom: 20px"
-          title="结束时间不能大于今天"
+          title="结束时间可选择未来最多30天"
           type="info">
         </el-alert>
 
@@ -1537,10 +1539,10 @@
           label="起止时间"
           prop="dateRange"
           :rules="[
-            { required: true, message: '起止时间不能为空'},
+            { required: true, message: '起止时间不能为空' },
           ]"
         >
-          <!-- 神策时间范围限制：  人群的 launchTime < dateRange < 当前时间  、并且范围在30天内 -->
+          <!-- 神策时间范围限制：  [人群的 launchTime, 未来30天内] -->
           <el-date-picker
             v-model="shenCeForm.dateRange"
             type="daterange"
@@ -1551,6 +1553,10 @@
             :picker-options="pickerShenCeOptionsDayinRange(30, currentCrowd.launchTime)"
             >
           </el-date-picker>
+        </el-form-item>
+
+        <el-form-item prop="autoVersion">
+          <el-checkbox v-model="shenCeForm.autoVersion">每日更新后自动发送</el-checkbox>
         </el-form-item>
 
       </el-form>
@@ -1774,7 +1780,8 @@ export default {
       linkPropsNameTip: {},
       shenCeForm: {
         dateRange: [],
-        crowdId: ''
+        crowdId: '',
+        autoVersion: false
       },
       shenCeDialog: false,
       showOperationalAnalysis: false,
@@ -2074,6 +2081,17 @@ export default {
     dataSourceColorEnum () {
       return dataSourceColorEnum
     }
+    // abStartTimeFormat () {
+    //   const time = this.currentCrowd.abStartTime || ''
+    //   // if (time) {
+    //   return this.$moment(time).format('YYYY-MM-DD')
+    //   // } else {
+    //   // return ''
+    //   // }
+    // },
+    // after30Days () {
+    //   return this.$moment().add(30, 'days').format('YYYY-MM-DD')
+    // }
   },
   created () {
     // 高阶函数
@@ -2170,39 +2188,76 @@ export default {
         })
       }
     },
-    pickerShenCeOptionsDayinRange (day, startTime) { //   开始和结束不超 day天   startTime - 最早时间
-      let _minTime = null
-      let _maxTime = null
+    // pickerShenCeOptionsDayinRange (day, startTime) { //   开始和结束不超 day天   startTime - 最早时间
+    //   let _minTime = null
+    //   let _maxTime = null
+
+    //   return {
+    //     onPick (time) {
+    //       // 如果选择了只选择了一个时间
+    //       if (!time.maxDate) {
+    //         const timeRange = day * 24 * 60 * 60 * 1000
+    //         _minTime = time.minDate.getTime() - timeRange // 最小时间
+    //         _maxTime = time.minDate.getTime() + timeRange // 最大时间
+    //         // 如果选了两个时间，那就清空本次范围判断数据，以备重选
+    //       } else {
+    //         _minTime = _maxTime = null
+    //       }
+    //     },
+    //     disabledDate: (time) => {
+    //       const maxTime = Date.now()
+    //       const day1 = 720 * 24 * 3600 * 1000
+    //       let minTime = Date.now() - day1
+
+    //       if (startTime) {
+    //         minTime = new Date(startTime) - 1 * 24 * 3600 * 1000
+    //         // minTime = Date.now(startTime) - 1 * 24 * 3600 * 1000
+    //       }
+
+    //       // onPick后触发
+    //       // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
+    //       if (_minTime && _maxTime) {
+    //         return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
+    //       } else {
+    //         return time.getTime() > maxTime || time.getTime() < minTime
+    //       }
+    //     }
+    //   }
+    // },
+    pickerShenCeOptionsDayinRange (day, startTime) { // 开始和结束不超 day天   startTime - 最早时间
+      // const _minTime = null
+      // const _maxTime = null
 
       return {
-        onPick (time) {
-          // 如果选择了只选择了一个时间
-          if (!time.maxDate) {
-            const timeRange = day * 24 * 60 * 60 * 1000
-            _minTime = time.minDate.getTime() - timeRange // 最小时间
-            _maxTime = time.minDate.getTime() + timeRange // 最大时间
-            // 如果选了两个时间，那就清空本次范围判断数据，以备重选
-          } else {
-            _minTime = _maxTime = null
-          }
-        },
+        // onPick (time) {
+        //   // 如果选择了只选择了一个时间
+        //   if (!time.maxDate) {
+        //     const timeRange = day * 24 * 60 * 60 * 1000
+        //     _minTime = time.minDate.getTime() - timeRange // 最小时间
+        //     _maxTime = time.minDate.getTime() + timeRange // 最大时间
+        //     // 如果选了两个时间，那就清空本次范围判断数据，以备重选
+        //   } else {
+        //     _minTime = _maxTime = null
+        //   }
+        // },
         disabledDate: (time) => {
-          const maxTime = Date.now()
-          const day1 = 720 * 24 * 3600 * 1000
-          let minTime = Date.now() - day1
+          // const day1 = 720 * 24 * 3600 * 1000 // 2 年
+          // let minTime = Date.now() - day1 // 最小值是过去 2 年内
+          // // 如果有设定起始日期，那最小日期就是设定的起始日期
+          // if (startTime) {
+          //   minTime = new Date(startTime) - 1 * 24 * 3600 * 1000
+          // }
 
-          if (startTime) {
-            minTime = new Date(startTime) - 1 * 24 * 3600 * 1000
-            // minTime = Date.now(startTime) - 1 * 24 * 3600 * 1000
-          }
+          const maxTime = Date.now() + 30 * 24 * 3600 * 1000 // 最大值是未来 30 天内
 
           // onPick后触发
           // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
-          if (_minTime && _maxTime) {
-            return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
-          } else {
-            return time.getTime() > maxTime || time.getTime() < minTime
-          }
+          // if (_minTime && _maxTime) {
+          //   return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
+          // } else {
+          // return time.getTime() > maxTime || time.getTime() < minTime
+          return time.getTime() > maxTime
+          // }
         }
       }
     },
@@ -3581,17 +3636,36 @@ export default {
       this.shenCeForm.dateRange = [] // 清空
 
       this.shenCeForm.crowdId = row.crowdId
+      // console.log('this.row------>', row)
+
       this.shenCeDialog = true
+      // 重置表单
+      this.$nextTick(() => {
+        this.$refs.shenCeForm.resetFields()
+        // 回显数据
+        if (row.sensorStartTime && row.sensorEndTime) {
+          this.shenCeForm.dateRange = [row.sensorStartTime, row.sensorEndTime]
+        }
+        this.shenCeForm.autoVersion = row.jobId > 0
+      })
     },
     ConfirmShenCeAnalysis (row) {
       const parmas = {
         crowdId: this.shenCeForm.crowdId,
         startDate: this.shenCeForm.dateRange[0],
-        endDate: this.shenCeForm.dateRange[1]
+        endDate: this.shenCeForm.dateRange[1],
+        autoVersion: this.shenCeForm.autoVersion
       }
       this.$service.sensorHitData(parmas).then(res => {
         console.log('res', res)
-
+        // 同步修改列表中的数据
+        this.tableData.forEach(item => {
+          if (parmas.crowdId === item.crowdId) {
+            item.sensorStartTime = parmas.startDate
+            item.sensorEndTime = parmas.endDate
+            item.jobId = parmas.autoVersion ? 1 : 0
+          }
+        })
         // 人群已经发送到神策平台，请前往神策继续分析
         if (res.result.indexOf('成功') > 0 || res.result.indexOf('已经发送') > 0) {
           this.$message.success(res.result)

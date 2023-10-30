@@ -278,17 +278,19 @@
                             </el-button>
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item
-                                        :command="['edit',scope.row]"
-                                        v-permission="'hoder:launch:crowd:ver:modify'"
-                                >编辑
+                                  :command="['edit',scope.row]"
+                                  v-permission="'hoder:launch:crowd:ver:modify'"
+                                >
+                                <!-- {{ scope.row.pushLaunchStatus }} -->
+                                  {{ (!(scope.row.pushLaunchStatus === 0 || scope.row.pushLaunchStatus === 2) || scope.row.crowdType !== 0) ? '查看' : '编辑' }}
                                 </el-dropdown-item>
-                                 <el-dropdown-item
-                                        v-if="scope.row.isFxFullSql === 1 && (launchStatusEnum[scope.row.history.status]).code === 91"
-                                        :command="['adjust',scope.row]"
-                                        v-permission="'hoder:launch:crowd:ver:index'"
+                                <el-dropdown-item
+                                  v-if="scope.row.isFxFullSql === 1 && (launchStatusEnum[scope.row.history.status]).code === 91"
+                                  :command="['adjust',scope.row]"
+                                  v-permission="'hoder:launch:crowd:ver:index'"
                                 >调整波动阀值
                                 </el-dropdown-item>
-                                        <!-- v-if="((scope.row.isFxFullSql === 1) || (scope.row.isFxFullSql === 0 && (launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91))" -->
+                                <!-- v-if="((scope.row.isFxFullSql === 1) || (scope.row.isFxFullSql === 0 && (launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91))" -->
                                 <el-dropdown-item
                                   :command="['monitor',scope.row]"
                                   v-permission="'hoder:launch:crowd:ver:index'"
@@ -376,7 +378,7 @@
                     </el-checkbox>
                 </el-form-item>
             </el-form>
-            <div v-if="launchType === 1 || launchType === 3">{{selectStrategy}}</div>
+            <div v-else>{{selectStrategy}}</div>
         </el-dialog>
 
         <!-- 投放提示 -->
@@ -899,12 +901,12 @@ export default {
         .MultiVersionCrowdPeople({ launchCrowdId: row.launchCrowdId })
         .then(data => {
           this.launchType = data.type
-          if (data.type === 1 || data.type === 3) {
-            this.launchTitle = '人群条件'
-            this.selectStrategy = data.sqlRule
-          } else {
+          if (data.type === 0) {
             this.launchTitle = '选择的策略'
             this.selectStrategy = data.respcl
+          } else {
+            this.launchTitle = '人群条件'
+            this.selectStrategy = data.sqlRule
           }
         })
     },
@@ -1045,22 +1047,44 @@ export default {
     //     })
     // },
 
-    // 修改状态
+    // // 修改状态
+    // lanuch (index, row) {
+    //   console.log('row', row)
+    //   this.currentLaunchRow = row
+    //   this.currentLaunchId = row.launchCrowdId
+    //   this.showEstimate = true
+    //   // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+    //   if (row.setCalculate) {
+    //     this.accountDefine = true
+    //     this.estimateValue = ['0', '1', '2', '3']
+    //   } else {
+    //     this.accountDefine = false
+    //     this.estimateValue = ['0']
+    //   }
+    //   this.$service.getEstimateType().then((data) => {
+    //     this.estimateItems = data
+    //   })
+    // },
     lanuch (index, row) {
       this.currentLaunchRow = row
       this.currentLaunchId = row.launchCrowdId
-      this.showEstimate = true
-      // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
-      if (row.setCalculate) {
-        this.accountDefine = true
-        this.estimateValue = ['0', '1', '2', '3']
-      } else {
-        this.accountDefine = false
-        this.estimateValue = ['0']
-      }
-      this.$service.getEstimateType().then((data) => {
-        this.estimateItems = data
+      const calIdType = row.calType
+      const fetchMethod = Number(row.isFxFullSql) === 0
+
+        ? this.$service.bitmapPush // 普通人群 投放 - bitmap
+        : this.$service.LaunchMultiVersionCrowd // 其他人群
+      fetchMethod({ launchCrowdId: this.currentLaunchId, calIdType }, '投放成功').then(() => {
+        this.callback()
       })
+      // if (Number(row.isFxFullSql) === 0) {
+      //   this.$service.bitmapPush({ launchCrowdId: this.currentLaunchId, calIdType }, '投放成功').then(() => {
+      //     this.callback()
+      //   })
+      // } else {
+      //   this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType }, '投放成功').then(() => {
+      //     this.callback()
+      //   })
+      // }
     },
 
     handleEstimate (calTypes) {

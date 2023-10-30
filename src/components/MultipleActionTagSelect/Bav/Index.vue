@@ -3371,6 +3371,199 @@
         </span>
       </span>
 
+      <!-- 渠道行为 -->
+      <span class="flex-row" v-else-if="childItem.tagCode === 'BAV0017'">
+        <!-- 第一级 -->
+        <el-form-item prop="bav.value">
+          <el-select
+            v-model="childItem.bav.value"
+            placeholder="请选择业务分类"
+            style="width: 120px"
+            name="oxve"
+            class="input-inline"
+            @change="handelBehavirSelectChange()"
+          >
+            <template v-for="item in getBehaviorAttrList(1)">
+              <el-option
+                :value="item.value"
+                :label="item.name"
+                :key="item.value"
+              ></el-option>
+            </template>
+          </el-select>
+        </el-form-item>
+
+        <!-- 综合起播的数据特殊处理 使用 showBehaviorValue 而不是 behaviorValue-->
+        <span
+          v-for="(item, index) in childItem.bav.showBehaviorValue"
+          :key="item.value"
+          class="flex-row child"
+        >
+          <!-- 第二级  item.childCheckedVal[0]-->
+          <span class="flex-row" v-if="item.mapName">
+            <el-select
+              v-model="item.childCheckedVal[0]"
+              clearable
+              style="width: 100px"
+              name="oxve"
+              class="input-inline"
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 2,
+                extra: {listMapName: item.mapName},
+                selectPropKeyValue: 'name',
+              })"
+            >
+              <template v-for="item in getBehaviorAttrList(2, {listMapName: item.mapName})">
+                <el-option
+                  :value="item.name"
+                  :label="item.name"
+                  :key="item.name"
+                ></el-option>
+              </template>
+            </el-select>
+            <!-- {{ item.mapName }} -->
+            <Bav0012 v-if="!!item.mapName" :aaa="item"></Bav0012>
+          </span>
+
+          <span class="flex-row" >
+            <el-select
+              v-if="childItem.bav.value === '消息弹窗'"
+              v-model="item.childCheckedVal[1]"
+              style="width: 150px;"
+              filterable
+              remote
+              placeholder="搜主题名"
+              no-data-text='暂无数据'
+              clearable
+              :remote-method="(query) => { getThemeNames(query, childItem.bav.value) }"
+              :loading="loading2"
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 3,
+                selectPropKeyValue: 'name'
+              })"
+            >
+              <el-option
+                v-for="item in themeNamesList"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value">
+              </el-option>
+              <!-- 编辑回显 选项-->
+              <!-- <el-option
+                v-if="singerList.length === 0 && item.childCheckedVal[4]"
+                :label="getMatchName(item.childCheckedVal[4], item.child)"
+                :value="item.childCheckedVal[4]">
+              </el-option> -->
+            </el-select>
+            <el-select
+              v-model="item.childCheckedVal[2]"
+              style="width: 150px;"
+              filterable
+              remote
+              placeholder="搜标题名"
+              no-data-text='暂无数据'
+              clearable
+              :remote-method="(query) => { getOperateNames(query, childItem.bav.value) }"
+              :loading="loading2"
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 4,
+                selectPropKeyValue: 'name'
+              })"
+            >
+              <el-option
+                v-for="item in operateNamesList"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value">
+              </el-option>
+              <!-- 编辑回显 选项-->
+              <!-- <el-option
+                v-if="singerList.length === 0 && item.childCheckedVal[4]"
+                :label="getMatchName(item.childCheckedVal[4], item.child)"
+                :value="item.childCheckedVal[4]">
+              </el-option> -->
+            </el-select>
+
+            <el-select
+              v-if="childItem.bav.value === '运营屏保' || childItem.bav.value === '状态栏'"
+              v-model="item.childCheckedVal[3]"
+              style="width: 150px;"
+              filterable
+              remote
+              placeholder="搜ID"
+              no-data-text='暂无数据'
+              clearable
+              :remote-method="(query) => { getOperateIds(query, childItem.bav.value) }"
+              :loading="loading2"
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 5,
+                selectPropKeyValue: 'name',
+                reverseSelectAttr: true
+              })"
+            >
+              <el-option
+                v-for="follow in operateIdsList"
+                :key="follow.value"
+                :label="follow.name"
+                :value="follow.value">
+              </el-option>
+              <!-- 编辑回显 选项-->
+              <!-- <el-option
+                v-if="musicList.length === 0 && item.childCheckedVal[5]"
+                :label="getMatchName(item.childCheckedVal[5], item.child)"
+                :value="item.childCheckedVal[5]">
+              </el-option> -->
+            </el-select>
+
+            <!-- <el-checkbox
+              class="reverse-check"
+              v-model="childItem.bav.reverseSelect"
+              @change="ReverseSelect($event, item.child, item.childCheckedVal[5], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
+            >
+              圈出未起1播
+            </el-checkbox> -->
+
+          </span>
+
+          <span class="flex-row" >
+            <!-- 第 5 级 -->
+            <el-form-item
+              :prop="`bav.showBehaviorValue[${index}].childCheckedVal[4]`"
+              :rules="{ required: true, message: '请选择', trigger: 'change' }"
+            >
+              <el-select
+                v-model="item.childCheckedVal[4]"
+                style="width: 100px"
+                name="oxve"
+                class="input-inline"
+                clearable
+                @change="handelChildBehavirSelectChange({
+                  childItem: item,
+                  level: 6,
+                })"
+              >
+                <template v-for="item in getBehaviorAttrList(6)">
+                  <el-option
+                    :value="item.value"
+                    :label="item.name"
+                    :key="item.name"
+                  ></el-option>
+                </template>
+              </el-select>
+            </el-form-item>
+          </span>
+          <!-- {{ item.childCheckedVal[1] }} ---  -->
+          <!-- {{ item.child }} ---  -->
+          <!-- {{ item.child[1] }} --- -->
+          <Type ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+
+        </span>
+      </span>
+
       <!-- 【续费包签约状态 - BAV0013 】 【连续包签约-续费-解约次数 - BAV0014】 【下单未支付 - BAV0015】-->
       <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0013' || childItem.tagCode === 'BAV0014' || childItem.tagCode === 'BAV0015'">
         <!-- 第一级 -->

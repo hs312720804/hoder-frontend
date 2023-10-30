@@ -191,3 +191,27 @@ export function getMusicInfo (params) {
     params
   })
 }
+// 行为标签 - 渠道行为 搜标题名
+export function getOperateNames (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/auto/members/getOperateNames',
+    params
+  })
+}
+// 行为标签 - 渠道行为 获取运营ID
+export function getOperateIds (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/auto/members/getOperateIds',
+    params
+  })
+}
+// 行为标签 - 渠道行为获取主题名称
+export function getThemeNames (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/auto/members/getThemeNames',
+    params
+  })
+}
