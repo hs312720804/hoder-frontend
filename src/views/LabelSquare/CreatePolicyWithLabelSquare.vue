@@ -119,17 +119,41 @@
         <span class="checkbox--pink">粉色</span>为实时标签[大数据],
         <span class="checkbox--gradient">渐变色</span>为营销研发标签
       </div>
-      <el-form-item label="策略名称" prop="policyName">
+      <el-form-item v-if="pageType === 'common'" label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
         <slot name="isChoosePeople"></slot>
       </el-form-item>
-      <el-form-item>
+      <el-form-item v-if="pageType === 'common'">
         <el-button type="warning" @click="handelBack">返回</el-button>
         <el-button type="warning" @click="saveAndNext(0)">跳过下一步保存</el-button>
         <el-button type="primary" @click="saveAndNext(1)">下一步</el-button>
       </el-form-item>
+      <el-form-item v-if="pageType === 'specialTag'">
+        <el-button type="warning" @click="specialHandelBack">返回</el-button>
+        <el-button type="primary" @click="specialTagSaveAndNext">下一步</el-button>
+      </el-form-item>
     </el-form>
 
+    <!-- 组合标签场景下 -->
+    <el-dialog
+      title="同一组合标签只能选择以下两种组合之一："
+      :visible.sync="Successdialog"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      width="30%"
+    >
+      <div style="margin: 10px 0">
+        组合一：<span class="checkbox--red">大数据标签</span>、<span class="checkbox--cyan">行为标签</span>
+      </div>
+      <div>
+        组合二：<span class="checkbox--red">大数据标签</span>、<span class="checkbox--blue">账号标签</span>、<span class="checkbox--green">临时标签/自定义标签</span>、<span class="checkbox--yellow">实时标签</span>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handelClose" type="primary" :disabled="isDisabled">知道了 {{Sencond}}s</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -157,7 +181,24 @@ export default {
     CrowdLabel,
     AILabel
   },
-  props: ['recordId', 'initTagList', 'policyId'],
+  props: {
+    recordId: {
+      type: [Number, String],
+      default: ''
+    },
+    initTagList: {
+      type: [Array, Object],
+      default: () => []
+    },
+    policyId: {
+      type: [Number, String],
+      default: ''
+    },
+    pageType: {
+      type: [Number, String],
+      default: 'common'
+    }
+  },
   computed: {
     ...mapGetters(['policyName']),
     dataSourceColorEnum () {
@@ -166,6 +207,18 @@ export default {
   },
   data () {
     return {
+      // 组合标签场景下
+      // 0 - 组合一：大数据标签、行为标签
+      // 1 - 组合二：大数据标签、账号标签、临时标签/自定义标签、实时标签
+      // 2 - 无限制
+      //  (红:2、青:8)  （红:2  蓝:3  绿:1  黄:5)
+      // 不包含 动态因子（ 紫色:6 ）
+      uniteType: 2,
+      Successdialog: false, // 控制弹出
+      Sencond: 5, // 设置初始倒计时
+      isDisabled: false,
+      interval: '',
+      // ------------
       dataList: [],
       filter: {
         // pageNum: 1,
@@ -212,10 +265,31 @@ export default {
     }
   },
   watch: {
+    initTagList: {
+      handler (val) {
+        // 编辑组合标签回显
+        if (this.pageType === 'specialTag') {
+          this.tagList = val
+          // this.addForm.crowdTagCrowdIds = [] // 人群标签
+          // this.addForm.conditionTagIds = [] // 其他
+
+          // val.forEach(item => {
+          //   if (item.dataSource === 12) {
+          //   // 人群标签 id 集合
+          //     this.addForm.crowdTagCrowdIds.push(item.tagId)
+          //   } else {
+          //   // 其他的标签 id 集合
+          //     this.addForm.conditionTagIds.push(item.tagId)
+          //   }
+          // })
+        }
+      },
+      immediate: true
+    },
     tagList: {
       handler (val) {
-        this.addForm.crowdTagCrowdIds = []
-        this.addForm.conditionTagIds = []
+        this.addForm.crowdTagCrowdIds = [] // 人群标签
+        this.addForm.conditionTagIds = [] // 其他
 
         val.forEach(item => {
           if (item.dataSource === 12) {
@@ -230,6 +304,21 @@ export default {
     }
   },
   methods: {
+    getSencond () {
+      this.Sencond = 5
+      const that = this
+      window.clearInterval(this.interval)
+      this.interval = window.setInterval(function () {
+        --that.Sencond
+        if (that.Sencond === 0) {
+          that.isDisabled = false
+          that.handelClose()// 倒计时结束时运行的业务逻辑，这里的是关闭当前页面
+        }
+      }, 1000)
+    },
+    handelClose () {
+      this.Successdialog = false
+    },
     handleReset () {
       this.searchAllVal = ''
       this.handleSearch()
@@ -270,7 +359,7 @@ export default {
       })
     },
 
-    // 下一步
+    // 一键投放 下一步
     saveAndNext (mode) {
       this.$refs.addForm.validate(valid => {
         if (valid) {
@@ -373,6 +462,41 @@ export default {
         }
       })
     },
+    // 组合标签 返回
+    specialHandelBack () {
+      this.$router.push({
+        path: 'labelSquare'
+      })
+    },
+    // 组合标签 下一步
+    specialTagSaveAndNext () {
+      // debugger
+      // const conditionTagIds =
+      //   this.tagList.map(function (v) {
+      //     return parseInt(v.tagId)
+      //   }) || []
+      // this.addForm = {
+      //   conditionTagIds
+      // }
+      const addForm = JSON.parse(JSON.stringify(this.addForm))
+
+      if (addForm.conditionTagIds.length === 0) {
+        this.$message.error('请选择策略维度！')
+        return
+      }
+
+      // 其他的标签 id 集合
+      addForm.conditionTagIds = addForm.conditionTagIds.join(',')
+
+      // 人群标签 id 集合
+      addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.join(',')
+
+      const tagIds = addForm.conditionTagIds
+
+      this.$service.saveSpecialTag({ tagIds }).then((data) => {
+        this.$emit('policyNextStep', data)
+      })
+    },
     // 返回策略列表
     handelBack () {
       this.$router.push({ name: 'strategyList' })
@@ -449,7 +573,21 @@ export default {
       // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
       this.tagList.splice(this.tagList.indexOf(tag), 1)
     },
+    getUniteType () {
+      const val = this.tagList
+      if (val.every(item => item.dataSource === 2)) {
+        this.uniteType = 2
+      } else if (val.every(item => [2, 8].indexOf(item.dataSource) > -1)) {
+        this.uniteType = 0
+      } else {
+        this.uniteType = 1
+      }
+    },
     handleGetTableSelectedData (val, mode) {
+      // 更新 UniteType，因为新增或编辑组合标签有互斥的交互
+      if (this.pageType === 'specialTag') {
+        this.getUniteType()
+      }
       // 只支持单数组，多数组要多次调用这个
       const tagList = this.tagList
       if (mode === 'add') {
@@ -464,6 +602,20 @@ export default {
         // 如果没有匹配的，就执行新增
         if (firstIndex === -1) {
           this.tagList.push(val)
+
+          // 新增或编辑组合标签有互斥的交互
+          if (this.pageType === 'specialTag') {
+            // 判断是否与其他标签类型冲突，若有冲突就删除该标签
+            if (this.uniteType === 0 && [2, 8].indexOf(val.dataSource) === -1) {
+              this.tagList.pop() // 删除前面 push 添加的
+              this.Successdialog = true
+              this.getSencond()
+            } else if (this.uniteType === 1 && [2, 3, 1, 5].indexOf(val.dataSource) === -1) {
+              this.tagList.pop() // 删除前面 push 添加的
+              this.Successdialog = true
+              this.getSencond()
+            }
+          }
         }
       } else {
         // 取消选中的则删除这一项
@@ -509,12 +661,15 @@ export default {
       this.getPolicyDetail()
       this.tagList = this.initTagList
     }
-    if (this.policyId) {
+    // this.pageType === 'specialTag'  编辑组合标签回显
+    if (this.policyId || this.pageType === 'specialTag') {
       this.tagList = this.initTagList
+      // console.log('this.addForm-->', this.addForm)
+      // console.log('this.initTagList-->', this.initTagList)
       this.addForm.policyName = this.policyName
       this.addForm.conditionTagIds = []
       this.addForm.crowdTagCrowdIds = []
-      this.initTagList.forEach(function (v) {
+      this.initTagList.forEach((v) => {
         if (v.dataSource === 12) {
           this.addForm.crowdTagCrowdIds.push(parseInt(v.tagId)) // 人群标签
         } else {

@@ -110,8 +110,8 @@ export default {
         search: ''
       },
       statusList: {
-        '1': '启用',
-        '2': '禁用'
+        1: '启用',
+        2: '禁用'
       },
       total: 0
     }

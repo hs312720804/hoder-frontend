@@ -14,7 +14,7 @@
       @getBigCrowdId="getBigCrowdId"
       @handleDynamicTest="handleDynamicTest"
     ></crowd-list>
-    <crowd-add
+    <CrowdAdd
       v-if="!isShowCrowdList && !isAbTest && mode === ''"
       :crowd="crowd"
       :isDynamicPeople="isDynamicPeople"
@@ -23,7 +23,7 @@
       :limitLaunchDisabled="effectCrowd"
       @goBackCrowdListPage="goBackCrowdListPage"
     >
-    </crowd-add>
+    </CrowdAdd>
 
     <!-- 编辑AB人群 -->
     <div v-if="!isShowCrowdList && isAbTest && mode === 'editABTest'">

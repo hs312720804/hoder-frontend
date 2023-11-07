@@ -154,12 +154,13 @@ export default {
     },
     handleSeeTagCategoryDetail (row) {
       this.tagId = row.tagId
-
       // 选中 tab 的 indedx, 构造 id
       const id = `tab-content-${this.tabIndex}`
       const target = document.getElementById(id)
       const parent = document.querySelector('.el-main')
-      parent.scrollTop = target.offsetTop // 滚动条滑到可视位置
+      if (target && parent) {
+        parent.scrollTop = target.offsetTop // 滚动条滑到可视位置
+      }
     },
     handleDelete (row) {
       this.$emit('delete', row.tagId)
@@ -190,7 +191,7 @@ export default {
       const currentSelectRows = this.currentSelectedTags
       this.dataList.forEach((item, index) => {
         currentSelectRows.forEach((i) => {
-          if (item.tagId === i.tagId) {
+          if (Number(item.tagId) === Number(i.tagId)) {
             arr.push(this.dataList[index])
           }
         })
