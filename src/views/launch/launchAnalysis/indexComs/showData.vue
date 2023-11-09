@@ -305,8 +305,12 @@ export default {
       // }
       const urlParams = `crowdId=${params.crowdId}&startDate=${params.startDate}&endDate=${params.endDate}&sourceNameList=${params.sourceNameList}`
       this.downloadUrl = '/api/exportRightsInterests?' + urlParams
-      this.$nextTick(() => {
-        this.$refs.download_Url.click()
+      // this.$nextTick(() => {
+      //   this.$refs.download_Url.click()
+      // })
+
+      this.$service.exportFile({
+        url:  this.downloadUrl
       })
     },
 

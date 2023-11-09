@@ -59,7 +59,7 @@ import StoryLine from '@/views/storyLine/Index'
 import operationHelper from '@/views/operationHelper/Index'
 import operate from '@/views/operate/Index'
 import crowdCompute from '@/views/crowdCompute/Index'
-
+import cardPreference from '@/views/cardPreference/Index'
 const children = [
   {
     name: 'operate',
@@ -703,6 +703,17 @@ const children = [
     meta: {
       title: '人群运营助手',
       tagId: 'operationHelper',
+      hideInMenu: true,
+      isCache: false
+    }
+  },
+  {
+    name: 'cardPreference',
+    path: '/cardPreference',
+    component: cardPreference,
+    meta: {
+      title: '卡种偏好人群',
+      tagId: 'cardPreference',
       hideInMenu: true,
       isCache: false
     }

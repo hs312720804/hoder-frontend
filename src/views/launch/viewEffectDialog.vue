@@ -161,13 +161,17 @@ export default {
   methods: {
     //  导出投后效果数据
     handleLaunchedExport () {
-      this.launchedExportUrl = `/api/chart/crowdGroupIndexStatistics/download?crowdId=${this.crowdId}&startDate=${this.timeRange[0]}&endDate=${this.timeRange[1]}`
-      console.log('this.launchedExportUrl===', this.launchedExportUrl)
-      // 人群id: 12400 有数据
-      // this.launchedExportUrl = '/api/chart/crowdGroupIndexStatistics/download?crowdId=12296&startDate=2022-07-04&endDate=2022-08-31&prod=hello'
-      // this.launchedExportUrl = '/api/chart/crowdGroupIndexStatistics/download?crowdId=12400&startDate=2022-08-17&endDate=2022-09-16&prod=hello'
-      this.$nextTick(() => {
-        this.$refs.launchedDownLoad.click()
+      // this.launchedExportUrl = `/api/chart/crowdGroupIndexStatistics/download?crowdId=${this.crowdId}&startDate=${this.timeRange[0]}&endDate=${this.timeRange[1]}`
+      // console.log('this.launchedExportUrl===', this.launchedExportUrl)
+      // // 人群id: 12400 有数据
+      // // this.launchedExportUrl = '/api/chart/crowdGroupIndexStatistics/download?crowdId=12296&startDate=2022-07-04&endDate=2022-08-31&prod=hello'
+      // // this.launchedExportUrl = '/api/chart/crowdGroupIndexStatistics/download?crowdId=12400&startDate=2022-08-17&endDate=2022-09-16&prod=hello'
+      // this.$nextTick(() => {
+      //   this.$refs.launchedDownLoad.click()
+      // })
+
+      this.$service.exportFile({
+        url:  `/api/chart/crowdGroupIndexStatistics/download?crowdId=${this.crowdId}&startDate=${this.timeRange[0]}&endDate=${this.timeRange[1]}`
       })
     },
     initRange () {

@@ -34,10 +34,10 @@
                 <!--</el-form>-->
                 <div class="button-list">
                     <el-button
-                            type="primary"
-                            size="small"
-                            @click="handleAdd"
-                            v-permission="'hoder:launch:crowd:ver:add'"
+                      type="primary"
+                      size="small"
+                      @click="handleAdd"
+                      v-permission="'hoder:launch:policy:save'"
                     >
                         新增投放
                     </el-button>
