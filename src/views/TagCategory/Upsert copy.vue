@@ -11,16 +11,15 @@
                   <el-input size="small" readonly v-model="parentGroupName" placeholder="请选择父类"></el-input>
                   <!--<el-button  size="small" type="primary" icon="search" @click="selectParent">选择</el-button>-->
               </div>
-              <!-- <el-select key="/groupId" :value="tagCategory.groupId" @input="handleInput('/groupId', $event)" placeholder="请选择">
-                <el-option
-                  v-for="item in tagGroupList"
-                  :key="item.groupId"
-                  :label="item.groupName"
-                  :value="item.groupId"
-                  :disabled="item.groupId === 79"
-                >
-                </el-option>
-              </el-select> -->
+              <el-select key="/groupId" :value="tagCategory.groupId" @input="handleInput('/groupId', $event)" placeholder="请选择">
+                  <el-option
+                      v-for="item in tagGroupList"
+                      :key="item.groupId"
+                      :label="item.groupName"
+                      :value="item.groupId"
+                      :disabled="item.groupId === 79"
+                  ></el-option>
+              </el-select>
 
               <el-select
                 key="/dataSource"
@@ -66,7 +65,7 @@
           </c-gate-schema-form>
         </el-dialog>
         <!--选择父类弹窗-->
-        <!-- <el-dialog
+        <el-dialog
           title="选择父类"
           :visible.sync="showSelectDialog"
           width="30%"
@@ -82,7 +81,7 @@
             <el-button @click="parentSelectCancel">取 消</el-button>
             <el-button type="primary" @click="parentSelectOk">确 定</el-button>
         </span>
-        </el-dialog> -->
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -95,10 +94,8 @@ export default {
       parentGroupName: '自定义标签',
       showCreateDialog: false,
       showSelectDialog: false,
-      tagCategory: {
-        groupId: undefined
-      },
-      // tagGroupList: [],
+      tagCategory: {},
+      tagGroupList: [],
       dataSourceList: [],
       tagTypeList: [],
       parentTree: [],
@@ -137,7 +134,7 @@ export default {
             placeholder: '字母开头，100位以内字母数字组合',
             disabled: isDisabled
           }),
-        // groupId: _.r.number.other('form', { label: '所属分组' }),
+        groupId: _.r.number.other('form', { label: '所属分组' }),
         tagType: _.r.string.other('form', { label: '类型' }),
         tagUnit: _
           .switch('/tagType', [
@@ -178,10 +175,10 @@ export default {
         form.activePaths = {}
       }
       this.tagCategory = val ? cloneDeep(val) : {}
-      // if (this.tagCategory) {
-      //   this.oldGroupId = this.tagCategory.groupId
-      // }
-      // this.getParentInfo()
+      if (this.tagCategory) {
+        this.oldGroupId = this.tagCategory.groupId
+      }
+      this.getParentInfo()
     },
     showCreateDialog (val) {
       if (!val) {
@@ -210,13 +207,10 @@ export default {
     getFormData () {
       const data = JSON.parse(JSON.stringify(this.tagCategory))
       if (data.tagId) {
-        // data.oldGroup = this.oldGroupId ? this.oldGroupId : data.groupId
-        data.oldGroup = this.oldGroupId
+        data.oldGroup = this.oldGroupId ? this.oldGroupId : data.groupId
       }
-      data.groupId = this.definedTagId
       delete data.createTime
       delete data.updateTime
-      console.log('data--->', data)
       return data
     },
     getDataSourceList () {
@@ -231,54 +225,54 @@ export default {
         // let arr = Object.keys(data).map(value => ({value: parseInt(value), label:data[value]}))
         // this.thirdInterfaces = arr
       })
+    },
+    fetchTagCategoryList () {
+      this.$service.getParentIdList().then((data) => {
+        this.tagGroupList = data
+      })
+    },
+    selectParent () {
+      this.showSelectDialog = true
+    },
+    getParentInfo () {
+      this.$service.getParentIdList().then((data) => {
+        const id = this.tagCategory.tagId
+        const source = this.tagCategory.dataSource
+        if (id && source === 2) {
+          this.parentTree = data
+        } else {
+          this.parentTree = data.filter(function (item) {
+            return (item.groupId != 79)
+          })
+        }
+        // const parentId = this.tagCategory.groupId
+        this.parentGroupName = '自定义标签'
+        // if (parentId) {
+        //     this.$service.findLabelGroupById({ groupId: parentId }).then((detail) => {
+        //         this.parentGroupName = detail.groupName
+        //     })
+        //
+        // }else {this.parentGroupName = ''}
+      })
+    },
+    handleSelectNodeClick (node) {
+      this.currentSelectDada = node
+    },
+    parentSelectCancel () {
+      this.showSelectDialog = false
+    },
+    parentSelectOk () {
+      this.tagCategory.groupId = this.currentSelectDada.groupId
+      this.parentGroupName = this.currentSelectDada.groupName
+      this.showSelectDialog = false
     }
-    // fetchTagCategoryList () {
-    //   this.$service.getParentIdList().then((data) => {
-    //     this.tagGroupList = data
-    //   })
-    // }
-    // selectParent () {
-    //   this.showSelectDialog = true
-    // },
-    // getParentInfo () {
-    //   this.$service.getParentIdList().then((data) => {
-    //     const id = this.tagCategory.tagId
-    //     const source = this.tagCategory.dataSource
-    //     if (id && source === 2) {
-    //       this.parentTree = data
-    //     } else {
-    //       this.parentTree = data.filter(function (item) {
-    //         return (item.groupId != 79)
-    //       })
-    //     }
-    //     // const parentId = this.tagCategory.groupId
-    //     this.parentGroupName = '自定义标签'
-    //     // if (parentId) {
-    //     //     this.$service.findLabelGroupById({ groupId: parentId }).then((detail) => {
-    //     //         this.parentGroupName = detail.groupName
-    //     //     })
-    //     //
-    //     // }else {this.parentGroupName = ''}
-    //   })
-    // }
-    // handleSelectNodeClick (node) {
-    //   this.currentSelectDada = node
-    // }
-    // parentSelectCancel () {
-    //   this.showSelectDialog = false
-    // }
-    // parentSelectOk () {
-    //   this.tagCategory.groupId = this.currentSelectDada.groupId
-    //   this.parentGroupName = this.currentSelectDada.groupName
-    //   this.showSelectDialog = false
-    // }
   },
   created () {
     this.getDataSourceList()
     this.getThirdInterfaces()
     this.tagCategory = this.currentTagCategory || {}
-    // this.getParentInfo()
-    // this.tagCategory.groupId = this.definedTagId
+    this.getParentInfo()
+    this.tagCategory.groupId = this.definedTagId
     this.parentGroupName = '自定义标签'
   }
 }

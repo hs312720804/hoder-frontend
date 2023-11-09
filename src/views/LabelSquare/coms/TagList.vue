@@ -54,10 +54,10 @@
             <el-button type="text" @click="handleSeeTagCategoryDetail(scope.row)">
               查看
             </el-button>
-            <el-button v-if="showEditBtn" type="text" @click="handleEdit(scope.row)">
+            <el-button v-if="showEditBtn" v-permission="'hoder:label:modify'" type="text" @click="handleEdit(scope.row)">
               编辑
             </el-button>
-            <el-button v-if="showDeleteBtn" type="text" @click="handleDelete(scope.row)">
+            <el-button v-if="showDeleteBtn" v-permission="'hoder:label:del'" type="text" @click="handleDelete(scope.row)">
               删除
             </el-button>
             <!-- 收藏 -->
