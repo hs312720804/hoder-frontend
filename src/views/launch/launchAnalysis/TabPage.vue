@@ -1099,22 +1099,32 @@ export default {
 
       const link = document.createElement('a')
 
-      axios.post('/api/effect/downloadNew', params, { responseType: 'arraybuffer' }).then(res => {
-        this.showLoadingDownload = false
-        const name = res.headers['content-disposition'].split(';')[1].split('filename=')[1]
-        const title = decodeURIComponent(name) // 解码
-        // 创建Blob对象，设置文件类型
-        const blob = new Blob([res.data],
-          { type: 'application/vnd.ms-excel' }
-          // { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
-        )
+      // axios.post('/api/effect/downloadNew', params, { responseType: 'arraybuffer' }).then(res => {
+      //   this.showLoadingDownload = false
+      //   const name = res.headers['content-disposition'].split(';')[1].split('filename=')[1]
+      //   const title = decodeURIComponent(name) // 解码
+      //   // 创建Blob对象，设置文件类型
+      //   const blob = new Blob([res.data],
+      //     { type: 'application/vnd.ms-excel' }
+      //     // { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
+      //   )
 
-        const objectUrl = URL.createObjectURL(blob) // 创建URL
-        link.href = objectUrl
-        link.download = title // 自定义文件名
-        link.click() // 下载文件
-        URL.revokeObjectURL(objectUrl) // 释放内存
+      //   const objectUrl = URL.createObjectURL(blob) // 创建URL
+      //   link.href = objectUrl
+      //   link.download = title // 自定义文件名
+      //   link.click() // 下载文件
+
+      //   URL.revokeObjectURL(objectUrl) // 释放内存
+      // })
+      this.$service.exportFile({
+        url:  `/api/effect/downloadNew`,
+        params
+      }).then(res => {
+        this.showLoadingDownload = false
+      }).catch(() => {
+        this.showLoadingDownload = false
       })
+
     },
 
     // 清除图表
