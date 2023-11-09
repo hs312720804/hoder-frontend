@@ -1,11 +1,34 @@
 <template>
-<div>
 
   <!-- <div>
     <el-button @click="handleAdd" type="primary">新增</el-button>
   </div> -->
+<div class="my-collect">
+  <div class="header">
+    <div v-if="!showSelection">
+      <el-button @click="handleAdd" type="primary">
+        新建
+      </el-button>
+    </div>
+    <div v-else></div>
+    <!-- 标签分类搜索 -->
+    <!-- <div class="search-input">
+      <el-input placeholder="支持按标签名、ID搜索" class="header-input" v-model="filter.tagName"
+        @keyup.enter.native="fetchData"></el-input>
+      <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+    </div> -->
+    <div class="search-input">
+      <el-input
+        v-model="searchForm.keywords"
+        placeholder="请输入"
+        @keyup.enter.native="fetchData"
+      >
+        <el-button slot="append" icon="el-icon-search" @click="fetchData"></el-button>
+      </el-input>
+    </div>
 
-  <div class="header-wrap">
+  </div>
+  <!-- <div class="header-wrap">
 
     <div class="search-input">
       <el-input
@@ -25,7 +48,7 @@
       <a class="fa fa-plus" style="color: white;"></a>新增
     </el-button>
 
-  </div>
+  </div> -->
 
   <c-table
     class="list-table"
@@ -456,12 +479,21 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.header-wrap
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
+@import '../common.styl'
 .search-input
-  display: flex;
+  position relative
+  display flex
+  width 350px
+.header
+  display flex
+  justify-content space-between
+  margin 10px 0
+// .header-wrap
+//   display: flex;
+//   justify-content: space-between;
+//   margin-bottom: 20px;
+// .search-input
+//   display: flex;
 .remark
   font-size 12px
   color: #999

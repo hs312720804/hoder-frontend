@@ -42,6 +42,17 @@
           @get-table-selected="handleGetTableSelectedData">
         </special-tag>
       </el-tab-pane>
+      <el-tab-pane label="扩充人群标签" name="expandCrowdTag">
+        <ExpandCrowdTag
+          :tagName="myCollectTagName"
+          :checkList="checkList"
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          @clear-search="handleClearSearch"
+          @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </ExpandCrowdTag>
+      </el-tab-pane>
 
     </el-tabs>
 
@@ -63,6 +74,7 @@ import tempLabelIndex from './tempLabel/TempLabelIndex'
 import LocalLabelIndex from './localLabel/Index'
 import specialTag from './SpecialTag'
 import CustomTag from './CustomTag'
+import ExpandCrowdTag from './ExpandCrowdTag'
 
 export default {
   name: 'labelSquareAA',
@@ -70,7 +82,8 @@ export default {
     tempLabelIndex,
     specialTag,
     LocalLabelIndex,
-    CustomTag
+    CustomTag,
+    ExpandCrowdTag
   },
   props: {
     showSelection: {
