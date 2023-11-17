@@ -210,8 +210,8 @@ export default {
     getFormData () {
       const data = JSON.parse(JSON.stringify(this.tagCategory))
       if (data.tagId) {
-        // data.oldGroup = this.oldGroupId ? this.oldGroupId : data.groupId
-        data.oldGroup = this.oldGroupId
+        data.oldGroup = this.oldGroupId ? this.oldGroupId : data.groupId
+        // data.oldGroup = this.oldGroupId
       }
       data.groupId = this.definedTagId
       delete data.createTime
