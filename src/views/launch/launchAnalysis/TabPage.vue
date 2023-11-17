@@ -1097,26 +1097,49 @@ export default {
         ...this.formData
       }
 
-      const link = document.createElement('a')
-
-      axios.post('/api/effect/downloadNew', params, { responseType: 'arraybuffer' }).then(res => {
-        this.showLoadingDownload = false
-        const name = res.headers['content-disposition'].split(';')[1].split('filename=')[1]
-        const title = decodeURIComponent(name) // 解码
-        // 创建Blob对象，设置文件类型
-        const blob = new Blob([res.data],
-          { type: 'application/vnd.ms-excel' }
-          // { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
-        )
-
-        const objectUrl = URL.createObjectURL(blob) // 创建URL
-        link.href = objectUrl
-        link.download = title // 自定义文件名
-        link.click() // 下载文件
-        URL.revokeObjectURL(objectUrl) // 释放内存
+      // 创建一个URLSearchParams实例
+      // const urlSearchParams = new URLSearchParams(window.location.search)
+      // console.log('window.location.search--->', window.location)
+      // // 把键值对列表转换为一个对象
+      // const params1 = Object.fromEntries(urlSearchParams.entries())
+      const urlParams = this.getParams(params)
+      this.downloadUrl = '/api/effect/downloadNew?' + urlParams
+      this.$nextTick(() => {
+        this.$refs.download_Url.click()
       })
-    },
+      this.showLoadingDownload = false
+      // const link = document.createElement('a')
 
+      // axios.post('/api/effect/downloadNew', params, { responseType: 'arraybuffer' }).then(res => {
+      //   this.showLoadingDownload = false
+      //   const name = res.headers['content-disposition'].split(';')[1].split('filename=')[1]
+      //   const title = decodeURIComponent(name) // 解码
+      //   // 创建Blob对象，设置文件类型
+      //   const blob = new Blob([res.data],
+      //     { type: 'application/vnd.ms-excel' }
+      //     // { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
+      //   )
+
+      //   const objectUrl = URL.createObjectURL(blob) // 创建URL
+      //   link.href = objectUrl
+      //   link.download = title // 自定义文件名
+      //   link.click() // 下载文件
+      //   URL.revokeObjectURL(objectUrl) // 释放内存
+      // })
+    },
+    getParams (params) {
+      let paramStr = ''
+      Object.keys(params)
+        .forEach((item) => {
+          if (paramStr === '') {
+            paramStr = `${item}=${params[item]}`
+          } else {
+            paramStr = `${paramStr}&${item}=${params[item]}`
+          }
+        })
+      console.log(paramStr)
+      return paramStr
+    },
     // 清除图表
     clearChart () {
       this.chartData = []
