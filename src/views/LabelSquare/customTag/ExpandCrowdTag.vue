@@ -1,8 +1,8 @@
 <template>
 
-  <!-- <div>
-    <el-button @click="handleAdd" type="primary">新增</el-button>
-  </div> -->
+<!-- <div>
+  <el-button @click="handleAdd" type="primary">新增</el-button>
+</div> -->
 <div class="my-collect">
   <div class="header">
     <div v-if="!showSelection">
@@ -19,7 +19,7 @@
     </div> -->
     <div class="search-input">
       <el-input
-        v-model="searchForm.keywords"
+        v-model="searchForm.search"
         placeholder="请输入"
         @keyup.enter.native="fetchData"
       >
@@ -71,23 +71,42 @@
   <el-dialog title="新建人群扩充" :visible.sync="dialogFormVisible" width="600px">
     <!-- {{ form }} -->
     <el-form :model="form" :label-width="formLabelWidth" :rules="rules" ref="ruleForm">
-      <el-form-item label="选择原始人群/标签：" prop="taskCode" >
-        <el-input v-model="form.taskCode" autocomplete="off" placeholder="请搜索选择"></el-input>
+      <el-form-item label="选择原始人群/标签：" prop="historyCrowdId" >
+        <!-- <el-input v-model="form.historyCrowdId" autocomplete="off" placeholder="请搜索选择"></el-input> -->
+
+        <el-select
+          style="width: 100%"
+          v-model="form.historyCrowdId"
+          filterable
+          remote
+          placeholder="请搜索选择"
+          clearable
+          :remote-method="qiBoRemoteMethod"
+          :loading="getCrowdListLoading"
+          v-loadmore="{'methord': handelQiboLoadmore}"
+        >
+          <el-option
+            v-for="item in crowdList"
+            :value="item.value"
+            :label="item.value + '-' + item.name"
+            :key="item.value"
+          ></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="扩充至：" prop="taskName" >
-        <el-input v-model="form.taskName" autocomplete="off" placeholder="xxxxx扩充至xx万"></el-input>
+      <el-form-item label="扩充至：" prop="extendNum" >
+        <el-input v-model="form.extendNum" autocomplete="off" placeholder="xxxxx扩充至xx万"></el-input>
       </el-form-item>
-      <el-form-item label="扩充后人群命名：" prop="taskName" >
-        <el-input v-model="form.taskName" autocomplete="off" placeholder="xxxxx扩充至xx万"></el-input>
+      <el-form-item label="扩充后人群命名：" prop="launchName" >
+        <el-input v-model="form.launchName" autocomplete="off" placeholder="xxxxx扩充至xx万"></el-input>
       </el-form-item>
-      <el-form-item label="人群描述：" prop="taskName" >
-        <el-input v-model="form.taskName" autocomplete="off" placeholder="请输入至少五个字符"></el-input>
+      <el-form-item label="人群描述：" prop="remark" >
+        <el-input v-model="form.remark" autocomplete="off" placeholder="请输入至少五个字符"></el-input>
       </el-form-item>
 
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="handleSave">投 放</el-button>
+      <el-button type="primary" @click="handleSave">确 定</el-button>
     </div>
   </el-dialog>
 
@@ -95,100 +114,29 @@
 </template>
 
 <script>
+import CrowdStatus from '@/views/crowdCompute/components/crowdStatus.vue'
 export default {
   name: 'peoplePositionList',
+  components: { CrowdStatus },
   data () {
     return {
-      detailPagination: {
-        filter: {},
-        pagination: {
-          pageSize: 10,
-          currentPage: 1,
-          total: 0
-        },
-        taskCode: null
-      },
-      showConfiguration: false,
-      seeDetailData: {
-        props: {
-          border: true
-        },
-        data: [],
-        header: [
-          {
-            label: '版本号',
-            prop: 'versionId'
-          },
-          {
-            label: '文件名称',
-            prop: 'fileName'
-          },
-          {
-            label: '创建时间',
-            prop: 'createTime'
-          },
-          {
-            label: '操作',
-            width: '100px',
-            render: (h, { row }) => {
-              return h('el-popover', {
-                attrs: {
-                  placement: 'left',
-                  width: '600',
-                  trigger: 'click'
-                }
-              }, [
-                h('el-input', {
-                  props: {
-                    type: 'textarea',
-                    rows: 8,
-                    readonly: true,
-                    value: row.content,
-                    autosize: { minRows: 10, maxRows: 20 }
-                  },
-                  class: 'get-setting'
-                }),
-                h('el-button', {
-                  props: {
-                    type: 'text'
-                  },
-                  slot: 'reference'
-                }, '查看配置')])
-            }
-          }
-        ]
-      },
-      pickerOptions: {
-        disabledDate (time) {
-          // 可选时间为包括今天在内的未来时间的三个月内，不可选时间置灰。
-          return time.getTime() < (Date.now() - 24 * 60 * 60 * 1000) || time.getTime() > (Date.now() + 90 * 24 * 60 * 60 * 1000)
-        }
-      },
-      currentTaskId: '',
+      showSelection: false,
       rules: {
-        taskCode: [
-          { required: true, message: '请输入任务ID', trigger: 'blur' }
-          // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        historyCrowdId: [
+          { required: true, message: '请选择', trigger: 'change' }
         ],
-        taskName: [
-          { required: true, message: '请输入任务名称', trigger: 'blur' }
+        extendNum: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        launchName: [
+          { required: true, message: '请输入', trigger: 'blur' }
         ]
-        // putType: [
-        //   { required: true, message: '请选择投放时间', trigger: 'change' }
-        // ],
-        // putTime: [
-        //   { type: 'array', required: true, message: '请选择时间范围', trigger: 'change' }
-        // ],
-
       },
       dialogFormVisible: false,
       searchForm: {
-        bizId: 1,
-        keywords: ''
+        search: ''
       },
-      form: {
-
-      },
+      form: {},
       formLabelWidth: '155px',
       pagination: {
         pageNum: 1,
@@ -200,41 +148,43 @@ export default {
         header: [
           {
             label: 'id',
-            prop: 'id'
+            prop: 'launchCrowdId'
           },
           {
             label: '人群标签名',
-            prop: 'taskCode'
+            prop: 'launchName'
           },
           {
             label: '描述',
-            prop: 'taskName'
+            prop: 'remark'
           },
           {
             label: '数量',
-            prop: 'taskCode'
+            render: (h, { row }) => {
+              return this.cc_format_number(row.history.totalMac)
+            }
           },
           {
             label: '原始数量',
-            prop: 'taskName'
+            render: (h, { row }) => {
+              return this.cc_format_number(row.history.totalMac)
+            }
           },
           {
             label: '状态',
             // prop: 'status',
             render: (h, { row }) => {
-              const dict = {
-                1: '生效中',
-                2: '已下架',
-                3: '草稿',
-                4: '未开始（未到投放周期）',
-                5: '已过期（已过投放周期内）'
-              }
-              return dict[row.status]
+              return h(CrowdStatus, {
+                props: {
+                  history: row.history,
+                  launchStatusEnum: this.launchStatusEnum
+                }
+              })
             }
           },
           {
             label: '创建人',
-            prop: 'userName'
+            prop: 'creatorName'
           },
           {
             label: '创建时间',
@@ -253,8 +203,7 @@ export default {
                   //   }
                   // ],
                   props: {
-                    type: 'text',
-                    disabled: params.row.putway === 3 && method === 'handleOffSet' // 草稿不允许上下架
+                    type: 'text'
                   },
                   on: {
                     click: () => {
@@ -264,7 +213,7 @@ export default {
                 }, label)
               }
               return h('div', null, [
-                createBtn(params.row.putway === 1 ? '下架' : '上架', 'handleOffSet'),
+                createBtn(params.row.onOffCrowd ? '下架' : '上架', 'handleOffSet'),
                 createBtn('删除', 'handleDelete')
               ])
             }
@@ -276,118 +225,99 @@ export default {
         selected: [],
         selectionType: 'none'
       },
-      showViewEffect: false,
-      currentRow: {}
+      // showViewEffect: false,
+      currentRow: {},
+      // --------
+      getCrowdListLoading: false,
+      crowdList: [],
+      getCrowdListParams: {
+        pageNum: 1,
+        pageSize: 100,
+        crowdType: 1, // 固定为1
+        launchName: ''
+      },
+      getCrowdListQuery: '',
+      launchStatusEnum: {}
     }
   },
   methods: {
-    // handleFilterChange (type, pagination) {
-    //   if (pagination) {
-    //     this.pagination = pagination
-    //   }
-    //   if (type === 'query') {
-    //     if (this.pagination) {
-    //       this.pagination.currentPage = 1
-    //     }
-    //   }
-    //   this.fetchData()
-    // },
-    // // 查看配置分页
-    // handleFilterChange () {
-    //   this.loadDetailList(this.detailPagination.currentId)
-    // },
-    seeDevDetail ({ row }) {
-      this.showConfiguration = true
-      this.detailPagination.taskCode = row.taskCode
-      this.loadDetailList()
+    // 起播行为影片搜索更多
+    handelQiboLoadmore () {
+      this.getCrowdListParams.pageNum++ // 滚动加载翻页
+      this.qiBoRemoteMethod(this.getCrowdListQuery)
     },
-    loadDetailList () {
-      const params = {
-        taskCode: this.detailPagination.taskCode,
-        pageNum: this.detailPagination.pagination.currentPage,
-        pageSize: this.detailPagination.pagination.pageSize
+
+    qiBoRemoteMethod (query) {
+      // 重新查询，不是滚动加载
+      if (this.getCrowdListQuery !== query) {
+        this.crowdList = []
+        this.getCrowdListParams.pageNum = 1 // 页码归1
       }
-      this.$service.getAssistantLuaList(params).then((data) => {
-        this.seeDetailData.data = data.rows
-        this.detailPagination.pagination.total = data.total
-      })
-    },
-    // 同步
-    freshCache ({ row }) {
-      this.$confirm('新建的人群策略将实时生效，旧的策略更新需要延时2小时生效', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          this.$service.genLuaById({ taskCode: row.taskCode }, '操作成功').then(data => {
-            this.fetchData()
-          })
+
+      // if (query !== '') {
+      this.getCrowdListLoading = true
+
+      this.getCrowdListParams.launchName = query || ''
+
+      this.$service.getTempLaunchList(this.getCrowdListParams).then(data => {
+        this.getCrowdListLoading = false
+        this.getCrowdListQuery = query // 记录查询关键字，滚动加载时要用到
+        let list = data.pageInfo.list
+
+        list = list.map(obj => {
+          return {
+            name: obj.launchName,
+            value: obj.versionId
+          }
         })
-    },
-    handleViewEffectDialog ({ row }) {
-      this.currentRow = row
-      this.showViewEffect = true
+        this.crowdList.push(...list)
+      }).catch(() => {
+        this.getCrowdListLoading = false
+      })
+      // }
+      // else {
+      //   this.crowdList = []
+      // }
     },
     tableRowClassName ({ row }) {
       if (row.putway === 2) { return 'gray-row' }
     },
     initFormData () {
       return {
-        bizId: 1,
-        taskCode: '',
-        taskName: '',
-        binds: [{
-          resourceCode: '',
-          resourceName: ''
-        }, {
-          resourceCode: '',
-          resourceName: ''
-        }]
-        // putType: 1,
-        // putTime: []
+        historyCrowdId: '',
+        extendNum: '',
+        launchName: '',
+        remark: ''
       }
     },
-    // 下架任务
-    handleOffSet ({ row }) {
-      const params = {
-        id: row.id,
-        putway: row.putway === 1 ? 2 : 1 // 1 上架 2 下架
-      }
-      this.$service.assistantTaskPutway(params).then(res => {
-        this.fetchData()
-      })
-    },
-    // 保存草稿
-    handleSaveDraft () {
-      if (this.form.taskCode === '' || this.form.taskName === '') {
-        return this.$message.error('请输入 任务ID 和 任务名称 ')
-      }
-      const params = {
-        ...this.form,
-        putTime: Array.isArray(this.form.putTime) ? this.form.putTime.join(',') : this.form.putTime,
-        priority: null, // 优先级字段不创
-        putway: 3 // 草稿
-      }
 
-      this.$service.saveAssistantTask(params).then(res => {
-        this.fetchData()
-        this.dialogFormVisible = false
-      })
-    },
+    // 保存草稿
+    // handleSaveDraft () {
+    //   if (this.form.taskCode === '' || this.form.taskName === '') {
+    //     return this.$message.error('请输入 任务ID 和 任务名称 ')
+    //   }
+    //   const params = {
+    //     ...this.form,
+    //     putTime: Array.isArray(this.form.putTime) ? this.form.putTime.join(',') : this.form.putTime,
+    //     priority: null, // 优先级字段不创
+    //     putway: 3 // 草稿
+    //   }
+
+    //   this.$service.saveAssistantTask(params).then(res => {
+    //     this.fetchData()
+    //     this.dialogFormVisible = false
+    //   })
+    // },
     handleSave () {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           console.log('this.form-->', this.form)
 
           const params = {
-            ...this.form,
-            putTime: Array.isArray(this.form.putTime) ? this.form.putTime.join(',') : this.form.putTime,
-            priority: null, // 优先级字段不创
-            putway: 1 // 投放
+            ...this.form
           }
 
-          this.$service.saveAssistantTask(params).then(res => {
+          this.$service.addExtendCrowd(params).then(res => {
             this.fetchData()
             this.dialogFormVisible = false
           })
@@ -434,17 +364,26 @@ export default {
         })
       })
     },
+    // 下架任务
+    handleOffSet ({ row }) {
+      const params = {
+        extendCrowdId: row.launchCrowdId,
+        onOffCrowd: !row.onOffCrowd
+      }
+      this.$service.onOrOffExtendCrowd(params).then(res => {
+        this.fetchData()
+      })
+    },
     handleDelete ({ row }) {
-      this.$confirm('确定删除此任务吗？', '提示', {
+      this.$confirm('确定删除此扩充人群吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         const params = {
-          id: row.id,
-          delFlag: 2
+          launchCrowdId: row.launchCrowdId
         }
-        this.$service.delAssistantTask(params, '删除成功').then(() => {
+        this.$service.deleteExtendCrowd(params, '删除成功').then(() => {
           this.fetchData()
         })
       })
@@ -461,11 +400,16 @@ export default {
     fetchData () {
       const params = {
         ...this.pagination,
-        ...this.searchForm
+        ...this.searchForm,
+        page: this.pagination.pageNum
       }
-      this.$service.assistantTaskList(params).then((data) => {
-        this.table.data = data.row
-        this.pagination.total = data.total
+      // console.log('this.searchForm-->', this.pagination)
+      // console.log('params-->', params)
+      this.$service.getExtendCrowd(params).then((data) => {
+        this.launchStatusEnum = data.launchStatusEnum
+        const pageInfo = data.pageInfo
+        this.table.data = pageInfo.list
+        this.pagination.total = pageInfo.total
       })
     }
   },
@@ -473,6 +417,7 @@ export default {
     this.fetchData()
     // 初始化数据
     this.form = this.initFormData()
+    this.qiBoRemoteMethod() // 弹窗 - 下拉列表
   }
 }
 

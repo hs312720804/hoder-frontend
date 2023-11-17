@@ -1046,3 +1046,36 @@ export function sceneFlowChart (params) {
     params
   })
 }
+// 人群扩充查询功能
+export function getExtendCrowd (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/extendCrowd/index',
+    params
+  })
+}
+// 新增人群扩充
+export function addExtendCrowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/extendCrowd/extend',
+    data,
+    isJSON: true
+  })
+}
+// 人群扩充下架功能
+export function onOrOffExtendCrowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: `/api/extendCrowd/OnOrOff/${data.extendCrowdId}`,
+    data
+  })
+}
+// 人群扩充删除功能
+export function deleteExtendCrowd (params) {
+  return this.fetch({
+    method: 'delete',
+    url: '/api/extendCrowd',
+    params
+  })
+}
