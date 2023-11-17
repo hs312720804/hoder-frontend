@@ -57,35 +57,7 @@
           <template slot-scope="scope">
             <!-- {{ scope.row.history.status }} -->
             <div v-if="scope.row.history.status">
-              <!-- 状态为计算中，显示进度 -->
-              <template v-if="scope.row.history.status >=20 && scope.row.history.status < 30">
-                {{ scope.row.history.process }}
-              </template>
-              <template v-else-if="(launchStatusEnum[scope.row.history.status]).code === 3">
-                计算完成
-              </template>
-              <template v-else-if="scope.row.history.status === 41">
-                结果为0
-              </template>
-              <!-- 新增计算中时是否是人群排队中 -->
-              <template
-                v-else-if="((launchStatusEnum[scope.row.history.status]).code === 2 && (launchStatusEnum[scope.row.history.status]).childrenCode === 23)">
-                {{ (launchStatusEnum[scope.row.history.status]).childrenName }}
-              </template>
-              <template
-                v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7">
-                <span v-if="crowdType === 4">计算</span>
-                <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
-              </template>
-              <span v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
-                计算失败
-                <!-- ，<el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
-              </span>
-              <template v-else>
-                {{ (launchStatusEnum[scope.row.history.status]).name }}
-              </template>
-
-              <TipPopover :launchStatusEnum="launchStatusEnum" :status="scope.row.history.status"></TipPopover>
+              <CrowdStatus :history="scope.row.history" :launchStatusEnum="launchStatusEnum"></CrowdStatus>
             </div>
           </template>
         </el-table-column>
@@ -220,7 +192,8 @@
 </template>
 
 <script>
-import TipPopover from '../components/tipPopover.vue'
+// import TipPopover from '../components/tipPopover.vue'
+import CrowdStatus from '../components/crowdStatus.vue'
 
 export default {
   name: 'TempLabel',
@@ -575,7 +548,7 @@ export default {
       this.$emit('change-checkList', val)
     }
   },
-  components: { TipPopover }
+  components: { CrowdStatus }
 }
 </script>
 

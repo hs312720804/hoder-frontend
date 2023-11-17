@@ -1,0 +1,66 @@
+<template>
+<div>
+  <!-- 状态为计算中，显示进度 -->
+  <template v-if="history.status >=20 && history.status < 30">
+    {{ history.process }}
+  </template>
+  <template v-else-if="(launchStatusEnum[history.status]).code === 3">
+    计算完成
+  </template>
+  <template v-else-if="history.status === 41">
+    结果为0
+  </template>
+  <!-- 新增计算中时是否是人群排队中 -->
+  <template
+    v-else-if="((launchStatusEnum[history.status]).code === 2 && (launchStatusEnum[history.status]).childrenCode === 23)">
+    {{ (launchStatusEnum[history.status]).childrenName }}
+  </template>
+  <template
+    v-else-if="(launchStatusEnum[history.status]).code === 1 || (launchStatusEnum[history.status]).code === 4 || (launchStatusEnum[history.status]).code === 7">
+    <span v-if="crowdType === 4">计算</span>
+    <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
+  </template>
+  <span v-else-if="(launchStatusEnum[history.status]).code === 5" style="color: red">
+    计算失败
+    <!-- ，<el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
+  </span>
+  <template v-else>
+    {{ (launchStatusEnum[history.status]).name }}
+  </template>
+
+  <TipPopover :launchStatusEnum="launchStatusEnum" :status="history.status"></TipPopover>
+</div>
+</template>
+
+<script>
+import TipPopover from '../components/tipPopover.vue'
+
+export default {
+  components: { TipPopover },
+  props: {
+    history: {
+      type: Object,
+      default: () => {}
+    },
+    launchStatusEnum: {
+      type: Object,
+      default: () => {}
+    }
+  },
+  data () {
+    return {
+
+    }
+  },
+  created () {
+
+  },
+  methods: {
+
+  }
+}
+</script>
+
+<style lang='stylus' scoped>
+
+</style>
