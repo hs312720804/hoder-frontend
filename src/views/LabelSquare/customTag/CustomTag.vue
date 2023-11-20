@@ -146,16 +146,16 @@ export default {
       this.$refs.tagCategoryUpsert.showCreateDialog = true
     },
     // 新增或编辑组合标签种类
-    async handleAddOrEdit () {
-      if (this.form.tagId) { // 编辑
-        await this.$service.editSpecialTagType(this.form)
-      } else { // 新增
-        await this.$service.addSpecialTagType(this.form)
-      }
-      this.fetchData()
-      this.dialogVisible = false
-      this.$message.success('保存成功')
-    },
+    // async handleAddOrEdit () {
+    //   if (this.form.tagId) { // 编辑
+    //     await this.$service.editSpecialTagType(this.form)
+    //   } else { // 新增
+    //     await this.$service.addSpecialTagType(this.form)
+    //   }
+    //   this.fetchData()
+    //   this.dialogVisible = false
+    //   this.$message.success('保存成功')
+    // },
     // 新增组合标签
     handleAdd () {
       // // 数据置空，否则会残留编辑的数据
