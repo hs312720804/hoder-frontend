@@ -46,7 +46,8 @@ export function getDataSourceEnum () {
 export function getTagGroupTreeList (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/label/indexTree',
+    // url: '/api/label/indexTree',
+    url: '/api/label/tagTree',
     params
   })
 }
