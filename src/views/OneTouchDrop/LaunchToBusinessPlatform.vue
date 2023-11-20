@@ -99,12 +99,12 @@
                     <el-input size="small" v-model="crowdForm.remark"></el-input>
                 </el-form-item>
                 <el-form-item label="选择策略" prop="policyIds">
+                  <!-- @remove-tag="removeTag" -->
                     <el-select
-                            filterable
-                            v-model="crowdForm.policyIds"
-                            disabled
-                            @change="getCrowd"
-                            @remove-tag="removeTag"
+                      filterable
+                      v-model="crowdForm.policyIds"
+                      disabled
+                      @change="getCrowd"
                     >
                         <el-option
                                 v-for="item in strategyPlatform"
@@ -118,18 +118,27 @@
 
                 <el-form-item label="选择人群" prop="policyCrowdIds">
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
-                            <el-checkbox-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
+                            <!-- <el-checkbox-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
                                 <el-checkbox
                                     v-for="item in v.childs"
                                     :label="v.policyId+'_'+item.tempCrowdId"
                                     :key="item.tempCrowdId+''"
                                     :disabled="item.canPush === false || item.isDisabledCrowd"
                                   >
-                                    <!-- :disabled="item.canLaunch === false || item.isDisabledCrowd" -->
                                   {{ item.crowdName }}
                                 </el-checkbox>
                             </el-checkbox-group>
-                            <span style="color: red">单次仅可投放一个包含行为标签的人群</span>
+                            <span style="color: red">单次仅可投放一个包含行为标签的人群</span> -->
+                            <el-radio-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
+                                <el-radio
+                                  v-for="item in v.childs"
+                                  :label="v.policyId+'_'+item.tempCrowdId"
+                                  :key="item.tempCrowdId+''"
+                                >
+                                  {{ item.crowdName }} -- {{ item.canPush }}
+                                </el-radio>
+                            </el-radio-group>
+
                         </el-form-item>
                 </el-form-item>
                 <!--<el-form-item label="数据有效期" prop="expiryDay">-->
@@ -163,6 +172,9 @@
                     ></el-time-picker>
                 </el-form-item>
                 <el-form-item label="数据类型" prop="calType">
+                  <!-- 选择人群的canpush: true -  数据类型都可选
+                       false - 只能选【设备】 -->
+                       <!-- {{ estimateItems }} -->
                     <el-checkbox-group v-model="crowdForm.calType">
                       <el-checkbox
                         v-for="(item,index) in estimateItems"
@@ -170,7 +182,8 @@
                         :label="index"
                         :key="index"
                         @change="estimateValueChange(index)"
-                        :disabled="isBehaviorCrowd && (index == 1 || index == 2 || index == 3)">
+                        :disabled="!policyCrowdIdsCanPush && (index == 1 || index == 2 || index == 3 || index == 5)">
+                        <!-- :disabled="isBehaviorCrowd && (index == 1 || index == 2 || index == 3)"> -->
                         {{item}}
                         <el-popover
                           v-if="index === '0'"
@@ -220,6 +233,7 @@ export default {
   data () {
     return {
       isBehaviorCrowd: false,
+      policyCrowdIdsCanPush: true,
       // fullscreenLoading: false,
       crowdForm: {
         biIdsPull: [],
@@ -231,7 +245,7 @@ export default {
         remark: '',
         //      dataSource: 2,
         policyIds: '',
-        policyCrowdIds: [],
+        policyCrowdIds: '',
         // expiryDay: 7,
         autoVersion: 0,
         autoLaunchTime: undefined,
@@ -340,11 +354,12 @@ export default {
       const policyId = crowdData[index].policyId
       // 选中的对象list
       const checkedList = crowdList.filter(item => {
-        const flag = val.includes(policyId + '_' + item.tempCrowdId)
+        const flag = val === (policyId + '_' + item.tempCrowdId)
         return flag
       }) || []
 
       this.isBehaviorCrowd = checkedList.length > 0 ? checkedList[0].isBehaviorCrowd : false
+      this.policyCrowdIdsCanPush = checkedList.length > 0 ? checkedList[0].canPush : false
 
       // 若无选中，则全部恢复可选状态
       if (checkedList.length === 0) {
@@ -354,35 +369,35 @@ export default {
         this.$set(this.crowdData, index, this.crowdData[index])
       }
 
-      for (let i = 0; i < checkedList.length; i++) {
-        // eslint-disable-next-line no-debugger
+      // for (let i = 0; i < checkedList.length; i++) {
+      //   // eslint-disable-next-line no-debugger
 
-        const obj = checkedList[i]
-        if (obj.isBehaviorCrowd) { // 选了行为人群
-          this.crowdData[index].childs.forEach(item => {
-            // eslint-disable-next-line no-debugger
-            if (obj.tempCrowdId === item.tempCrowdId) {
-              item.isDisabledCrowd = false
-            } else {
-              item.isDisabledCrowd = true
-            }
-          })
-          this.$set(this.crowdData, index, this.crowdData[index])
-          break
-        } else { // 选了普通人群
-          this.crowdData[index].childs.forEach(item => {
-            if (item.isBehaviorCrowd) {
-              item.isDisabledCrowd = true
-            } else {
-              item.isDisabledCrowd = false
-            }
-          })
-          this.$set(this.crowdData, index, this.crowdData[index])
-          break
-        }
-      }
+      //   const obj = checkedList[i]
+      //   if (obj.isBehaviorCrowd) { // 选了行为人群
+      //     this.crowdData[index].childs.forEach(item => {
+      //       // eslint-disable-next-line no-debugger
+      //       if (obj.tempCrowdId === item.tempCrowdId) {
+      //         item.isDisabledCrowd = false
+      //       } else {
+      //         item.isDisabledCrowd = true
+      //       }
+      //     })
+      //     this.$set(this.crowdData, index, this.crowdData[index])
+      //     break
+      //   } else { // 选了普通人群
+      //     this.crowdData[index].childs.forEach(item => {
+      //       if (item.isBehaviorCrowd) {
+      //         item.isDisabledCrowd = true
+      //       } else {
+      //         item.isDisabledCrowd = false
+      //       }
+      //     })
+      //     this.$set(this.crowdData, index, this.crowdData[index])
+      //     break
+      //   }
+      // }
 
-      console.log('this.crowdData==', this.crowdData)
+      // console.log('this.crowdData==', this.crowdData)
 
       // v.policyId+'_'+item.tempCrowdId
     },
@@ -437,9 +452,10 @@ export default {
             crowdForm.biIds = crowdForm.biIds.join(',')
             crowdForm.calType = crowdForm.calType.join(',')
             crowdForm.policyIds = crowdForm.policyIds
-            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
-              return v.split('_')[1]
-            }).join(',')
+            // crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
+            //   return v.split('_')[1]
+            // }).join(',')
+            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.split('_')[1]
           }
           const formData = {
             launch: launch,
@@ -607,11 +623,11 @@ export default {
         })
         .catch(err => { this.$message.error(err) })
     },
-    removeTag (policyId) {
-      this.crowdForm.policyCrowdIds = this.crowdForm.policyCrowdIds.filter((v) => {
-        if (v.split('_')[0] != policyId) { return v }
-      })
-    },
+    // removeTag (policyId) {
+    //   this.crowdForm.policyCrowdIds = this.crowdForm.policyCrowdIds.filter((v) => {
+    //     if (v.split('_')[0] != policyId) { return v }
+    //   })
+    // },
     handleBackPrevStep () {
       if (this.isDynamicPeople) {
         this.$emit('launchPrevStep', 4)
