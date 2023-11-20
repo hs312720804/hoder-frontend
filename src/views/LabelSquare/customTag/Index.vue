@@ -36,7 +36,7 @@
           :tagName="myCollectTagName"
           :checkList="checkList"
           :show-selection="showSelection"
-          :currentSelectTag="tagList"
+          :currentSelectTag="currentSelectTag"
           @clear-search="handleClearSearch"
           @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
@@ -47,7 +47,7 @@
           :tagName="myCollectTagName"
           :checkList="checkList"
           :show-selection="showSelection"
-          :currentSelectTag="tagList"
+          :currentSelectTag="currentSelectTag"
           @clear-search="handleClearSearch"
           @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
