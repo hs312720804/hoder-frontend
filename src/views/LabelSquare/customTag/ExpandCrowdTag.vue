@@ -140,9 +140,29 @@
         </el-select>
       </el-form-item>
       <el-form-item label="扩充至：" prop="extendNum" >
-        <el-input v-model="form.extendNum" autocomplete="off" placeholder="xxxxx扩充至xx万"></el-input>
+        <el-input-number
+          v-model.number="form.extendNum"
+          autocomplete="off"
+          placeholder="请输入正整数"
+          style="width: 150px"
+          clearable
+          @input="validateInput"
+          :max="3000"
+          @mousewheel.native.prevent
+          @keyup.native="prevent($event)"
+        >
+        <!-- :max="3000" -->
+        <!-- @mousewheel.native.prevent
+          @keyup.native="prevent($event)" -->
+        </el-input-number> 万
+        <!-- <el-input-number
+          v-model.number="form.extendNum"
+          placeholder="请输入"
+          :min="1"
+          :max="10">
+        </el-input-number> -->
       </el-form-item>
-      <el-form-item label="扩充后人群命名：" prop="launchName" >
+      <el-form-item label="扩充后人群命名：" prop="launchName">
         <el-input v-model="form.launchName" autocomplete="off" placeholder="xxxxx扩充至xx万"></el-input>
       </el-form-item>
       <el-form-item label="人群描述：" prop="remark" >
@@ -301,6 +321,21 @@ export default {
     // }
   },
   methods: {
+    // // 限制正整数输入
+    // validateInput (value) {
+    //   value = value.replace(/[^0-9]/g, '')
+    //   if (value.indexOf(0) == 0) {
+    //     value = ''
+    //   }
+    // },
+
+    prevent (e) {
+      const keynum = window.event ? e.keyCode : e.which // 获取键盘码
+      if (keynum === 189 || keynum === 190 || keynum === 109 || keynum === 110) {
+        this.$message.warning('禁止输入小数以及负数')
+        e.target.value = ''
+      }
+    },
     updateTableSelected () {
       const dataList = this.table.data
       const arr = []
