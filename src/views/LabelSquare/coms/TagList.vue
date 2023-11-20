@@ -111,6 +111,9 @@ export default {
     tabIndex: {
       type: [String, Number],
       default: ''
+    },
+    defaultDataSourceEnum: {
+      type: Object
     }
   },
   components: {
@@ -135,6 +138,10 @@ export default {
   },
   methods: {
     getDataSourceList () {
+      if (this.defaultDataSourceEnum) {
+        this.dataSourceEnum = this.defaultDataSourceEnum
+        return
+      }
       this.$service.getDatasource().then((data) => {
         // const arr = Object.keys(data).map(value => ({ value: parseInt(value), label: data[value] }))
         // this.dataSourceEnum = arr
