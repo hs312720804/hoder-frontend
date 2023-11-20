@@ -50,13 +50,59 @@
 
   </div> -->
 
-  <c-table
+  <!-- <c-table
     class="list-table"
     :props="table.props"
     :header="table.header"
     :data="table.data"
   >
-  </c-table>
+  </c-table> -->
+  <el-table
+    ref="changeTable"
+    :data="table.data"
+    border
+    @select="handleSelectOrCancel"
+    @select-all="handleSelectAllOrCancel">
+    <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
+    <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
+    <el-table-column prop="launchName" label="人群标签名" width="120"></el-table-column>
+    <el-table-column prop="remark" label="描述" width="180"></el-table-column>
+    <el-table-column prop="count" label="数量">
+      <template slot-scope="scope">
+        {{ cc_format_number(scope.row.history.totalMac)  }}
+      </template>
+    </el-table-column>
+    <el-table-column prop="count" label="原始数量">
+      <template slot-scope="scope">
+        {{ cc_format_number(scope.row.history.totalMac)  }}
+      </template>
+    </el-table-column>
+    <el-table-column label="状态" width="150">
+      <template slot-scope="scope">
+        <CrowdStatus
+          :history="scope.row.history"
+          :launchStatusEnum="launchStatusEnum"
+        ></CrowdStatus>
+      </template>
+    </el-table-column>
+    <el-table-column prop="creatorName" label="创建人" >
+    </el-table-column>
+    <el-table-column prop="createTime" label="创建时间" >
+    </el-table-column>
+
+    <el-table-column label="操作" width="120" v-if="!showSelection" fixed="right">
+      <template slot-scope="scope">
+        <el-button-group>
+          <el-button type="text" @click="handleOffSet(scope)">
+            {{ scope.row.onOffCrowd ? '下架' : '上架'}}
+          </el-button>
+          <el-button type="text" @click="handleDelete(scope)">
+            删除
+          </el-button>
+        </el-button-group>
+      </template>
+    </el-table-column>
+  </el-table>
 
   <div align="right">
     <pagination
@@ -120,7 +166,6 @@ export default {
   components: { CrowdStatus },
   data () {
     return {
-      showSelection: false,
       rules: {
         historyCrowdId: [
           { required: true, message: '请选择', trigger: 'change' }
@@ -240,7 +285,69 @@ export default {
       launchStatusEnum: {}
     }
   },
+  props: {
+    showSelection: {
+      type: Boolean,
+      default: false
+    },
+    currentSelectTag: {
+      type: Array
+    }
+  },
+  watch: {
+    currentSelectTag: 'updateTableSelected'
+    // checkListParent: function (val) {
+    //   this.checkList = val
+    // }
+  },
   methods: {
+    updateTableSelected () {
+      const dataList = this.table.data
+      const arr = []
+      const currentSelectRows = this.currentSelectTag
+      dataList.forEach((item, index) => {
+        currentSelectRows.forEach((i) => {
+          if (Number(item.tagId) === Number(i.tagId)) {
+            arr.push(dataList[index])
+          }
+        })
+      })
+      if (arr.length > 0) {
+        // 如果存在，则先清空选中，再赋值
+        this.$nextTick(() => {
+          this.$refs.changeTable.clearSelection()
+          arr.forEach(row => {
+            this.$refs.changeTable.toggleRowSelection(row, true)
+          })
+        })
+      } else {
+        this.$refs.changeTable.clearSelection()
+      }
+    },
+    handleSelectOrCancel (select, row) {
+      const selectedFlag = select.length && select.indexOf(row) !== -1
+      // true就是选中，0或者false是取消选中
+      if (selectedFlag) {
+        this.$refs.changeTable.toggleRowSelection(row, true)
+        this.$emit('get-table-selected', row, 'add')
+      } else {
+        this.$refs.changeTable.toggleRowSelection(row, false)
+        this.$emit('get-table-selected', row, 'del')
+      }
+    },
+    handleSelectAllOrCancel (select) {
+      // 当select长度为0，则是取消全选，否则是全选
+      const data = this.itemList
+      if (select.length === 0) {
+        for (let i = 0; i < data.length; i++) {
+          this.$emit('get-table-selected', data[i], 'del')
+        }
+      } else {
+        for (let j = 0; j < data.length; j++) {
+          this.$emit('get-table-selected', data[j], 'add')
+        }
+      }
+    },
     // 起播行为影片搜索更多
     handelQiboLoadmore () {
       this.getCrowdListParams.pageNum++ // 滚动加载翻页
@@ -408,8 +515,20 @@ export default {
       this.$service.getExtendCrowd(params).then((data) => {
         this.launchStatusEnum = data.launchStatusEnum
         const pageInfo = data.pageInfo
-        this.table.data = pageInfo.list
+        this.table.data = pageInfo.list || []
+        this.table.data = this.table.data.map(item => {
+          return {
+            ...item,
+            tagId: item.launchCrowdId,
+            dataSource: 1
+          }
+        })
         this.pagination.total = pageInfo.total
+        if (this.showSelection) {
+          this.$nextTick(() => {
+            this.updateTableSelected()
+          })
+        }
       })
     }
   },
