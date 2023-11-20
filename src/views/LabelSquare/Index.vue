@@ -13,14 +13,18 @@
     <div class="other-form" v-if="!!filter.tagName" style="padding-top: 45px">
       <tag-list
         :data-list="dataList"
-        :data-source-enum="dataSourceEnum"
+        :default-data-source-enum="dataSourceEnum"
+        :current-selected-tags="tagList"
         :type-enum="typeEnum"
         :loading="loading"
         :check-list-parent="checkList"
         :show-selection="showSelection"
         @change-checkList="handleCheckListChange"
         @table-selected="handleGetTableSelectedData"
-        :current-selected-tags="tagList">
+        :showEditBtn="true"
+        :showDeleteBtn="true"
+        @delete="handleDelete"
+        @edit="handleEdit">
       </tag-list>
 
       <el-pagination
@@ -63,6 +67,37 @@
 
     </el-tabs>
 
+    <!-- 自定义标签 - 自定义标签 编辑 -->
+    <TagCategoryUpsert
+      v-if="definedTagId"
+      ref="tagCategoryUpsert"
+      :current-tag-category="tagCategory"
+      :type-enum="typeEnum"
+      :data-source-enum="dataSourceEnum"
+      :definedTagId="definedTagId"
+      @upsert-end="handleSearch"
+    >
+    </TagCategoryUpsert>
+
+    <!-- 其他标签 编辑 -->
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500px">
+      <el-form label-position="left" label-width="80px" :model="form">
+        <el-form-item label="名称" required>
+          <el-input v-model="form.tagName"></el-input>
+        </el-form-item>
+        <el-form-item label="英文名" required>
+          <el-input v-model="form.tagKey"></el-input>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="form.remark"></el-input>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -72,6 +107,7 @@ import BigDataTag from './bigDataTag/Index.vue'
 import ThirdPartyTag from './thirdTag/Index.vue'
 import CustomTag from './customTag/Index.vue'
 import tagList from './coms/TagList'
+import TagCategoryUpsert from '@/views/TagCategory/Upsert.vue'
 
 export default {
   name: 'crowdCompute',
@@ -80,7 +116,8 @@ export default {
     BigDataTag,
     ThirdPartyTag,
     CustomTag,
-    tagList
+    tagList,
+    TagCategoryUpsert
   },
   data () {
     return {
@@ -114,10 +151,88 @@ export default {
       //   5: 'warning'
       // },
       showSelection: false,
-      tempCheckList: []
+      tempCheckList: [],
+      // ---------编辑弹窗----------
+      dialogVisible: false,
+      form: {
+        tagName: '',
+        tagKey: '',
+        remark: ''
+      },
+      dialogTitle: '',
+      // ---------自定义编辑弹窗----------
+
+      // dataSourceEnum: {},
+      // typeEnum: {},
+      tagCategory: {},
+      definedTagId: ''
+      // ------------------------
     }
   },
   methods: {
+    // --------全局搜索标签，标签的修改、删除方法----------
+    // 删除
+    handleDelete (id) {
+      this.$service.deleteSpecialTagType(id).then(() => {
+        // this.fetchData()
+        // 重新刷新
+        this.handleSearch()
+        this.$message('删除成功')
+      })
+    },
+    handleEdit (row) {
+      const { tagId, tagName, tagKey, remark, dataSource } = row
+
+      if (dataSource === 1) {
+        this.handleCustomTagEdit(row)
+      } else {
+        this.form.tagId = tagId
+        this.form.tagName = tagName
+        this.form.tagKey = tagKey
+        this.form.remark = remark || ''
+        this.dialogTitle = '编辑种类'
+        this.dialogVisible = true
+      }
+    },
+    // <!-- 自定义标签 - 自定义标签 编辑 -->
+    handleCustomTagEdit (row) {
+      const {
+        tagId,
+        groupId,
+        oldGroup,
+        tagName,
+        tagKey,
+        tagType,
+        tagUnit,
+        remark,
+        dataSource,
+        thirdPartyApiId,
+        mapThirdPartyApiField
+      } = row
+      this.definedTagId = groupId
+      const params = {
+        id: tagId
+      }
+      this.$service.readTagCategory(params).then((data) => {
+        // this.dataSourceEnum = data.dataSourceEnum
+        // this.typeEnum = data.typeEnum
+        this.tagCategory = data.tagCategory
+        this.$refs.tagCategoryUpsert.showCreateDialog = true
+      })
+    },
+    // 新增或编辑组合标签种类
+    async handleAddOrEdit () {
+      if (this.form.tagId) { // 编辑
+        await this.$service.editSpecialTagType(this.form)
+      } else { // 新增
+        await this.$service.addSpecialTagType(this.form)
+      }
+      // 重新刷新
+      this.handleSearch()
+      this.dialogVisible = false
+      this.$message.success('保存成功')
+    },
+    // --------全局搜索标签，标签的修改、删除方法 end ----------
     handleReset () {
       this.searchAllVal = ''
       this.handleSearch()
