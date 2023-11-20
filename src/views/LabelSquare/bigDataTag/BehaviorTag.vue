@@ -1,24 +1,31 @@
 <template>
   <div class="my-collect">
-    <div class="header">
+    <!-- <div class="header">
       <div v-if="!showSelection">
         <el-button @click="handleAdd" type="primary">
           新建
         </el-button>
       </div>
       <div v-else></div>
-      <!-- 标签分类搜索 -->
-      <!-- <div class="search-input">
+      标签分类搜索
+      <div class="search-input">
         <el-input placeholder="支持按标签名搜索" class="header-input" v-model="launchName"
           @keyup.enter.native="fetchData"></el-input>
         <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
-      </div> -->
-    </div>
+      </div>
+    </div> -->
     <tag-list
       :data-list="dataList"
-      :check-list-parent="checkList" :current-selected-tags="currentSelectTag" :show-selection="showSelection"
-      :show-delete-btn="true" :show-edit-btn="true" @fetch-data="fetchData" @change-checkList="handleCheckListChange"
-      @table-selected="handleTableSelected" @delete="handleDelete" @edit="handleEdit">
+      :check-list-parent="checkList"
+      :current-selected-tags="currentSelectTag"
+      :show-selection="showSelection"
+      :show-delete-btn="true"
+      :show-edit-btn="true"
+      @fetch-data="fetchData"
+      @change-checkList="handleCheckListChange"
+      @table-selected="handleTableSelected"
+      @delete="handleDelete"
+      @edit="handleEdit">
       <div align="right">
         <pagination :currentpage="filter.pageNum" :pagesize="filter.pageSize" :totalcount="totalCount"
           @handle-size-change="handleSizeChange" @handle-current-change="handleCurrentChange"></pagination>
@@ -114,6 +121,7 @@ export default {
       this.dialogTitle = '编辑种类'
       this.dialogVisible = true
     },
+
     // 新增或编辑组合标签种类
     async handleAddOrEdit () {
       if (this.form.tagId) { // 编辑
