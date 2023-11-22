@@ -121,11 +121,11 @@
         <!-- <el-input v-model="form.historyCrowdId" autocomplete="off" placeholder="请搜索选择"></el-input> -->
 
         <el-select
-          style="width: 100%"
+          style="width: 300px"
           v-model="form.historyCrowdId"
           filterable
           remote
-          placeholder="请搜索选择"
+          placeholder="请搜索选择行为人群、临时人群、本地人群  "
           clearable
           :remote-method="qiBoRemoteMethod"
           :loading="getCrowdListLoading"
@@ -138,19 +138,23 @@
             :key="item.value"
           ></el-option>
         </el-select>
+        <span v-if="form.historyCrowdId" class="tip-text">数量：{{ cc_format_number(selectedCrowd.totalUser) }}</span>
+
       </el-form-item>
-      <el-form-item label="扩充至：" prop="extendNum" >
+      <el-form-item label="扩充至：" prop="extendNum">
         <el-input-number
           v-model.number="form.extendNum"
           autocomplete="off"
           placeholder="请输入正整数"
           style="width: 150px"
           clearable
-          @input="validateInput"
+          :min="100"
           :max="3000"
           @mousewheel.native.prevent
           @keyup.native="prevent($event)"
+          @change="handleExtendNumChange"
         >
+        <!-- @input="validateInput" -->
         <!-- :max="3000" -->
         <!-- @mousewheel.native.prevent
           @keyup.native="prevent($event)" -->
@@ -163,10 +167,24 @@
         </el-input-number> -->
       </el-form-item>
       <el-form-item label="扩充后人群命名：" prop="launchName">
-        <el-input v-model="form.launchName" autocomplete="off" placeholder="xxxxx扩充至xx万"></el-input>
+        <el-input
+          v-model="form.launchName"
+          autocomplete="off"
+          placeholder="xxxxx扩充至xx万"
+          style="width: 300px"
+          clearable>
+        </el-input>
       </el-form-item>
       <el-form-item label="人群描述：" prop="remark" >
-        <el-input v-model="form.remark" autocomplete="off" placeholder="请输入至少五个字符"></el-input>
+        <el-input
+          type="text"
+          v-model="form.remark"
+          autocomplete="off"
+          placeholder="请输入至少五个字符"
+          style="width: 300px"
+          clearable
+          minlength="5">
+        </el-input>
       </el-form-item>
 
     </el-form>
@@ -185,10 +203,28 @@ export default {
   name: 'peoplePositionList',
   components: { CrowdStatus },
   data () {
+    const checkCrowd = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请选择'))
+      }
+      this.selectedCrowd = this.crowdList.find(item => {
+        return item.value === value
+      }) || {}
+      this.form.launchName = `${this.selectedCrowd.name}扩充至${this.form.extendNum}万`
+
+      if (this.selectedCrowd.totalUser < 100 || this.selectedCrowd.totalUser > 30000000) {
+        callback(new Error('数量不可少于100，不可多于3千万'))
+      }
+      callback()
+    }
     return {
+      selectedCrowd: {
+        totalUser: 0
+      },
       rules: {
         historyCrowdId: [
-          { required: true, message: '请选择', trigger: 'change' }
+          // { required: true, message: '请选择', trigger: 'change' },
+          { validator: checkCrowd, trigger: 'change' }
         ],
         extendNum: [
           { required: true, message: '请输入', trigger: 'blur' }
@@ -328,7 +364,14 @@ export default {
     //     value = ''
     //   }
     // },
-
+    // selectOriginCrowd (id) {
+    //   this.selectedCrowd = this.crowdList.find(item => {
+    //     return item.value === id
+    //   }) || {}
+    // },
+    handleExtendNumChange (value) {
+      this.form.launchName = `${this.selectedCrowd.name}扩充至${this.form.extendNum}万`
+    },
     prevent (e) {
       const keynum = window.event ? e.keyCode : e.which // 获取键盘码
       if (keynum === 189 || keynum === 190 || keynum === 109 || keynum === 110) {
@@ -409,7 +452,8 @@ export default {
         list = list.map(obj => {
           return {
             name: obj.launchName,
-            value: obj.versionId
+            value: obj.versionId,
+            totalUser: obj.totalUser
           }
         })
         this.crowdList.push(...list)
