@@ -134,14 +134,16 @@ export default {
       this.checkList = val
     },
     dataList: 'updateTableSelected',
-    currentSelectedTags: 'updateTableSelected'
+    currentSelectedTags: 'updateTableSelected',
+    defaultDataSourceEnum: {
+      handler (value) {
+        this.dataSourceEnum = value || this.getDataSourceList()
+      },
+      immediate: true
+    }
   },
   methods: {
     getDataSourceList () {
-      if (this.defaultDataSourceEnum) {
-        this.dataSourceEnum = this.defaultDataSourceEnum
-        return
-      }
       this.$service.getDatasource().then((data) => {
         // const arr = Object.keys(data).map(value => ({ value: parseInt(value), label: data[value] }))
         // this.dataSourceEnum = arr
@@ -241,7 +243,7 @@ export default {
     }
   },
   created () {
-    this.getDataSourceList()
+    // this.getDataSourceList()
     this.getTagType()
     this.checkList = this.checkListParent
   }
