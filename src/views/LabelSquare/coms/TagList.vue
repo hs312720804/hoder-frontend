@@ -50,7 +50,28 @@
           </el-popover>
         </template>
         <template slot-scope="scope">
-          <el-button-group>
+
+          <!-- 全局搜索 - 临时标签 - 编辑 -->
+          <TempLabelListOperate
+            v-if="scope.row.dataSource === 15"
+            :crowdType="2"
+            :scope="getTempLabelListOperateScope(scope.row)"
+            :launchStatusEnum="launchStatusEnum"
+            @show-add="(id, statusCode) => $emit('show-add', id, statusCode, 'tempCrowd')"
+            @get-list="$emit('get-list')"
+          >
+          </TempLabelListOperate>
+
+          <!-- 全局搜索 - 本地标签 - 编辑 -->
+          <LocalListOperate
+            v-else-if="scope.row.dataSource === 16"
+            :scope="scope"
+            @show-add="(localCrowdId, crowdName) => $emit('show-add', localCrowdId, crowdName, 'localCrowd')"
+            @get-list="$emit('get-list')"
+          >
+          </LocalListOperate>
+
+          <el-button-group v-else>
             <el-button type="text" @click="handleSeeTagCategoryDetail(scope.row)">
               查看
             </el-button>
@@ -78,6 +99,9 @@
 
 <script>
 import tagDetailList from './TagDetail.vue'
+import TempLabelListOperate from './TempLabelListOperate.vue'
+import LocalListOperate from './LocalListOperate.vue'
+
 export default {
   name: 'TagList',
   props: {
@@ -114,10 +138,16 @@ export default {
     },
     defaultDataSourceEnum: {
       type: Object
+    },
+    launchStatusEnum: {
+      type: Object,
+      default: () => {}
     }
   },
   components: {
-    tagDetailList
+    tagDetailList,
+    TempLabelListOperate,
+    LocalListOperate
   },
   data () {
     return {
@@ -137,12 +167,27 @@ export default {
     currentSelectedTags: 'updateTableSelected',
     defaultDataSourceEnum: {
       handler (value) {
-        this.dataSourceEnum = value || this.getDataSourceList()
+        if (value) {
+          this.dataSourceEnum = value
+        } else {
+          this.getDataSourceList()
+        }
       },
       immediate: true
     }
   },
   methods: {
+    getTempLabelListOperateScope (row) {
+      console.log('scope-->', row)
+      return {
+        row: {
+          ...row,
+          history: {
+            status: row.status
+          }
+        }
+      }
+    },
     getDataSourceList () {
       this.$service.getDatasource().then((data) => {
         // const arr = Object.keys(data).map(value => ({ value: parseInt(value), label: data[value] }))

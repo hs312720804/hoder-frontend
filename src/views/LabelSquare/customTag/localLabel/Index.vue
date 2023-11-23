@@ -11,8 +11,15 @@
       @change-checkList="handleCheckListChange"
     >
     </list>
-
-    <group-image-add
+    <LocalListEdit
+      v-if="showAdd2"
+      :title="title"
+      :localCrowdId="localCrowdId"
+      :crowdName="crowdName"
+      @close-add="handleCloseAddForm"
+    >
+    </LocalListEdit>
+    <!-- <group-image-add
       v-if="showAdd2"
       :title="title"
       @close-add="handleCloseAddForm"
@@ -24,9 +31,7 @@
       :crowdName="crowdName"
       :uploadTipMessage="uploadTipMessage"
     >
-      <!-- 解构插槽 Prop -->
       <template #default="slotData">
-        <!-- {{ slotData }} -->
         <el-form-item label="标签名称">
           <el-input v-model="slotData.slotData.name" :maxlength="50"></el-input>
         </el-form-item>
@@ -34,21 +39,23 @@
       <template v-slot:temlDownload>
         <a class="temlDownload" :download="templTagName" :href="`${publicPath}${templTagName}`">模板下载</a>
       </template>
-    </group-image-add>
+    </group-image-add> -->
   </div>
 </template>
 
 <script>
+import LocalListEdit from '../../coms/LocalListEdit.vue'
 import list from './LocalList'
-import groupImageAdd from '@/views/GroupImageInsight/Add.vue'
+// import groupImageAdd from '@/views/GroupImageInsight/Add.vue'
 
 export default {
   name: 'TempLabel',
   components: {
     list,
     // tempLabelAdd,
-    groupImageAdd
-    // deviceEcharts
+    // groupImageAdd, // deviceEcharts
+
+    LocalListEdit
   },
   props: {
     showSelection: {
@@ -72,40 +79,58 @@ export default {
       title: '新建本地标签',
       localCrowdId: '',
       crowdName: '',
-      addOrEditStatus: '',
-      publicPath: process.env.BASE_URL,
-      templTagName: 'static/localtag.xlsx',
-      uploadTipMessage: ''
+      addOrEditStatus: ''
+      // publicPath: process.env.BASE_URL,
+      // templTagName: 'static/localtag.xlsx'
+      // uploadTipMessage: ''
     }
   },
   created () {},
   methods: {
-    handleSave (selectedFile, launchName) {
-      // const params = {
-      //   file: selectedFile,
-      //   launchName: launchName
-      // }
-      const formData = new FormData()
-      formData.append('file', selectedFile)
-      formData.append('launchName', launchName)
-      // debugger
-      if (this.addOrEditStatus === 'add') {
-        this.$service.addLocalCrowd(formData, '保存成功').then(() => {
-          // this.$root.$emit('local-label-list-refresh')
-          this.$root.$emit('custom-tag-list-refresh')
-          this.handleCloseAddForm()
-        }).catch(err => {
-          // 不符合要求的Mac在上传框里提示
-          this.uploadTipMessage = err.message
-        })
-      } else {
-        this.$service.updateLocalCrowd({ formData, id: this.localCrowdId }, '编辑成功').then(() => {
-          // this.$root.$emit('local-label-list-refresh')
-          this.$root.$emit('custom-tag-list-refresh')
-          this.handleCloseAddForm()
-        })
-      }
+    // handleSave (selectedFile, launchName) {
+    //   // const params = {
+    //   //   file: selectedFile,
+    //   //   launchName: launchName
+    //   // }
+    //   const formData = new FormData()
+    //   formData.append('file', selectedFile)
+    //   formData.append('launchName', launchName)
+    //   // debugger
+    //   if (this.addOrEditStatus === 'add') {
+    //     this.$service.addLocalCrowd(formData, '保存成功').then(() => {
+    //       // this.$root.$emit('local-label-list-refresh')
+    //       this.$root.$emit('custom-tag-list-refresh')
+    //       this.handleCloseAddForm()
+    //     }).catch(err => {
+    //       // 不符合要求的Mac在上传框里提示
+    //       this.uploadTipMessage = err.message
+    //     })
+    //   } else {
+    //     this.$service.updateLocalCrowd({ formData, id: this.localCrowdId }, '编辑成功').then(() => {
+    //       // this.$root.$emit('local-label-list-refresh')
+    //       this.$root.$emit('custom-tag-list-refresh')
+    //       this.handleCloseAddForm()
+    //     })
+    //   }
+    // },
+
+    // handleRefreshList () {
+    //   this.showList = true
+    //   this.refreshFlag = true
+    //   this.$root.$emit('custom-tag-list-refresh')
+    // },
+    handleCloseAddForm () {
+      this.showAdd2 = false
+      // this.uploadTipMessage = ''
+      // this.templTagName = 'static/localtag.xlsx'
     },
+    // /**
+    //  * 切换不同文件类型，下载不同模板
+    //  */
+    // handleChangeType (type) {
+    //   this.templTagName = type === 1 ? 'static/localtag.txt' : 'static/localtag.xlsx'
+    // },
+    // --------------
     handleShowAdd (localCrowdId, crowdName) {
       this.showAdd2 = true
       this.refreshFlag = false
@@ -118,28 +143,13 @@ export default {
         this.title = '新建本地标签'
       }
     },
-    handleRefreshList () {
-      this.showList = true
-      this.refreshFlag = true
-      this.$root.$emit('custom-tag-list-refresh')
-    },
-    handleCloseAddForm () {
-      this.showAdd2 = false
-      this.uploadTipMessage = ''
-      this.templTagName = 'static/localtag.xlsx'
-    },
     handleTableSelected (val, mode) {
       this.$emit('get-table-selected', val, mode)
     },
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)
-    },
-    /**
-     * 切换不同文件类型，下载不同模板
-     */
-    handleChangeType (type) {
-      this.templTagName = type === 1 ? 'static/localtag.txt' : 'static/localtag.xlsx'
     }
+
   }
 }
 </script>

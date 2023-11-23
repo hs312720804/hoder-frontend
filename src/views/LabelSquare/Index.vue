@@ -14,6 +14,7 @@
       <tag-list
         :data-list="dataList"
         :default-data-source-enum="dataSourceEnum"
+        :launchStatusEnum="launchStatusEnum"
         :current-selected-tags="tagList"
         :type-enum="typeEnum"
         :loading="loading"
@@ -24,7 +25,10 @@
         :showEditBtn="true"
         :showDeleteBtn="true"
         @delete="handleDelete"
-        @edit="handleEdit">
+        @edit="handleEdit"
+        @get-list="handleSearch"
+        @show-add="handleShowAdd"
+      >
       </tag-list>
 
       <el-pagination
@@ -67,18 +71,6 @@
 
     </el-tabs>
 
-    <!-- 自定义标签 - 自定义标签 编辑 -->
-    <TagCategoryUpsert
-      v-if="definedTagId"
-      ref="tagCategoryUpsert"
-      :current-tag-category="tagCategory"
-      :type-enum="typeEnum"
-      :data-source-enum="dataSourceEnum"
-      :definedTagId="definedTagId"
-      @upsert-end="handleSearch"
-    >
-    </TagCategoryUpsert>
-
     <!-- 其他标签 编辑 -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500px">
       <el-form label-position="left" label-width="80px" :model="form">
@@ -98,6 +90,50 @@
         <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
       </div>
     </el-dialog>
+
+    <!-- 全局搜索 - 自定义标签 - 自定义标签 编辑 -->
+    <TagCategoryUpsert
+      v-if="definedTagId"
+      ref="tagCategoryUpsert"
+      :current-tag-category="tagCategory"
+      :type-enum="typeEnum"
+      :data-source-enum="dataSourceEnum"
+      :definedTagId="definedTagId"
+      @upsert-end="handleSearch"
+    >
+    </TagCategoryUpsert>
+
+    <!-- 全局搜索 - 编辑本地标签 -->
+    <LocalListEdit
+      v-if="showAddLocal"
+      title="编辑本地标签"
+      :localCrowdId="localCrowdId"
+      :crowdName="crowdName"
+      @close-add="handleCloseAddForm"
+    >
+    </LocalListEdit>
+
+    <!-- 全局搜索 - 编辑临时标签 -->
+    <!-- {{ showAddTemp }} -->
+    <el-dialog :visible.sync="showAddTemp">
+      <TempLabelAdd
+        :editLaunchCrowdId="editLaunchCrowdId"
+        :editStatus="editStatus"
+        :crowdType="2"
+        @changeStatus="handleRefreshList"
+      >
+      </TempLabelAdd>
+    </el-dialog>
+    <!--
+    <temp-label-add
+      v-if="!showList"
+      :editLaunchCrowdId="editLaunchCrowdId"
+      :editStatus="editStatus"
+      @cancel-add="showList = true"
+      @changeStatus="handleRefreshList"
+      :crowdType="crowdType"
+    >
+    </temp-label-add> -->
   </div>
 </template>
 
@@ -108,7 +144,8 @@ import ThirdPartyTag from './thirdTag/Index.vue'
 import CustomTag from './customTag/Index.vue'
 import tagList from './coms/TagList'
 import TagCategoryUpsert from '@/views/TagCategory/Upsert.vue'
-
+import LocalListEdit from '@/views/LabelSquare/coms/LocalListEdit.vue'
+import TempLabelAdd from '@/views/LabelSquare/customTag/tempLabel/TempLabelAdd.vue'
 export default {
   name: 'crowdCompute',
   components: {
@@ -117,10 +154,24 @@ export default {
     ThirdPartyTag,
     CustomTag,
     tagList,
-    TagCategoryUpsert
+    TagCategoryUpsert,
+    LocalListEdit,
+    TempLabelAdd
   },
   data () {
     return {
+      // ------全局搜索 - 编辑临时标签 -------
+      showAddTemp: false,
+      editLaunchCrowdId: '',
+      editStatus: '',
+      // ------全局搜索 - 编辑临时标签  end-----
+
+      // ------全局搜索 - 编辑本地标签 -------
+      showAddLocal: false, // 弹窗
+      localCrowdId: '',
+      crowdName: '',
+      // ------全局搜索 - 编辑本地标签  end-----
+
       dataList: [],
       filter: {
         // pageNum: 1,
@@ -165,12 +216,41 @@ export default {
       // dataSourceEnum: {},
       // typeEnum: {},
       tagCategory: {},
-      definedTagId: ''
+      definedTagId: '',
+      launchStatusEnum: {}
       // ------------------------
     }
   },
   methods: {
-    // --------全局搜索标签，标签的修改、删除方法----------
+    handleRefreshList () {
+      this.showAddTemp = false
+      // this.refreshFlag = true
+      // 重新刷新
+      this.handleSearch()
+    },
+    handleCloseAddForm () {
+      this.showAddLocal = false
+    },
+    // <!-- 全局搜索 - 编辑临时标签、本地标签 -->
+    handleShowAdd (localCrowdId, crowdName, type) {
+      if (type === 'tempCrowd') {
+        // 临时标签
+        // console.log('arguments', id)
+        // console.log('arguments', code)
+        // console.log('arguments', arguments)
+        this.showAddTemp = true
+        this.editLaunchCrowdId = localCrowdId
+        this.editStatus = crowdName
+      } else {
+        // 本地标签
+        // console.log('localCrowdId, crowdName-->', localCrowdId, crowdName)
+        this.showAddLocal = true
+        this.refreshFlag = false
+        this.localCrowdId = localCrowdId
+        this.crowdName = crowdName
+      }
+    },
+    // --------全局搜索标签，删除----------
     // 删除
     handleDelete (id) {
       this.$service.deleteSpecialTagType(id).then(() => {
@@ -183,6 +263,7 @@ export default {
     handleEdit (row) {
       const { tagId, tagName, tagKey, remark, dataSource } = row
 
+      // 自定义标签，编辑比较特殊
       if (dataSource === 1) {
         this.handleCustomTagEdit(row)
       } else {
@@ -252,13 +333,15 @@ export default {
       const filter = {
         ...this.filter,
         ...this.pagination,
-        groupId: 0
+        groupId: 0,
+        total: undefined
       }
 
       this.$service.getTagGroupTreeList(filter).then((data) => {
         this.dataList = data.pageInfo.list
         this.dataSourceEnum = data.lableDataSourceEnum
         this.typeEnum = data.tagsTypeEnum
+        this.launchStatusEnum = data.launchStatusEnum
         this.loading = false
         this.pagination.total = data.pageInfo.total
       })
