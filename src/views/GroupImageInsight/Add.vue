@@ -28,7 +28,7 @@
 
 <script>
 export default {
-  name: 'Add',
+  name: 'UploadAdd',
   data () {
     return {
       slotData: {

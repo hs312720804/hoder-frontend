@@ -1,4 +1,5 @@
 <template>
+  <!-- 因为新增和编辑放在不同的组件，所以将编辑新增组件提取出来 -->
  <div class='' id=''>
   <groupImageAdd
     :isUpload="false"
@@ -10,13 +11,11 @@
     @upsert-end="handleRefreshList"
     @save-form="handleSave"
     @currentFileType="handleChangeType"
-
   >
       <!-- 解构插槽 Prop -->
-      <template #default="slotData">
-        <!-- {{ slotData }} -->
+      <template #default="{slotData}">
         <el-form-item label="标签名称">
-          <el-input v-model="slotData.slotData.name" :maxlength="50"></el-input>
+          <el-input v-model="slotData.name" :maxlength="50"></el-input>
         </el-form-item>
       </template>
       <template v-slot:temlDownload>
