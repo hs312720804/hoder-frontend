@@ -227,8 +227,6 @@ export default {
     },
     // 编辑
     handleEdit (launchCrowdItem) {
-      console.log('this.launchStatusEnum', this.launchStatusEnum)
-      console.log('this.launchStatusEnum', launchCrowdItem.history.status)
       this.$emit('show-add', launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
     },
     // 删除

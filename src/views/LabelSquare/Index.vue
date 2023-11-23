@@ -93,7 +93,7 @@
 
     <!-- 全局搜索 - 自定义标签 - 自定义标签 编辑 -->
     <TagCategoryUpsert
-      v-if="definedTagId"
+      v-if="definedTagId !== ''"
       ref="tagCategoryUpsert"
       :current-tag-category="tagCategory"
       :type-enum="typeEnum"
@@ -115,12 +115,15 @@
 
     <!-- 全局搜索 - 编辑临时标签 -->
     <!-- {{ showAddTemp }} -->
-    <el-dialog :visible.sync="showAddTemp">
+    <el-dialog :visible.sync="showAddTemp" :show-close="false" width="900px">
       <TempLabelAdd
+        v-if="showAddTemp"
         :editLaunchCrowdId="editLaunchCrowdId"
         :editStatus="editStatus"
         :crowdType="2"
+        style="margin-top: -30px;"
         @changeStatus="handleRefreshList"
+        @cancel-add="showAddTemp = false"
       >
       </TempLabelAdd>
     </el-dialog>
@@ -166,11 +169,11 @@ export default {
       editStatus: '',
       // ------全局搜索 - 编辑临时标签  end-----
 
-      // ------全局搜索 - 编辑本地标签 -------
+      // // ------全局搜索 - 编辑本地标签 -------
       showAddLocal: false, // 弹窗
       localCrowdId: '',
       crowdName: '',
-      // ------全局搜索 - 编辑本地标签  end-----
+      // // ------全局搜索 - 编辑本地标签  end-----
 
       dataList: [],
       filter: {
@@ -235,9 +238,6 @@ export default {
     handleShowAdd (localCrowdId, crowdName, type) {
       if (type === 'tempCrowd') {
         // 临时标签
-        // console.log('arguments', id)
-        // console.log('arguments', code)
-        // console.log('arguments', arguments)
         this.showAddTemp = true
         this.editLaunchCrowdId = localCrowdId
         this.editStatus = crowdName

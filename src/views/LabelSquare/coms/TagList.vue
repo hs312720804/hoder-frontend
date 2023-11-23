@@ -183,7 +183,7 @@ export default {
         row: {
           ...row,
           history: {
-            status: row.status
+            status: row.hstatus
           }
         }
       }
