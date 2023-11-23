@@ -74,7 +74,7 @@
     </el-table-column>
     <el-table-column prop="count" label="原始数量">
       <template slot-scope="scope">
-        {{ cc_format_number(scope.row.history.totalMac)  }}
+        {{ cc_format_number(scope.row.history.historyNumber)  }}
       </template>
     </el-table-column>
     <el-table-column label="状态" width="150">
@@ -148,7 +148,7 @@
           placeholder="请输入正整数"
           style="width: 150px"
           clearable
-          :min="100"
+          :min="1"
           :max="3000"
           @mousewheel.native.prevent
           @keyup.native="prevent($event)"
@@ -268,7 +268,7 @@ export default {
           {
             label: '原始数量',
             render: (h, { row }) => {
-              return this.cc_format_number(row.history.totalMac)
+              return this.cc_format_number(row.history.historyNumber)
             }
           },
           {
@@ -471,7 +471,7 @@ export default {
     initFormData () {
       return {
         historyCrowdId: '',
-        extendNum: '',
+        extendNum: 100,
         launchName: '',
         remark: ''
       }
