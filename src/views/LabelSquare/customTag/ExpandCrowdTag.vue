@@ -130,6 +130,7 @@
           :remote-method="qiBoRemoteMethod"
           :loading="getCrowdListLoading"
           v-loadmore="{'methord': handelQiboLoadmore}"
+          @change="handleHistoryCrowdIdChange"
         >
           <el-option
             v-for="item in crowdList"
@@ -210,7 +211,6 @@ export default {
       this.selectedCrowd = this.crowdList.find(item => {
         return item.value === value
       }) || {}
-      this.form.launchName = `${this.selectedCrowd.name}扩充至${this.form.extendNum}万`
 
       if (this.selectedCrowd.totalUser < 100 || this.selectedCrowd.totalUser > 30000000) {
         callback(new Error('数量不可少于100，不可多于3千万'))
@@ -223,7 +223,7 @@ export default {
       },
       rules: {
         historyCrowdId: [
-          // { required: true, message: '请选择', trigger: 'change' },
+          { required: true, message: '请选择', trigger: 'change' },
           { validator: checkCrowd, trigger: 'change' }
         ],
         extendNum: [
@@ -246,82 +246,82 @@ export default {
       },
       table: {
         props: { 'row-class-name': this.tableRowClassName },
-        header: [
-          {
-            label: 'id',
-            prop: 'launchCrowdId'
-          },
-          {
-            label: '人群标签名',
-            prop: 'launchName'
-          },
-          {
-            label: '描述',
-            prop: 'remark'
-          },
-          {
-            label: '数量',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.history.totalMac)
-            }
-          },
-          {
-            label: '原始数量',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.history.historyNumber)
-            }
-          },
-          {
-            label: '状态',
-            // prop: 'status',
-            render: (h, { row }) => {
-              return h(CrowdStatus, {
-                props: {
-                  history: row.history,
-                  launchStatusEnum: this.launchStatusEnum
-                }
-              })
-            }
-          },
-          {
-            label: '创建人',
-            prop: 'creatorName'
-          },
-          {
-            label: '创建时间',
-            prop: 'createTime'
-          },
-          {
-            label: '操作',
-            fixed: 'right',
-            render: (h, params) => {
-              const createBtn = (label, method, permission) => {
-                return h('el-button', {
-                  // directives: [
-                  //   {
-                  //     name: 'permission',
-                  //     value: permission
-                  //   }
-                  // ],
-                  props: {
-                    type: 'text'
-                  },
-                  on: {
-                    click: () => {
-                      this[method](params)
-                    }
-                  }
-                }, label)
-              }
-              return h('div', null, [
-                createBtn(params.row.onOffCrowd ? '下架' : '上架', 'handleOffSet'),
-                createBtn('删除', 'handleDelete')
-              ])
-            }
+        // header: [
+        //   {
+        //     label: 'id',
+        //     prop: 'launchCrowdId'
+        //   },
+        //   {
+        //     label: '人群标签名',
+        //     prop: 'launchName'
+        //   },
+        //   {
+        //     label: '描述',
+        //     prop: 'remark'
+        //   },
+        //   {
+        //     label: '数量',
+        //     render: (h, { row }) => {
+        //       return this.cc_format_number(row.history.totalMac)
+        //     }
+        //   },
+        //   {
+        //     label: '原始数量',
+        //     render: (h, { row }) => {
+        //       return this.cc_format_number(row.history.historyNumber)
+        //     }
+        //   },
+        //   {
+        //     label: '状态',
+        //     // prop: 'status',
+        //     render: (h, { row }) => {
+        //       return h(CrowdStatus, {
+        //         props: {
+        //           history: row.history,
+        //           launchStatusEnum: this.launchStatusEnum
+        //         }
+        //       })
+        //     }
+        //   },
+        //   {
+        //     label: '创建人',
+        //     prop: 'creatorName'
+        //   },
+        //   {
+        //     label: '创建时间',
+        //     prop: 'createTime'
+        //   },
+        //   {
+        //     label: '操作',
+        //     fixed: 'right',
+        //     render: (h, params) => {
+        //       const createBtn = (label, method, permission) => {
+        //         return h('el-button', {
+        //           // directives: [
+        //           //   {
+        //           //     name: 'permission',
+        //           //     value: permission
+        //           //   }
+        //           // ],
+        //           props: {
+        //             type: 'text'
+        //           },
+        //           on: {
+        //             click: () => {
+        //               this[method](params)
+        //             }
+        //           }
+        //         }, label)
+        //       }
+        //       return h('div', null, [
+        //         createBtn(params.row.onOffCrowd ? '下架' : '上架', 'handleOffSet'),
+        //         createBtn('删除', 'handleDelete')
+        //       ])
+        //     }
 
-          }
+        //   }
 
-        ],
+        // ],
         data: [],
         selected: [],
         selectionType: 'none'
@@ -357,6 +357,9 @@ export default {
     // }
   },
   methods: {
+    handleHistoryCrowdIdChange () {
+      this.form.launchName = `${this.selectedCrowd.name || ''}扩充至${this.form.extendNum || ''}万`
+    },
     // // 限制正整数输入
     // validateInput (value) {
     //   value = value.replace(/[^0-9]/g, '')
@@ -370,7 +373,7 @@ export default {
     //   }) || {}
     // },
     handleExtendNumChange (value) {
-      this.form.launchName = `${this.selectedCrowd.name}扩充至${this.form.extendNum}万`
+      this.form.launchName = `${this.selectedCrowd.name || ''}扩充至${this.form.extendNum || ''}万`
     },
     prevent (e) {
       const keynum = window.event ? e.keyCode : e.which // 获取键盘码
