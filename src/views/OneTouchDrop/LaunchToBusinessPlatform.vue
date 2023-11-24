@@ -134,8 +134,9 @@
                                   v-for="item in v.childs"
                                   :label="v.policyId+'_'+item.tempCrowdId"
                                   :key="item.tempCrowdId+''"
+                                  :disabled="item.canPush === null"
                                 >
-                                  {{ item.crowdName }} -- {{ item.canPush }}
+                                  {{ item.crowdName }}
                                 </el-radio>
                             </el-radio-group>
 
