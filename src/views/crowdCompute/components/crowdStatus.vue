@@ -1,5 +1,5 @@
 <template>
-<div>
+<div v-if="history.status">
   <!-- 状态为计算中，显示进度 -->
   <template v-if="history.status >=20 && history.status < 30">
     {{ history.process }}
@@ -18,7 +18,7 @@
   <template
     v-else-if="(launchStatusEnum[history.status]).code === 1 || (launchStatusEnum[history.status]).code === 4 || (launchStatusEnum[history.status]).code === 7">
     <span v-if="crowdType === 4">计算</span>
-    <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
+    <el-button type="text" v-else @click="calculate">计算</el-button>
   </template>
   <span v-else-if="(launchStatusEnum[history.status]).code === 5" style="color: red">
     计算失败
@@ -38,10 +38,14 @@ import TipPopover from '../components/tipPopover.vue'
 export default {
   components: { TipPopover },
   props: {
-    history: {
+    row: {
       type: Object,
       default: () => {}
     },
+    // history: {
+    //   type: Object,
+    //   default: () => {}
+    // },
     launchStatusEnum: {
       type: Object,
       default: () => {}
@@ -52,11 +56,23 @@ export default {
 
     }
   },
+  computed: {
+    history () {
+      return this.row ? this.row.history : {}
+    }
+  },
   created () {
 
   },
   methods: {
-
+    // 计算
+    calculate () {
+      const row = this.row
+      this.$service.calculateTempCrowd({ launchCrowdId: row.launchCrowdId, calType: row.calType }, '成功计算中').then(() => {
+        // this.fetchData()
+        this.$emit('get-list')
+      })
+    }
   }
 }
 </script>

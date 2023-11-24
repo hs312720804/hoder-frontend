@@ -64,7 +64,7 @@
     @select="handleSelectOrCancel"
     @select-all="handleSelectAllOrCancel">
     <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
-    <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
+    <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column>
     <el-table-column prop="launchName" label="人群标签名" width="120"></el-table-column>
     <el-table-column prop="remark" label="描述" width="180"></el-table-column>
     <el-table-column prop="count" label="数量">
@@ -78,10 +78,11 @@
       </template>
     </el-table-column>
     <el-table-column label="状态" width="150">
-      <template slot-scope="scope">
+      <template v-slot="{row}">
         <CrowdStatus
-          :history="scope.row.history"
+          :row="row"
           :launchStatusEnum="launchStatusEnum"
+          @get-list="fetchData"
         ></CrowdStatus>
       </template>
     </el-table-column>
@@ -135,7 +136,7 @@
           <el-option
             v-for="item in crowdList"
             :value="item.value"
-            :label="item.value + '-' + item.name"
+            :label="item.name"
             :key="item.value"
           ></el-option>
         </el-select>

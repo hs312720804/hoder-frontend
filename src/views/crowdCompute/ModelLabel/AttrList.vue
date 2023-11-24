@@ -38,7 +38,7 @@
               v-if="showSelection"
             ></el-table-column>
             <el-table-column prop="launchCrowdId" label="标签ID"></el-table-column>
-            <el-table-column prop="dmpCrowdId" label="人群ID" width="120"></el-table-column>
+            <el-table-column prop="dmpCrowdId" label="dmp人群投放ID" width="120"></el-table-column>
             <el-table-column prop="launchName" label="名称" width="230"></el-table-column>
             <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
             <el-table-column prop="count" label="使用次数">

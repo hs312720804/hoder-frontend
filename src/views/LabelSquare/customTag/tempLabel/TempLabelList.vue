@@ -26,18 +26,17 @@
           </el-input>
           <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
         </div> -->
-        <el-popover placement="top" trigger="click" class="popover-button">
+        <!-- <el-popover placement="top" trigger="click" class="popover-button">
           <div>
             <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
               <el-checkbox label="creatorName">创建人</el-checkbox>
               <el-checkbox label="createTime">创建时间</el-checkbox>
-              <!--<el-checkbox label="status">投放状态</el-checkbox>-->
               <el-checkbox label="department">业务部门</el-checkbox>
             </el-checkbox-group>
           </div>
           <i class="el-icon-cc-setting operate" slot="reference">
           </i>
-        </el-popover>
+        </el-popover> -->
       </div>
 
     </div>
@@ -45,7 +44,9 @@
       <el-table ref="tempChangeTable" :data="tableData" border @select="handleSelectOrCancel"
         @select-all="handleSelectAllOrCancel">
         <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
-        <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column>
+        <el-table-column prop="tagId" label="标签ID"></el-table-column>
+
+        <!-- <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column> -->
         <el-table-column prop="dmpCrowdId" label="dmp人群投放ID" width="120"></el-table-column>
         <el-table-column prop="launchName" label="名称" width="180"></el-table-column>
         <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
@@ -55,47 +56,20 @@
           <!--</template>-->
         </el-table-column>
         <el-table-column label="状态" width="150">
-          <template slot-scope="scope">
-            <!-- {{ scope.row.history.status }} -->
-            <div v-if="scope.row.history.status">
-              <!-- 状态为计算中，显示进度 -->
-              <template v-if="scope.row.history.status >= 20 && scope.row.history.status < 30">
-                {{ scope.row.history.process }}
-              </template>
-              <template v-else-if="(launchStatusEnum[scope.row.history.status]).code === 3">
-                计算完成
-              </template>
-              <template v-else-if="scope.row.history.status === 41">
-                结果为0
-              </template>
-              <!-- 新增计算中时是否是人群派对中 -->
-              <template
-                v-else-if="((launchStatusEnum[scope.row.history.status]).code === 2 && (launchStatusEnum[scope.row.history.status]).childrenCode === 23)">
-                {{ (launchStatusEnum[scope.row.history.status]).childrenName }}
-              </template>
-              <template
-                v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7">
-                <span v-if="crowdType === 4">计算</span>
-                <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
-              </template>
-              <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
-                计算失败
-                <!-- ，<el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
-              </div>
-              <template v-else>
-                {{ (launchStatusEnum[scope.row.history.status]).name }}
-              </template>
-
-              <TipPopover :launchStatusEnum="launchStatusEnum" :status="scope.row.history.status"></TipPopover>
-            </div>
+          <template v-slot="{row}">
+            <CrowdStatus
+              :row="row"
+              :launchStatusEnum="launchStatusEnum"
+              @get-list="fetchData"
+            ></CrowdStatus>
           </template>
         </el-table-column>
-        <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" label="创建人" prop="creatorName">
+        <!-- <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" label="创建人" prop="creatorName">
         </el-table-column>
         <el-table-column v-if="(checkList.indexOf('createTime') > -1)" label="创建时间" prop="history.createTime">
         </el-table-column>
         <el-table-column v-if="(checkList.indexOf('department') > -1)" label="业务部门" prop="department">
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="设备数量">
           <template slot-scope="scope">
             {{ cc_format_number(scope.row.history.totalUser) }}
@@ -106,21 +80,17 @@
             {{ cc_format_number(scope.row.history.totalWxOpenid) }}
           </template>
         </el-table-column>
-        <el-table-column label="总体耗时（min）">
-          <template slot-scope="scope">
-            {{ scope.row.spentTotalTime }}
-          </template>
-        </el-table-column>
-        <el-table-column label="dmp人群ID">
-          <template slot-scope="scope">
-            {{ scope.row.dmpCrowdId }}
-          </template>
-        </el-table-column>
         <el-table-column label="版本" width="100">
           <template slot-scope="scope">
             {{ scope.row.history.version }}
           </template>
         </el-table-column>
+        <!-- <el-table-column label="总体耗时（min）">
+          <template slot-scope="scope">
+            {{ scope.row.spentTotalTime }}
+          </template>
+        </el-table-column> -->
+
         <el-table-column label="操作" width="120" v-if="!showSelection" fixed="right">
           <template slot-scope="scope">
             <TempLabelListOperate
@@ -158,14 +128,15 @@
 </template>
 
 <script>
-import TipPopover from '@/views/crowdCompute/components/tipPopover.vue'
+// import TipPopover from '@/views/crowdCompute/components/tipPopover.vue'
 import TempLabelListOperate from '@/views/LabelSquare/coms/TempLabelListOperate.vue'
-
+import CrowdStatus from '@/views/crowdCompute/components/crowdStatus.vue'
 export default {
   name: 'TempLabel',
   components: {
-    TipPopover,
-    TempLabelListOperate
+    // TipPopover,
+    TempLabelListOperate,
+    CrowdStatus
   },
   props: {
     refreshFlag: {
@@ -424,11 +395,11 @@ export default {
     // },
     // minitor (row) {},
     // 计算
-    calculate (row) {
-      this.$service.calculateTempCrowd({ launchCrowdId: row.launchCrowdId, calType: row.calType }, '成功计算中').then(() => {
-        this.fetchData()
-      })
-    },
+    // calculate (row) {
+    //   this.$service.calculateTempCrowd({ launchCrowdId: row.launchCrowdId, calType: row.calType }, '成功计算中').then(() => {
+    //     this.fetchData()
+    //   })
+    // },
     // 新增
     handleAdd () {
       this.$emit('show-add')

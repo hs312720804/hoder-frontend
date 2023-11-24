@@ -39,7 +39,7 @@
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="launchCrowdId" label="ID" width="50"></el-table-column>
       <el-table-column prop="launchName" label="投放名称" width="100"></el-table-column>
-      <el-table-column prop="dmpCrowdId" label="人群投放Id" width="80"></el-table-column>
+      <el-table-column prop="dmpCrowdId" label="dmp人群投放ID" width="80"></el-table-column>
       <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
       <el-table-column prop="status" label="人群状态" width="70">
         <template slot-scope="scope">

@@ -5,8 +5,9 @@
       @select-all="handleSelectAllOrCancel">
       <el-table-column type="selection" width="55" v-if="showSelection">
       </el-table-column>
-      <el-table-column prop="tagId" label="ID">
-      </el-table-column>
+      <el-table-column prop="tagId" label="标签ID"></el-table-column>
+      <!-- <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column> -->
+      <el-table-column prop="dmpCrowdId" label="dmp人群投放ID" width="120"></el-table-column>
       <el-table-column prop="tagName" label="名称">
         <template slot-scope="scope">
           {{ scope.row.tagName }}
@@ -31,6 +32,47 @@
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注">
       </el-table-column>
+
+      <!-- -------------------------新增字段--------------------------------- -->
+      <el-table-column prop="count" label="使用次数">
+      </el-table-column>
+      <el-table-column label="状态">
+        <template v-slot="{row}" >
+          <template v-if="row.onOffCrowd !== null && row.onOffCrowd !== undefined">
+            <el-tag v-if="row.onOffCrowd">生效中</el-tag>
+            <el-tag v-else type="info">已下架</el-tag>
+          </template>
+
+          <CrowdStatus
+            :row="getComputedRow(row)"
+            :launchStatusEnum="launchStatusEnum"
+            @get-list="$emit('get-list')"
+          ></CrowdStatus>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" label="创建人" prop="creatorName">
+      </el-table-column>
+      <el-table-column v-if="(checkList.indexOf('createTime') > -1)" label="创建时间" prop="history.createTime">
+      </el-table-column>
+      <el-table-column v-if="(checkList.indexOf('department') > -1)" label="业务部门" prop="department">
+      </el-table-column> -->
+      <el-table-column label="设备数量">
+        <template v-slot="{row}">
+          {{ cc_format_number(row.htotalUser) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="微信数量">
+        <template v-slot="{row}">
+          {{ cc_format_number(row.htotalWxOpenid)}}
+        </template>
+      </el-table-column>
+      <el-table-column label="版本">
+        <template v-slot="{row}">
+          {{ row.hversion }}
+        </template>
+      </el-table-column>
+      <!-- -------------------------新增字段 end--------------------------------- -->
+
       <el-table-column prop="operation" label="操作" v-if="!showSelection">
         <!-- slot-scope="{ column, $index }" -->
         <template slot="header">
@@ -101,6 +143,7 @@
 import tagDetailList from './TagDetail.vue'
 import TempLabelListOperate from './TempLabelListOperate.vue'
 import LocalListOperate from './LocalListOperate.vue'
+import CrowdStatus from '@/views/crowdCompute/components/crowdStatus.vue'
 
 export default {
   name: 'TagList',
@@ -147,7 +190,8 @@ export default {
   components: {
     tagDetailList,
     TempLabelListOperate,
-    LocalListOperate
+    LocalListOperate,
+    CrowdStatus
   },
   data () {
     return {
@@ -177,6 +221,18 @@ export default {
     }
   },
   methods: {
+    // 构造计算标签的数据格式
+    getComputedRow (row) {
+      return {
+        ...row,
+        history: {
+          status: row.hstatus,
+          totalUser: row.htotalUser,
+          totalWxOpenid: row.htotalWxOpenid,
+          version: row.hversion
+        }
+      }
+    },
     getTempLabelListOperateScope (row) {
       console.log('scope-->', row)
       return {

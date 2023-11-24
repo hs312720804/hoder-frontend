@@ -15,26 +15,26 @@
             @keyup.enter.native="fetchData"></el-input>
           <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
         </div> -->
-        <el-popover placement="top" trigger="click" class="popover-button">
+        <!-- <el-popover placement="top" trigger="click" class="popover-button">
           <div>
             <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
               <el-checkbox label="creatorName">创建人</el-checkbox>
               <el-checkbox label="createTime">创建时间</el-checkbox>
-              <!--<el-checkbox label="status">投放状态</el-checkbox>-->
               <el-checkbox label="department">业务部门</el-checkbox>
             </el-checkbox-group>
           </div>
           <i class="el-icon-cc-setting operate" slot="reference">
           </i>
-        </el-popover>
+        </el-popover> -->
       </div>
     </div>
     <div>
       <el-table ref="tempChangeTable" :data="tableData" border @select="handleSelectOrCancel"
         @select-all="handleSelectAllOrCancel">
         <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
-        <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
-        <el-table-column prop="dmpCrowdId" label="投放ID"></el-table-column>
+        <el-table-column prop="tagId" label="标签ID"></el-table-column>
+        <!-- <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column> -->
+        <el-table-column prop="dmpCrowdId" label="dmp人群投放ID"></el-table-column>
         <el-table-column prop="launchName" label="名称"></el-table-column>
         <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
         <el-table-column prop="count" label="使用次数">
@@ -43,17 +43,23 @@
           <!--</template>-->
         </el-table-column>
         <el-table-column label="状态">
-          <template #default="scope">
-            <el-tag v-if="scope.row.onOffCrowd">生效中</el-tag>
+          <template v-slot="{row}">
+            <el-tag v-if="row.onOffCrowd">生效中</el-tag>
             <el-tag v-else type="info">已下架</el-tag>
+            <br/>
+            <CrowdStatus
+              :row="row"
+              :launchStatusEnum="launchStatusEnum"
+              @get-list="fetchData"
+            ></CrowdStatus>
           </template>
         </el-table-column>
-        <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" label="创建人" prop="creatorName">
+        <!-- <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" label="创建人" prop="creatorName">
         </el-table-column>
         <el-table-column v-if="(checkList.indexOf('createTime') > -1)" label="创建时间" prop="history.createTime">
         </el-table-column>
         <el-table-column v-if="(checkList.indexOf('department') > -1)" label="业务部门" prop="department">
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="设备数量">
           <template slot-scope="scope">
             {{ cc_format_number(scope.row.history.totalUser) }}
@@ -105,6 +111,7 @@
 
 <script>
 import LocalListOperate from '../../coms/LocalListOperate.vue'
+import CrowdStatus from '@/views/crowdCompute/components/crowdStatus.vue'
 
 export default {
   name: 'TempLabel',
@@ -191,7 +198,7 @@ export default {
         search: this.launchName
       }
       this.$service.getLocalCrowdList(filter).then(data => {
-        // this.launchStatusEnum = data.launchStatusEnum
+        this.launchStatusEnum = data.launchStatusEnum
         this.tableData = data.pageInfo.list
         this.totalCount = data.pageInfo.total
         if (this.showSelection) {
@@ -335,7 +342,10 @@ export default {
       this.$emit('change-checkList', val)
     }
   },
-  components: { LocalListOperate }
+  components: {
+    LocalListOperate,
+    CrowdStatus
+  }
 }
 </script>
 

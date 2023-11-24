@@ -54,11 +54,13 @@
           <!--</template>-->
         </el-table-column>
         <el-table-column label="状态" width="150">
-          <template slot-scope="scope">
+          <template v-slot="{row}">
             <!-- {{ scope.row.history.status }} -->
-            <div v-if="scope.row.history.status">
-              <CrowdStatus :history="scope.row.history" :launchStatusEnum="launchStatusEnum"></CrowdStatus>
-            </div>
+              <CrowdStatus
+                :row="row"
+                :launchStatusEnum="launchStatusEnum"
+                @get-list="fetchData">
+              </CrowdStatus>
           </template>
         </el-table-column>
         <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" label="创建人" prop="creatorName">
