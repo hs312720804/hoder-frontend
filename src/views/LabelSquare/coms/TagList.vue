@@ -297,6 +297,9 @@ export default {
       }
     },
     updateTableSelected () {
+      // 取消查看详情
+      this.handleReadTagCancel()
+
       const arr = []
       const currentSelectRows = this.currentSelectedTags
       this.dataList.forEach((item, index) => {

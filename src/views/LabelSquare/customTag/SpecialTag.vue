@@ -11,13 +11,13 @@
             </div>
             <div v-else></div>
             <div class="search-input">
-                <el-input
-                        placeholder="支持按标签名、ID搜索"
-                        class="header-input"
-                        v-model="launchName"
-                        @keyup.enter.native="fetchData"
-                ></el-input>
-                <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+              <el-input
+                placeholder="支持按标签名、ID搜索"
+                class="header-input"
+                v-model="launchName"
+                @keyup.enter.native="fetchData"
+              ></el-input>
+              <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
             </div>
         </div>
       <tag-list
