@@ -73,7 +73,7 @@
       </el-table-column>
       <!-- -------------------------新增字段 end--------------------------------- -->
 
-      <el-table-column prop="operation" label="操作" v-if="!showSelection">
+      <el-table-column prop="operation" label="操作" v-if="!showSelection" width="250px">
         <!-- slot-scope="{ column, $index }" -->
         <template slot="header">
           操作
