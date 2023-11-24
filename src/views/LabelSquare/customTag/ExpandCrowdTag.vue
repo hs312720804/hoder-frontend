@@ -126,7 +126,7 @@
           v-model="form.historyCrowdId"
           filterable
           remote
-          placeholder="请搜索选择行为人群、临时人群、本地人群  "
+          placeholder="请搜索选择行为人群、临时标签、本地标签"
           clearable
           :remote-method="qiBoRemoteMethod"
           :loading="getCrowdListLoading"
