@@ -64,7 +64,7 @@
     @select="handleSelectOrCancel"
     @select-all="handleSelectAllOrCancel">
     <el-table-column type="selection" width="55" v-if="showSelection" :selectable="selectable"></el-table-column>
-    <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column>
+    <el-table-column prop="tagId" label="标签ID"></el-table-column>
     <el-table-column prop="launchName" label="人群标签名" width="120"></el-table-column>
     <el-table-column prop="remark" label="描述" width="180"></el-table-column>
     <el-table-column prop="count" label="数量">
@@ -605,7 +605,6 @@ export default {
         this.table.data = this.table.data.map(item => {
           return {
             ...item,
-            tagId: item.launchCrowdId,
             dataSource: 1
           }
         })
