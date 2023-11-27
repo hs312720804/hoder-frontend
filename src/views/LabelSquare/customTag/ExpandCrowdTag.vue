@@ -63,7 +63,7 @@
     border
     @select="handleSelectOrCancel"
     @select-all="handleSelectAllOrCancel">
-    <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
+    <el-table-column type="selection" width="55" v-if="showSelection" :selectable="selectable"></el-table-column>
     <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column>
     <el-table-column prop="launchName" label="人群标签名" width="120"></el-table-column>
     <el-table-column prop="remark" label="描述" width="180"></el-table-column>
@@ -358,6 +358,9 @@ export default {
     // }
   },
   methods: {
+    selectable (row, index) {
+      return row.onOffCrowd ? !!row.onOffCrowd : false
+    },
     handleHistoryCrowdIdChange () {
       this.form.launchName = `${this.selectedCrowd.name || ''}扩充至${this.form.extendNum || ''}万`
     },
