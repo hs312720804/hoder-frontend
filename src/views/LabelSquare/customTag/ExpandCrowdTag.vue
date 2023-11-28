@@ -362,7 +362,9 @@ export default {
       return row.onOffCrowd ? !!row.onOffCrowd : false
     },
     handleHistoryCrowdIdChange () {
-      this.form.launchName = `${this.selectedCrowd.name || ''}扩充至${this.form.extendNum || ''}万`
+      this.$nextTick(() => {
+        this.form.launchName = `${this.selectedCrowd.name || ''}扩充至${this.form.extendNum || ''}万`
+      })
     },
     // // 限制正整数输入
     // validateInput (value) {
@@ -536,6 +538,7 @@ export default {
       this.$nextTick(res => {
         // 初始化数据
         this.form = this.initFormData()
+        this.selectedCrowd = { totalUser: 0 }
         this.$refs.ruleForm.resetFields()
       })
     },
