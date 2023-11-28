@@ -351,6 +351,8 @@ export default {
       // console.log(val)
       // console.log(index)
       // console.log(crowdData)
+      this.crowdForm.calType = ['0'] // 重置数据类型
+
       const crowdList = crowdData[index].childs
       const policyId = crowdData[index].policyId
       // 选中的对象list
