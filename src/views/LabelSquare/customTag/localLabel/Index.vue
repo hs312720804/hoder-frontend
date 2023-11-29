@@ -16,7 +16,10 @@
       :title="title"
       :localCrowdId="localCrowdId"
       :crowdName="crowdName"
+      :editTagId="editTagId"
       @close-add="handleCloseAddForm"
+      @upsert-end="handleRefreshList"
+      :addOrEditStatus="addOrEditStatus"
     >
     </LocalListEdit>
     <!-- <group-image-add
@@ -79,7 +82,8 @@ export default {
       title: '新建本地标签',
       localCrowdId: '',
       crowdName: '',
-      addOrEditStatus: ''
+      addOrEditStatus: '',
+      editTagId: ''
       // publicPath: process.env.BASE_URL,
       // templTagName: 'static/localtag.xlsx'
       // uploadTipMessage: ''
@@ -114,11 +118,11 @@ export default {
     //   }
     // },
 
-    // handleRefreshList () {
-    //   this.showList = true
-    //   this.refreshFlag = true
-    //   this.$root.$emit('custom-tag-list-refresh')
-    // },
+    handleRefreshList () {
+      this.showList = true
+      this.refreshFlag = true
+      this.$root.$emit('custom-tag-list-refresh')
+    },
     handleCloseAddForm () {
       this.showAdd2 = false
       // this.uploadTipMessage = ''
@@ -131,7 +135,7 @@ export default {
     //   this.templTagName = type === 1 ? 'static/localtag.txt' : 'static/localtag.xlsx'
     // },
     // --------------
-    handleShowAdd (localCrowdId, crowdName) {
+    handleShowAdd (localCrowdId, crowdName, tagId) {
       this.showAdd2 = true
       this.refreshFlag = false
       this.localCrowdId = localCrowdId
@@ -139,6 +143,7 @@ export default {
       this.addOrEditStatus = this.localCrowdId != null && this.crowdName != undefined ? 'edit' : 'add'
       if (this.addOrEditStatus === 'edit') {
         this.title = '编辑本地标签'
+        this.editTagId = tagId
       } else {
         this.title = '新建本地标签'
       }

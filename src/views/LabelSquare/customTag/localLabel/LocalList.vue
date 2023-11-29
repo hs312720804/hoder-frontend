@@ -79,7 +79,7 @@
           <template slot-scope="scope">
             <LocalListOperate
               :scope="scope"
-              @show-add="(localCrowdId, crowdName) => $emit('show-add', localCrowdId, crowdName)"
+              @show-add="(localCrowdId, crowdName, tagId) => $emit('show-add', localCrowdId, crowdName, tagId)"
               @get-list="fetchData"
             >
             </LocalListOperate>
