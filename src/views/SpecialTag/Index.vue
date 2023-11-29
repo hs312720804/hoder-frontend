@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="">
+        <div>
             <el-steps :active="activeStep" finish-status="success" simple style="margin-top: 20px">
                 <el-step title="第一步：挑选基础标签" icon="el-icon-edit"></el-step>
                 <el-step title="第二步：编辑组合标签" icon="el-icon-edit"></el-step>
@@ -9,7 +9,7 @@
         </div>
         <div>
                     <!-- :recordId="recordId" -->
-            <AddOrEditSpecialTag
+            <!-- <AddOrEditSpecialTag
                 v-if="activeStep === 0"
                 :mode="mode"
                 :initTagList="initTagList"
@@ -17,17 +17,25 @@
                 :usedTagList="usedTagList"
                 @resetFormData="resetFormData"
                 @handleDirectStrategyList="handleDirectStrategyList">
-            </AddOrEditSpecialTag>
+            </AddOrEditSpecialTag> -->
+            <newCreatePolicy
+              v-if="activeStep === 0"
+              pageType="specialTag"
+              :initTagList="initTagList"
+              @policyNextStep="handlePolicyNextStep"
+              @resetFormData="resetFormData"
+              @handleDirectStrategyList="handleDirectStrategyList">
+            </newCreatePolicy>
 
-                    <!-- :recordId="recordId" -->
-            <create-crowd
-                v-if="activeStep === 1"
-                :initTagList="initTagList"
-                @crowdNextStep="handleCrowdNextStep"
-                @crowdPrevStep="handleCrowdPrevStep"
-                @resetFormData="resetFormData"
-                @handleDirectStrategyList="handleDirectStrategyList">
-            </create-crowd>
+            <!-- :recordId="recordId" -->
+            <createCrowd
+              v-if="activeStep === 1"
+              :initTagList="initTagList"
+              @crowdNextStep="handleCrowdNextStep"
+              @crowdPrevStep="handleCrowdPrevStep"
+              @resetFormData="resetFormData"
+              @handleDirectStrategyList="handleDirectStrategyList">
+            </createCrowd>
 
         </div>
     </div>
@@ -35,14 +43,16 @@
 
 <script>
 import createCrowd from './CreateCrowd'
-import AddOrEditSpecialTag from './AddOrEditSpecialTag'
+// import AddOrEditSpecialTag from './AddOrEditSpecialTag'
+import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
 export default {
   name: 'index',
   components: {
     // createPolicy,
     createCrowd,
     // LaunchToBusiness,
-    AddOrEditSpecialTag
+    // AddOrEditSpecialTag
+    newCreatePolicy
   },
   provide () {
     return {
@@ -112,7 +122,14 @@ export default {
     getSpecialTagDetail () {
       this.$service.specialTagDetail({ specialTagId: this.$route.query.specialTagId }).then((data) => {
         this.specialTagDetail = data
-        this.initTagList = this.specialTagDetail.tags || []
+        const tags = this.specialTagDetail.tags || []
+        this.initTagList = tags.map(item => {
+          return {
+            ...item,
+            tagId: Number(item.tagId) // 转成数字类型
+          }
+        })
+
         if (this.specialTagDetail.useTags && this.specialTagDetail.useTags.length > 0) {
           this.usedTagList = this.specialTagDetail.useTags.map(item => {
             return Number(item.tagId)

@@ -1,6 +1,6 @@
 <template>
   <div class="add">
-    <el-row>
+    <el-row v-if="pageType === 'common'">
       <el-col :span="24">
         <div class="title" v-if="crowdId == null">新增人群</div>
         <div class="title" v-if="crowdId != null">编辑人群</div>
@@ -16,6 +16,7 @@
           label-width="130px"
         >
         <!-- rulesJson----------{{ rulesJson }} -->
+        <template v-if="pageType === 'common'">
           <el-form-item label="人群名称" prop="name">
             <el-input
               size="small"
@@ -24,9 +25,21 @@
               :maxlength="50"
             ></el-input>
           </el-form-item>
+        </template>
+        <template v-if="pageType === 'specialTag'">
+          <el-form-item label="标签名称" prop="name">
+            <el-input
+              size="small"
+              v-model="form.name"
+              placeholder="标签名称"
+              :maxlength="50"
+            ></el-input>
+          </el-form-item>
+        </template>
           <div style="position: relative">
             <div v-if="tags.length > 0">
               <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
+                <!-- rulesJson -- {{rulesJson}} -->
                 <MultipleSelect
                   ref="MultipleSelectRef"
                   :tags="tags"
@@ -72,98 +85,108 @@
               ></MultipleSelect>
             </el-form-item>
           </div>
+          <!-- 默认情况展示，组合标签时不展示 -->
+          <template v-if="pageType === 'common'">
 
-          <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新" prop="autoVersion" >
-            <el-radio-group v-model="form.autoVersion">
-              <el-radio :label="false">否</el-radio>
-              <el-radio :label="true">是</el-radio>
-            </el-radio-group>
-          </el-form-item>
-
-          <!-- 动态人群不展示下面的 -->
-          <template v-if="!isDynamicPeople">
-            <el-form-item label="是否限制投放数量" prop="limitLaunch">
-              <el-radio-group
-                v-model="form.limitLaunch"
-                :disabled="limitLaunchDisabled"
-              >
+            <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新" prop="autoVersion" >
+              <el-radio-group v-model="form.autoVersion">
                 <el-radio :label="false">否</el-radio>
                 <el-radio :label="true">是</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item
-              label="投放数量"
-              prop="limitLaunchCount"
-              v-if="form.limitLaunch"
-            >
-              <el-input-number
-                size="medium"
-                placeholder="不能大于1,000,000"
-                :max="1000000"
-                :min="1"
-                v-model="form.limitLaunchCount"
-                style="width: 220px;"
-              ></el-input-number>
-              <span class="tip-text">命中的设备数量上限</span>
-            </el-form-item>
-            <el-form-item label="人群黑名单" prop="blackFlag">
-              <el-radio-group v-model="form.blackFlag">
-                <el-radio :label="0">否</el-radio>
-                <el-radio :label="1">是</el-radio>
-              </el-radio-group>
-            </el-form-item>
 
-            <template v-if="form.blackFlag === 1">
-              <div
-                class="filed-row"
-                v-for="(item, index) in form.blackList"
-                :key="index"
+            <!-- 动态人群不展示下面的 -->
+            <template v-if="!isDynamicPeople">
+              <el-form-item label="是否限制投放数量" prop="limitLaunch">
+                <el-radio-group
+                  v-model="form.limitLaunch"
+                  :disabled="limitLaunchDisabled"
+                >
+                  <el-radio :label="false">否</el-radio>
+                  <el-radio :label="true">是</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item
+                label="投放数量"
+                prop="limitLaunchCount"
+                v-if="form.limitLaunch"
               >
-                <el-form-item
-                  :prop="'blackList.' + index + '.value'"
-                  :rules="[
-                    { required: true, message: '不能为空', trigger: 'blur' },
-                    { validator: checkBlackName, trigger: ['blur'] }
-                  ]">
-                  <el-input
-                    v-model="item.value"
-                    placeholder="请输入要屏蔽的MAC地址"
-                    clearable
-                    style="width: 250px"
-                    maxlength="12"
-                    show-word-limit>
-                  </el-input>
+                <el-input-number
+                  size="medium"
+                  placeholder="不能大于1,000,000"
+                  :max="1000000"
+                  :min="1"
+                  v-model="form.limitLaunchCount"
+                  style="width: 220px;"
+                ></el-input-number>
+                <span class="tip-text">命中的设备数量上限</span>
+              </el-form-item>
+              <el-form-item label="人群黑名单" prop="blackFlag">
+                <el-radio-group v-model="form.blackFlag">
+                  <el-radio :label="0">否</el-radio>
+                  <el-radio :label="1">是</el-radio>
+                </el-radio-group>
+              </el-form-item>
 
-                  <el-button
-                    v-if="form.blackList.length > 1"
-                    type="text"
-                    icon="el-icon-remove-outline"
-                    class="delete-btn"
-                    @click="handleDeleteBlack(index)"
-                  >
-                  </el-button>
-                </el-form-item>
-              </div>
+              <template v-if="form.blackFlag === 1">
+                <div
+                  class="filed-row"
+                  v-for="(item, index) in form.blackList"
+                  :key="index"
+                >
+                  <el-form-item
+                    :prop="'blackList.' + index + '.value'"
+                    :rules="[
+                      { required: true, message: '不能为空', trigger: 'blur' },
+                      { validator: checkBlackName, trigger: ['blur'] }
+                    ]">
+                    <el-input
+                      v-model="item.value"
+                      placeholder="请输入要屏蔽的MAC地址"
+                      clearable
+                      style="width: 250px"
+                      maxlength="12"
+                      show-word-limit>
+                    </el-input>
 
-              <div class="filed-row" style="margin-left: 130px">
-                <el-button @click="handleAddBlack" icon="el-icon-plus" class="add-btn">添加</el-button>
-              </div>
+                    <el-button
+                      v-if="form.blackList.length > 1"
+                      type="text"
+                      icon="el-icon-remove-outline"
+                      class="delete-btn"
+                      @click="handleDeleteBlack(index)"
+                    >
+                    </el-button>
+                  </el-form-item>
+                </div>
+
+                <div class="filed-row" style="margin-left: 130px">
+                  <el-button @click="handleAddBlack" icon="el-icon-plus" class="add-btn">添加</el-button>
+                </div>
+              </template>
+
+              <el-form-item label="备注" prop="remark">
+                <el-input size="small" v-model="form.remark"></el-input>
+              </el-form-item>
+              <el-form-item label="优先级" prop="priority" v-if="crowdId != null">
+                <el-input size="small" v-model="priority"></el-input>
+              </el-form-item>
             </template>
-
-            <el-form-item label="备注" prop="remark">
-              <el-input size="small" v-model="form.remark"></el-input>
-            </el-form-item>
-            <el-form-item label="优先级" prop="priority" v-if="crowdId != null">
-              <el-input size="small" v-model="priority"></el-input>
-            </el-form-item>
           </template>
         </el-form>
       </el-col>
     </el-row>
-    <div slot="footer" class="footer">
+    <div slot="footer" class="footer" v-if="pageType === 'common'">
       <el-button @click="cancelAdd">返回</el-button>
       <el-button type="primary" @click="handleSave()">保存</el-button>
     </div>
+
+    <!-- 组合标签 -->
+    <div slot="footer" class="footer" v-if="pageType === 'specialTag'">
+      <el-button type="warning" @click="specialHandelBack">返回</el-button>
+      <el-button type="primary" @click="specialTagSaveAndNext">下一步</el-button>
+    </div>
+
     <el-dialog
       title="显示更多标签"
       :append-to-body="true"
@@ -351,8 +374,79 @@ export default {
       return this.actionTags.some(item => item.dataSource === 8)
     }
   },
-  props: ['policyId', 'crowdId', 'limitLaunchDisabled', 'isDynamicPeople', 'crowd'],
+  // props: [
+  //   'policyId', 'crowdId', 'limitLaunchDisabled', 'isDynamicPeople', 'crowd'
+  // ],
+  props: {
+    policyId: {
+      type: [Number, String],
+      default: ''
+    },
+    crowdId: {
+      type: [Number, String],
+      default: ''
+    },
+    limitLaunchDisabled: {
+      type: [Object, Boolean],
+      default: false
+    },
+    isDynamicPeople: {
+      type: [Boolean],
+      default: false
+    },
+    crowd: {
+      type: [Array, Object],
+      default: () => {}
+    },
+    pageType: {
+      type: [Number, String],
+      default: 'common'
+    },
+    initTagList: { // 组合标签特有参数
+      type: [Array, Object],
+      default: () => []
+    }
+  },
   methods: {
+    // 组合标签 返回
+    specialHandelBack () {
+      this.$emit('back')
+    },
+    // 组合标签 下一步
+
+    async specialTagSaveAndNext (callback) {
+      const _this = this
+      const form = JSON.parse(JSON.stringify(this.form))
+
+      // 黑名单
+
+      const valid = await this.$refs.form.validate()
+      if (valid) {
+        // 校验规则
+        const validPromise = validateRule(this, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson)
+
+        validPromise.then(data => {
+          const { rulesJson, behaviorRulesJson, tagIds } = data
+
+          const params = {
+            crowdName: form.name,
+            rulesJson: rulesJson,
+            behaviorRulesJson: behaviorRulesJson,
+            dynamicPolicyJson: JSON.stringify(this.dynamicPolicyJson),
+            tagIds
+          }
+
+          // this.fetchAddOrEdit(params)
+          this.$emit('save', params)
+        }).catch(err => {
+          if (err.openMoveOrClear) {
+            this.openMoveOrClearDialogVisible = true
+            this.openMoveOrClearDialogRef = _this
+          }
+        })
+      }
+    },
+
     checkBlackName (rule, value, callback) {
       console.warn('checkBlackName')
       const reg = /^[a-fA-F0-9]{12}$/
@@ -959,93 +1053,223 @@ export default {
     }
   },
   created () {
-    this.form.policyId = this.policyId
-    this.$service
-      .getTagsByPoliceId({ policyId: this.form.policyId })
-      .then(data => {
-        let normalTags = []
-        const actionTags = []
-        const specialTags = []
-        data.forEach(item => {
-          if (item.dataSource === 6) { // 效果指标
-            specialTags.push(item)
-          } else if (item.dataSource === 8) { // 行为标签
-            actionTags.push(item)
-          } else if (item.dataSource === 2) { // 大数据标签
-            actionTags.push(item)
-            normalTags.push(item)
-          } else {
-            normalTags.push(item)
-          }
-        })
-        // 如果当前人群已经当做人群标签被使用了，那么就不能使用人群标签，需要过滤掉
-        if (this.crowd && this.crowd.isUsedAsTag === 1) {
-          normalTags = normalTags.filter(item => item.dataSource !== 12)
-        }
-        this.tags = normalTags
-        this.actionTags = actionTags
-        this.specialTags = specialTags
-      })
-      // 编辑
-    if (this.crowdId != null) {
-      this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
-        const policyData = data.policyCrowds
-        this.form.name = policyData.crowdName
-        this.form.remark = policyData.remark
-        this.priority = policyData.priority
-        this.versionNum = policyData.versionNum || 0
-
-        this.form.autoVersion = policyData.autoVersion
-        this.form.isShowAutoVersion = true
-
-        this.form.limitLaunch = policyData.limitLaunch
-        this.form.limitLaunchCount = policyData.limitLaunch
-          ? policyData.limitLaunchCount
-          : undefined
-
-        // 黑名单 回显数据
-        this.form.blackFlag = policyData.blackFlag
-        this.form.blacks = policyData.blacks
-        this.form.blackList = [{ value: '' }]
-
-        if (policyData.blackFlag === 1) {
-          this.form.blackList = policyData.blacks.split(',').map(item => {
-            return {
-              value: item
+    if (this.pageType === '' || this.pageType === 'common') {
+      this.form.policyId = this.policyId
+      this.$service
+        .getTagsByPoliceId({ policyId: this.form.policyId })
+        .then(data => {
+          let normalTags = []
+          const actionTags = []
+          const specialTags = []
+          data.forEach(item => {
+            if (item.dataSource === 6) { // 效果指标
+              specialTags.push(item)
+            } else if (item.dataSource === 8) { // 行为标签
+              actionTags.push(item)
+            } else if (item.dataSource === 2) { // 大数据标签
+              actionTags.push(item)
+              normalTags.push(item)
+            } else {
+              normalTags.push(item)
             }
           })
-        }
+          // 如果当前人群已经当做人群标签被使用了，那么就不能使用人群标签，需要过滤掉
+          if (this.crowd && this.crowd.isUsedAsTag === 1) {
+            normalTags = normalTags.filter(item => item.dataSource !== 12)
+          }
+          this.tags = normalTags
+          this.actionTags = actionTags
+          this.specialTags = specialTags
+        })
+      // 编辑
+      if (this.crowdId != null) {
+        this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
+          const policyData = data.policyCrowds
+          this.form.name = policyData.crowdName
+          this.form.remark = policyData.remark
+          this.priority = policyData.priority
+          this.versionNum = policyData.versionNum || 0
 
-        this.currentLaunchLimitCount = policyData.limitLaunch
-          ? policyData.limitLaunchCount
-          : undefined
-        const ruleJsonData = JSON.parse(policyData.rulesJson)
-        let cacheIds = []
-        const cacheActionIds = []
-        const cacheSpecialIds = []
+          this.form.autoVersion = policyData.autoVersion
+          this.form.isShowAutoVersion = true
+
+          this.form.limitLaunch = policyData.limitLaunch
+          this.form.limitLaunchCount = policyData.limitLaunch
+            ? policyData.limitLaunchCount
+            : undefined
+
+          // 黑名单 回显数据
+          this.form.blackFlag = policyData.blackFlag
+          this.form.blacks = policyData.blacks
+          this.form.blackList = [{ value: '' }]
+
+          if (policyData.blackFlag === 1) {
+            this.form.blackList = policyData.blacks.split(',').map(item => {
+              return {
+                value: item
+              }
+            })
+          }
+
+          this.currentLaunchLimitCount = policyData.limitLaunch
+            ? policyData.limitLaunchCount
+            : undefined
+          const ruleJsonData = JSON.parse(policyData.rulesJson)
+          let cacheIds = []
+          const cacheActionIds = []
+          const cacheSpecialIds = []
+          ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
+            itemParent.rules.forEach(item => {
+            // 行为标签
+              if (item.dataSource === 8) {
+                cacheActionIds.push(item.tagCode)
+              } else if (item.tagType === 'string' || item.tagType === 'collect') {
+                cacheIds.push(item.tagId)
+              }
+              if (item.tagType === 'mix') {
+                cacheSpecialIds.push({
+                  tagId: item.tagId,
+                  tagCode: item.tagCode,
+                  provinceValue: item.provinceValue
+                })
+              }
+              if (item.tagType === 'string' && item.value === 'nil') {
+                item.operator = 'null'
+              }
+              // 多选的值，回显的时候需要转成数组 2222
+              if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
+                item.value = item.value === '' ? [] : item.value.split(',')
+              }
+              if (item.version === 0) {
+                if (item.tagType === 'time' && item.isDynamicTime === 3) {
+                  const value = item.value.split('-')
+                  this.$set(item, 'startDay', value[0])
+                  this.$set(item, 'endDay', value[1])
+                } else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
+                  this.$set(item, 'dateAreaType', '')
+                  this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
+                }
+              }
+            })
+            return itemParent
+          })
+
+          this.rulesJson = ruleJsonData
+
+          this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
+
+          const defaultChild = [
+            { name: '', value: '', filed: '', operator: '=', type: 'string', child: [] }
+          ]
+
+          this.behaviorRulesJson.rules.forEach(ruleItem => {
+            ruleItem.rules.forEach(rulesEachItem => {
+            // 多选的值，回显的时候需要转成数组 2222
+              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
+                rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
+              }
+              // 手动构建数据 一期数据格式兼容二期
+              if (this.versionNum === 0) {
+                if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006') { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
+                  const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
+                  rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
+                  rulesEachItem.bav.behaviorValue[0].child = ruleCopy.behaviorValue
+                  rulesEachItem.bav.behaviorValue[0].childCheckedVal = ruleCopy.value
+                } else if (rulesEachItem.tagCode === 'BAV0002') { // 应用活跃
+                  rulesEachItem.bav.behaviorValue.forEach(rule => {
+                    const ruleCopy = JSON.parse(JSON.stringify(rule)) // 原始数据
+                    rule.child = JSON.parse(JSON.stringify(defaultChild))
+                    rule.child[0].child = ruleCopy.child
+                    rule.child[0].childCheckedVal = ruleCopy.childCheckedVal
+                  })
+                } else if (rulesEachItem.tagCode === 'BAV0005') { // 页面活跃 第一级选项 产品包收银台 -> 影视收银台
+                  const matchIndex = rulesEachItem.bav.value.findIndex(item => item === '产品页')
+                  if (matchIndex > -1) {
+                    rulesEachItem.bav.value.splice(matchIndex, 1, '影视收银台')
+                    rulesEachItem.bav.behaviorValue.forEach(rule => {
+                      if (rule.value === '产品页') {
+                        rule.value = '影视收银台'
+                        rule.name = '影视收银台'
+                      }
+                    })
+                  }
+                }
+              }
+
+              if (this.versionNum < 2) { // 【起播活跃】 三期兼容前面几期的
+                if (rulesEachItem.tagCode === 'BAV0011') {
+                  rulesEachItem.isOldversion = true // 是否是旧版本
+                }
+              }
+            })
+          })
+
+          if (policyData.dynamicPolicyJson) {
+            this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
+          }
+
+          cacheIds = this.distinct(cacheIds, [])
+          if (cacheIds.length !== 0) {
+            cacheIds.forEach(this.fetchTagSuggestions)
+          }
+
+          // 行为标签的 id 集合
+          if (cacheActionIds.length !== 0) {
+            cacheActionIds.forEach(tagCode => {
+              this.fetchActionTagSuggestions(tagCode)
+            })
+          }
+
+          // 组合标签的 id 集合
+          if (cacheSpecialIds.length !== 0) {
+            cacheSpecialIds.forEach(item => {
+              this.fetchSpecialTagSuggestions(item.tagId, item.tagCode)
+              this.areaSelectChange(item.provinceValue, item.tagCode) // 根据省id获取市列表
+            })
+          }
+        })
+      }
+    } else if (this.pageType === 'specialTag') { // 新增或编辑组合标签
+      // console.log('this.params===', this.$route.params)
+      // console.log('this.value==>', this.value)
+      // this.$service.tagInfoNew(this.recordId).then(data => {
+      // this.tags = data
+      const data = this.initTagList
+      // console.log(data)
+      const normalTags = []
+      const actionTags = []
+      const specialTags = []
+      data.forEach(item => {
+        if (item.dataSource === 6) { // 效果指标
+          specialTags.push(item)
+        } else if (item.dataSource === 8) { // 行为标签
+          actionTags.push(item)
+        } else if (item.dataSource === 2) { // 大数据标签
+          actionTags.push(item)
+          normalTags.push(item)
+        } else {
+          normalTags.push(item)
+        }
+      })
+      this.tags = normalTags
+      this.actionTags = actionTags
+      this.specialTags = specialTags
+
+      const detail = this.crowd
+      this.form.name = detail.specialTagName
+      console.log('detail---------->', detail)
+      const cacheIds = []
+      if (detail.rulesJson) {
+        const ruleJsonData = JSON.parse(detail.rulesJson)
         ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
           itemParent.rules.forEach(item => {
-            // 行为标签
-            if (item.dataSource === 8) {
-              cacheActionIds.push(item.tagCode)
-            } else if (item.tagType === 'string' || item.tagType === 'collect') {
+            if (item.tagType === 'string' || item.tagType === 'collect') {
               cacheIds.push(item.tagId)
-            }
-            if (item.tagType === 'mix') {
-              cacheSpecialIds.push({
-                tagId: item.tagId,
-                tagCode: item.tagCode,
-                provinceValue: item.provinceValue
-              })
             }
             if (item.tagType === 'string' && item.value === 'nil') {
               item.operator = 'null'
             }
-            // 多选的值，回显的时候需要转成数组 2222
-            if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
-              item.value = item.value === '' ? [] : item.value.split(',')
-            }
-            if (item.version === 0) {
+            if (item.version === 0) { // 一期
               if (item.tagType === 'time' && item.isDynamicTime === 3) {
                 const value = item.value.split('-')
                 this.$set(item, 'startDay', value[0])
@@ -1055,84 +1279,27 @@ export default {
                 this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
               }
             }
+            // 多选的值，回显的时候需要转成数组 2222
+            if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
+              item.value = item.value === '' ? [] : item.value.split(',')
+            }
           })
           return itemParent
         })
-
+        // this.inputValue[0].rulesJson.rules = ruleJsonData.rules
         this.rulesJson = ruleJsonData
-
-        this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
-
-        const defaultChild = [
-          { name: '', value: '', filed: '', operator: '=', type: 'string', child: [] }
-        ]
-
+      }
+      if (detail.behaviorRulesJson) {
+        this.behaviorRulesJson = JSON.parse(detail.behaviorRulesJson)
         this.behaviorRulesJson.rules.forEach(ruleItem => {
           ruleItem.rules.forEach(rulesEachItem => {
-          // 多选的值，回显的时候需要转成数组 2222
+            // 多选的值，回显的时候需要转成数组 2222
             if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
               rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
             }
-            // 手动构建数据 一期数据格式兼容二期
-            if (this.versionNum === 0) {
-              if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006') { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
-                const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
-                rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
-                rulesEachItem.bav.behaviorValue[0].child = ruleCopy.behaviorValue
-                rulesEachItem.bav.behaviorValue[0].childCheckedVal = ruleCopy.value
-              } else if (rulesEachItem.tagCode === 'BAV0002') { // 应用活跃
-                rulesEachItem.bav.behaviorValue.forEach(rule => {
-                  const ruleCopy = JSON.parse(JSON.stringify(rule)) // 原始数据
-                  rule.child = JSON.parse(JSON.stringify(defaultChild))
-                  rule.child[0].child = ruleCopy.child
-                  rule.child[0].childCheckedVal = ruleCopy.childCheckedVal
-                })
-              } else if (rulesEachItem.tagCode === 'BAV0005') { // 页面活跃 第一级选项 产品包收银台 -> 影视收银台
-                const matchIndex = rulesEachItem.bav.value.findIndex(item => item === '产品页')
-                if (matchIndex > -1) {
-                  rulesEachItem.bav.value.splice(matchIndex, 1, '影视收银台')
-                  rulesEachItem.bav.behaviorValue.forEach(rule => {
-                    if (rule.value === '产品页') {
-                      rule.value = '影视收银台'
-                      rule.name = '影视收银台'
-                    }
-                  })
-                }
-              }
-            }
-
-            if (this.versionNum < 2) { // 【起播活跃】 三期兼容前面几期的
-              if (rulesEachItem.tagCode === 'BAV0011') {
-                rulesEachItem.isOldversion = true // 是否是旧版本
-              }
-            }
           })
         })
-
-        if (policyData.dynamicPolicyJson) {
-          this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
-        }
-
-        cacheIds = this.distinct(cacheIds, [])
-        if (cacheIds.length !== 0) {
-          cacheIds.forEach(this.fetchTagSuggestions)
-        }
-
-        // 行为标签的 id 集合
-        if (cacheActionIds.length !== 0) {
-          cacheActionIds.forEach(tagCode => {
-            this.fetchActionTagSuggestions(tagCode)
-          })
-        }
-
-        // 组合标签的 id 集合
-        if (cacheSpecialIds.length !== 0) {
-          cacheSpecialIds.forEach(item => {
-            this.fetchSpecialTagSuggestions(item.tagId, item.tagCode)
-            this.areaSelectChange(item.provinceValue, item.tagCode) // 根据省id获取市列表
-          })
-        }
-      })
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
 <div style="margin-right: 30px">
-  <!-- {{inputValue}} -->
+  <!-- {{ inputValue }} -->
   <!-- 动态人群 -->
   <div v-if="isDynamicPeople" class="el-collapse">
     <el-form-item label="" class="el-collapse_item">
@@ -595,7 +595,8 @@ export default {
         const copyName = this.getCopyIndex(0, copyCrowdData.crowdName)
         this.inputValue.push({
           ...copyCrowdData,
-          crowdName: copyName
+          crowdName: copyName,
+          tempCrowdId: undefined // 重置它的人群ID
         })
       } else { // 添加普通人群、引用其他人群
         const crowdName = linkCrowd ? `${linkCrowd.crowdName}（引用人群）` : undefined

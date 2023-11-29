@@ -5,8 +5,9 @@
       @select-all="handleSelectAllOrCancel">
       <el-table-column type="selection" width="55" v-if="showSelection">
       </el-table-column>
-      <el-table-column prop="tagId" label="ID">
-      </el-table-column>
+      <el-table-column prop="tagId" label="标签ID"></el-table-column>
+      <!-- <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column> -->
+      <el-table-column prop="dmpCrowdId" label="dmp人群投放ID" width="120"></el-table-column>
       <el-table-column prop="tagName" label="名称">
         <template slot-scope="scope">
           {{ scope.row.tagName }}
@@ -31,7 +32,48 @@
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注">
       </el-table-column>
-      <el-table-column prop="operation" label="操作" v-if="!showSelection">
+
+      <!-- -------------------------新增字段--------------------------------- -->
+      <el-table-column prop="count" label="使用次数">
+      </el-table-column>
+      <el-table-column label="状态">
+        <template v-slot="{row}" >
+          <template v-if="row.onOffCrowd !== null && row.onOffCrowd !== undefined">
+            <el-tag v-if="row.onOffCrowd">生效中</el-tag>
+            <el-tag v-else type="info">已下架</el-tag>
+          </template>
+
+          <CrowdStatus
+            :row="getComputedRow(row)"
+            :launchStatusEnum="launchStatusEnum"
+            @get-list="$emit('get-list')"
+          ></CrowdStatus>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" label="创建人" prop="creatorName">
+      </el-table-column>
+      <el-table-column v-if="(checkList.indexOf('createTime') > -1)" label="创建时间" prop="history.createTime">
+      </el-table-column>
+      <el-table-column v-if="(checkList.indexOf('department') > -1)" label="业务部门" prop="department">
+      </el-table-column> -->
+      <el-table-column label="设备数量">
+        <template v-slot="{row}">
+          {{ cc_format_number(row.htotalUser) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="微信数量">
+        <template v-slot="{row}">
+          {{ cc_format_number(row.htotalWxOpenid)}}
+        </template>
+      </el-table-column>
+      <el-table-column label="版本">
+        <template v-slot="{row}">
+          {{ row.hversion }}
+        </template>
+      </el-table-column>
+      <!-- -------------------------新增字段 end--------------------------------- -->
+
+      <el-table-column prop="operation" label="操作" v-if="!showSelection" width="250px">
         <!-- slot-scope="{ column, $index }" -->
         <template slot="header">
           操作
@@ -50,14 +92,35 @@
           </el-popover>
         </template>
         <template slot-scope="scope">
-          <el-button-group>
+
+          <!-- 全局搜索 - 临时标签 - 编辑 -->
+          <TempLabelListOperate
+            v-if="scope.row.dataSource === 15"
+            :crowdType="2"
+            :scope="getTempLabelListOperateScope(scope.row)"
+            :launchStatusEnum="launchStatusEnum"
+            @show-add="(id, statusCode) => $emit('show-add', id, statusCode, 'tempCrowd')"
+            @get-list="$emit('get-list')"
+          >
+          </TempLabelListOperate>
+
+          <!-- 全局搜索 - 本地标签 - 编辑 -->
+          <LocalListOperate
+            v-else-if="scope.row.dataSource === 16"
+            :scope="scope"
+            @show-add="(localCrowdId, crowdName) => $emit('show-add', localCrowdId, crowdName, 'localCrowd')"
+            @get-list="$emit('get-list')"
+          >
+          </LocalListOperate>
+
+          <el-button-group v-else>
             <el-button type="text" @click="handleSeeTagCategoryDetail(scope.row)">
               查看
             </el-button>
-            <el-button v-if="showEditBtn" type="text" @click="handleEdit(scope.row)">
+            <el-button v-if="showEditBtn" v-permission="'hoder:label:modify'" type="text" @click="handleEdit(scope.row)">
               编辑
             </el-button>
-            <el-button v-if="showDeleteBtn" type="text" @click="handleDelete(scope.row)">
+            <el-button v-if="showDeleteBtn" v-permission="'hoder:label:del'" type="text" @click="handleDelete(scope.row)">
               删除
             </el-button>
             <!-- 收藏 -->
@@ -78,6 +141,10 @@
 
 <script>
 import tagDetailList from './TagDetail.vue'
+import TempLabelListOperate from './TempLabelListOperate.vue'
+import LocalListOperate from './LocalListOperate.vue'
+import CrowdStatus from '@/views/crowdCompute/components/crowdStatus.vue'
+
 export default {
   name: 'TagList',
   props: {
@@ -111,10 +178,20 @@ export default {
     tabIndex: {
       type: [String, Number],
       default: ''
+    },
+    defaultDataSourceEnum: {
+      type: Object
+    },
+    launchStatusEnum: {
+      type: Object,
+      default: () => {}
     }
   },
   components: {
-    tagDetailList
+    tagDetailList,
+    TempLabelListOperate,
+    LocalListOperate,
+    CrowdStatus
   },
   data () {
     return {
@@ -131,9 +208,42 @@ export default {
       this.checkList = val
     },
     dataList: 'updateTableSelected',
-    currentSelectedTags: 'updateTableSelected'
+    currentSelectedTags: 'updateTableSelected',
+    defaultDataSourceEnum: {
+      handler (value) {
+        if (value) {
+          this.dataSourceEnum = value
+        } else {
+          this.getDataSourceList()
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
+    // 构造计算标签的数据格式
+    getComputedRow (row) {
+      return {
+        ...row,
+        history: {
+          status: row.hstatus,
+          totalUser: row.htotalUser,
+          totalWxOpenid: row.htotalWxOpenid,
+          version: row.hversion
+        }
+      }
+    },
+    getTempLabelListOperateScope (row) {
+      console.log('scope-->', row)
+      return {
+        row: {
+          ...row,
+          history: {
+            status: row.hstatus
+          }
+        }
+      }
+    },
     getDataSourceList () {
       this.$service.getDatasource().then((data) => {
         // const arr = Object.keys(data).map(value => ({ value: parseInt(value), label: data[value] }))
@@ -154,12 +264,13 @@ export default {
     },
     handleSeeTagCategoryDetail (row) {
       this.tagId = row.tagId
-
       // 选中 tab 的 indedx, 构造 id
       const id = `tab-content-${this.tabIndex}`
       const target = document.getElementById(id)
       const parent = document.querySelector('.el-main')
-      parent.scrollTop = target.offsetTop // 滚动条滑到可视位置
+      if (target && parent) {
+        parent.scrollTop = target.offsetTop // 滚动条滑到可视位置
+      }
     },
     handleDelete (row) {
       this.$emit('delete', row.tagId)
@@ -186,11 +297,14 @@ export default {
       }
     },
     updateTableSelected () {
+      // 取消查看详情
+      this.handleReadTagCancel()
+
       const arr = []
       const currentSelectRows = this.currentSelectedTags
       this.dataList.forEach((item, index) => {
         currentSelectRows.forEach((i) => {
-          if (item.tagId === i.tagId) {
+          if (Number(item.tagId) === Number(i.tagId)) {
             arr.push(this.dataList[index])
           }
         })
@@ -233,7 +347,7 @@ export default {
     }
   },
   created () {
-    this.getDataSourceList()
+    // this.getDataSourceList()
     this.getTagType()
     this.checkList = this.checkListParent
   }

@@ -1097,7 +1097,7 @@ export default {
         ...this.formData
       }
 
-      const link = document.createElement('a')
+      // const link = document.createElement('a')
 
       // axios.post('/api/effect/downloadNew', params, { responseType: 'arraybuffer' }).then(res => {
       //   this.showLoadingDownload = false
@@ -1126,7 +1126,6 @@ export default {
       })
 
     },
-
     // 清除图表
     clearChart () {
       this.chartData = []

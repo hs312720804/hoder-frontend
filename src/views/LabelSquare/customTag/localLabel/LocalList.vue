@@ -15,26 +15,26 @@
             @keyup.enter.native="fetchData"></el-input>
           <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
         </div> -->
-        <el-popover placement="top" trigger="click" class="popover-button">
+        <!-- <el-popover placement="top" trigger="click" class="popover-button">
           <div>
             <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
               <el-checkbox label="creatorName">创建人</el-checkbox>
               <el-checkbox label="createTime">创建时间</el-checkbox>
-              <!--<el-checkbox label="status">投放状态</el-checkbox>-->
               <el-checkbox label="department">业务部门</el-checkbox>
             </el-checkbox-group>
           </div>
           <i class="el-icon-cc-setting operate" slot="reference">
           </i>
-        </el-popover>
+        </el-popover> -->
       </div>
     </div>
     <div>
       <el-table ref="tempChangeTable" :data="tableData" border @select="handleSelectOrCancel"
         @select-all="handleSelectAllOrCancel">
         <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
-        <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
-        <el-table-column prop="dmpCrowdId" label="投放ID"></el-table-column>
+        <el-table-column prop="tagId" label="标签ID"></el-table-column>
+        <!-- <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column> -->
+        <el-table-column prop="dmpCrowdId" label="dmp人群投放ID"></el-table-column>
         <el-table-column prop="launchName" label="名称"></el-table-column>
         <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
         <el-table-column prop="count" label="使用次数">
@@ -43,17 +43,23 @@
           <!--</template>-->
         </el-table-column>
         <el-table-column label="状态">
-          <template #default="scope">
-            <el-tag v-if="scope.row.onOffCrowd">生效中</el-tag>
+          <template v-slot="{row}">
+            <el-tag v-if="row.onOffCrowd">生效中</el-tag>
             <el-tag v-else type="info">已下架</el-tag>
+            <br/>
+            <CrowdStatus
+              :row="row"
+              :launchStatusEnum="launchStatusEnum"
+              @get-list="fetchData"
+            ></CrowdStatus>
           </template>
         </el-table-column>
-        <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" label="创建人" prop="creatorName">
+        <!-- <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" label="创建人" prop="creatorName">
         </el-table-column>
         <el-table-column v-if="(checkList.indexOf('createTime') > -1)" label="创建时间" prop="history.createTime">
         </el-table-column>
         <el-table-column v-if="(checkList.indexOf('department') > -1)" label="业务部门" prop="department">
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="设备数量">
           <template slot-scope="scope">
             {{ cc_format_number(scope.row.history.totalUser) }}
@@ -71,61 +77,12 @@
         </el-table-column>
         <el-table-column label="操作" width="250" v-if="!showSelection" fixed="right">
           <template slot-scope="scope">
-            <el-button-group>
-              <!--<el-button-->
-              <!--type="text"-->
-              <!--@click="calculate(scope.row)"-->
-              <!--&gt;-->
-              <!--计算-->
-              <!--</el-button>-->
-              <!-- <el-button
-                                    type="text"
-                                    @click="condition(scope.row)"
-                            >
-                                标签条件
-                            </el-button> -->
-              <el-button type="text" @click="handleEdit(scope.row)">
-                编辑
-              </el-button>
-              <el-button type="text" @click="onOrOffLocalCrowd(scope.row)">
-                <!-- {{ scope.row.launchTempCrowdStatus }} -->
-                {{ scope.row.onOffCrowd ? '下架' : '上架' }}
-              </el-button>
-              <el-button type="text" @click="del(scope.row)">
-                删除
-              </el-button>
-              <el-button type="text" @click="launchShence(scope.row)">
-                神策分析
-              </el-button>
-
-              <a :href="launchedExportUrl" download ref="launchedDownLoad"></a>
-              <el-button type="text" @click="handleExport(scope.row)">
-                异常导出
-              </el-button>
-              <!--<el-button-->
-              <!--type="text"-->
-              <!--@click="minitor(scope.row)"-->
-              <!--&gt;-->
-              <!--监控-->
-              <!--</el-button>-->
-              <!-- <el-dropdown @command="handleCommandOpreate">
-                <el-button size="small" type="text">
-                    操作
-                </el-button>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item
-                            :command="['edit',scope.row]"
-                    >编辑
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                            :command="['del',scope.row]"
-                            v-permission="'hoder:launch:crowd:ver:delete'"
-                            v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
-                    >删除
-                    </el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown> -->
-            </el-button-group>
+            <LocalListOperate
+              :scope="scope"
+              @show-add="(localCrowdId, crowdName) => $emit('show-add', localCrowdId, crowdName)"
+              @get-list="fetchData"
+            >
+            </LocalListOperate>
           </template>
         </el-table-column>
       </el-table>
@@ -153,6 +110,9 @@
 </template>
 
 <script>
+import LocalListOperate from '../../coms/LocalListOperate.vue'
+import CrowdStatus from '@/views/crowdCompute/components/crowdStatus.vue'
+
 export default {
   name: 'TempLabel',
   props: {
@@ -171,7 +131,6 @@ export default {
   },
   data () {
     return {
-      launchedExportUrl: undefined,
       tableData: [],
       filter: {},
       launchName: undefined,
@@ -182,7 +141,7 @@ export default {
       isShowCondition: false,
       // launchType: undefined,
       launchTitle: '',
-      selectStrategy: null, // 人群条件的选择策略
+      selectStrategy: null,
       checkList: []
     }
   },
@@ -202,36 +161,36 @@ export default {
     }
   },
   methods: {
-    async handleExport (row) {
-      const launchCrowdId = row.launchCrowdId
-      console.log('launchCrowdId', launchCrowdId)
-      // 0   文件生成中   1  文件已经生成
-      const status = await this.$service.checkErrorMacFileIsExist({ launchCrowdId }).then(res => {
-        this.$message.info(res.msg)
-        return res.status || 0
-      })
-      console.log('status', status)
-      if (status === 1) {
-        // 下载文件
-        this.launchedExportUrl = '/api/tempCrowd/downloadErrorMacFile?launchCrowdId=' + launchCrowdId
-        this.$nextTick(() => {
-          this.$refs.launchedDownLoad.click()
-        })
-      }
-    },
-    launchShence (row) {
-      const launchCrowdId = row.launchCrowdId
-      console.log('launchCrowdId', launchCrowdId)
-      this.$service.sensorAnalysis({ launchCrowdId }).then(res => {
-        console.log('res', res)
-        // 人群已经发送到神策平台，请前往神策继续分析
-        if (res.data.indexOf('成功') > 0 || res.data.indexOf('已经发送') > 0) {
-          this.$message.success(res.data)
-        } else {
-          this.$message.info(res.data)
-        }
-      })
-    },
+    // async handleExport (row) {
+    //   const launchCrowdId = row.launchCrowdId
+    //   console.log('launchCrowdId', launchCrowdId)
+    //   // 0   文件生成中   1  文件已经生成
+    //   const status = await this.$service.checkErrorMacFileIsExist({ launchCrowdId }).then(res => {
+    //     this.$message.info(res.msg)
+    //     return res.status || 0
+    //   })
+    //   console.log('status', status)
+    //   if (status === 1) {
+    //     // 下载文件
+    //     this.launchedExportUrl = '/api/tempCrowd/downloadErrorMacFile?launchCrowdId=' + launchCrowdId
+    //     this.$nextTick(() => {
+    //       this.$refs.launchedDownLoad.click()
+    //     })
+    //   }
+    // },
+    // launchShence (row) {
+    //   const launchCrowdId = row.launchCrowdId
+    //   console.log('launchCrowdId', launchCrowdId)
+    //   this.$service.sensorAnalysis({ launchCrowdId }).then(res => {
+    //     console.log('res', res)
+    //     // 人群已经发送到神策平台，请前往神策继续分析
+    //     if (res.data.indexOf('成功') > 0 || res.data.indexOf('已经发送') > 0) {
+    //       this.$message.success(res.data)
+    //     } else {
+    //       this.$message.info(res.data)
+    //     }
+    //   })
+    // },
     fetchData () {
       const filter = {
         pageNum: this.currentPage,
@@ -239,7 +198,7 @@ export default {
         search: this.launchName
       }
       this.$service.getLocalCrowdList(filter).then(data => {
-        // this.launchStatusEnum = data.launchStatusEnum
+        this.launchStatusEnum = data.launchStatusEnum
         this.tableData = data.pageInfo.list
         this.totalCount = data.pageInfo.total
         if (this.showSelection) {
@@ -286,42 +245,42 @@ export default {
           this.selectStrategy = data.crowdSql
         })
     },
-    // 删除
-    del (row) {
-      // const crowdName = row.launchName
-      const launchCrowdId = row.launchCrowdId
-      // this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要删除吗`, "提示", {
-      this.$confirm('确定要删除吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          this.$service.delTempCrowd({ launchCrowdId }, '删除成功').then(() => {
-            this.fetchData()
-          })
-        })
-        .catch(() => {
-        })
-    },
-    // 下架
-    onOrOffLocalCrowd (row) {
-      const localCrowdId = row.launchCrowdId
-      const params = {
-        onOffCrowd: !row.onOffCrowd,
-        localCrowdId
-      }
-      const tipText = params.onOffCrowd ? '上架成功' : '下架成功'
-      this.$service.OnOrOffLocalCrowd(params, tipText).then(() => {
-        this.fetchData()
-      })
-    },
+    // // 删除
+    // del (row) {
+    //   // const crowdName = row.launchName
+    //   const launchCrowdId = row.launchCrowdId
+    //   // this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要删除吗`, "提示", {
+    //   this.$confirm('确定要删除吗?', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning'
+    //   })
+    //     .then(() => {
+    //       this.$service.delTempCrowd({ launchCrowdId }, '删除成功').then(() => {
+    //         this.fetchData()
+    //       })
+    //     })
+    //     .catch(() => {
+    //     })
+    // },
+    // // 下架
+    // onOrOffLocalCrowd (row) {
+    //   const localCrowdId = row.launchCrowdId
+    //   const params = {
+    //     onOffCrowd: !row.onOffCrowd,
+    //     localCrowdId
+    //   }
+    //   const tipText = params.onOffCrowd ? '上架成功' : '下架成功'
+    //   this.$service.OnOrOffLocalCrowd(params, tipText).then(() => {
+    //     this.fetchData()
+    //   })
+    // },
     // 编辑
-    handleEdit (row) {
-      const crowdName = row.launchName
-      const localCrowdId = row.launchCrowdId
-      this.$emit('show-add', localCrowdId, crowdName)
-    },
+    // handleEdit (row) {
+    //   const crowdName = row.launchName
+    //   const localCrowdId = row.launchCrowdId
+    //   this.$emit('show-add', localCrowdId, crowdName)
+    // },
     // minitor (row) {},
     // 计算
     calculate (row) {
@@ -382,6 +341,10 @@ export default {
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)
     }
+  },
+  components: {
+    LocalListOperate,
+    CrowdStatus
   }
 }
 </script>

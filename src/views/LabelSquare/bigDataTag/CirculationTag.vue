@@ -23,8 +23,8 @@
         @select-all="handleSelectAllOrCancel">
         <el-table-column type="selection" width="55" v-if="showSelection">
         </el-table-column>
-        <el-table-column prop="tagId" label="ID">
-        </el-table-column>
+        <el-table-column prop="tagId" label="标签ID"></el-table-column>
+        <el-table-column prop="dmpCrowdId" label="dmp人群投放ID" width="120"></el-table-column>
         <el-table-column prop="tagName" label="名称">
           <template slot-scope="scope">
             {{ scope.row.tagName }}

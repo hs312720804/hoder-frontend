@@ -14,18 +14,35 @@
         <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
       </div> -->
     </div>
-    <tag-list :data-list="dataList" :data-source-enum="dataSourceEnum" :type-enum="typeEnum"
-      :check-list-parent="checkList" :current-selected-tags="currentSelectTag" :show-selection="showSelection"
-      @fetch-data="fetchData" @change-checkList="handleCheckListChange" @table-selected="handleTableSelected"
-      @delete="handleDelete" @edit="handleEdit">
+    <tag-list
+      :data-list="dataList"
+      :data-source-enum="dataSourceEnum"
+      :type-enum="typeEnum"
+      :check-list-parent="checkList"
+      :current-selected-tags="currentSelectTag"
+      :show-selection="showSelection"
+      :show-delete-btn="true"
+      :showEditBtn="true"
+      @fetch-data="fetchData"
+      @change-checkList="handleCheckListChange"
+      @table-selected="handleTableSelected"
+      @delete="handleDelete"
+      @edit="handleEdit">
       <div align="right">
         <pagination :currentpage="filter.pageNum" :pagesize="filter.pageSize" :totalcount="totalCount"
           @handle-size-change="handleSizeChange" @handle-current-change="handleCurrentChange"></pagination>
       </div>
     </tag-list>
 
-    <TagCategoryUpsert v-if="definedTagId" ref="tagCategoryUpsert" :current-tag-category="tagCategory"
-      :type-enum="typeEnum" :data-source-enum="dataSourceEnum" @upsert-end="fetchData" :definedTagId="definedTagId">
+    <TagCategoryUpsert
+      v-if="definedTagId"
+      ref="tagCategoryUpsert"
+      :current-tag-category="tagCategory"
+      :type-enum="typeEnum"
+      :data-source-enum="dataSourceEnum"
+      :definedTagId="definedTagId"
+      @upsert-end="fetchData"
+    >
     </TagCategoryUpsert>
   </div>
 </template>
@@ -82,31 +99,63 @@ export default {
   methods: {
     // 删除
     handleDelete (id) {
-      this.$service.deleteSpecialTagType(id).then(() => {
-        this.fetchData()
-        this.$message('删除成功')
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$service.deleteTagCategory({ tagId: id }, '删除成功').then(() => {
+          this.fetchData()
+        })
       })
     },
     handleEdit (row) {
-      const { tagId, tagName, tagKey, remark } = row
-      this.form.tagId = tagId
-      this.form.tagName = tagName
-      this.form.tagKey = tagKey
-      this.form.remark = remark || ''
-      this.dialogTitle = '编辑种类'
-      this.dialogVisible = true
+      const {
+        tagId,
+        groupId,
+        oldGroup,
+        tagName,
+        tagKey,
+        tagType,
+        tagUnit,
+        remark,
+        dataSource,
+        thirdPartyApiId,
+        mapThirdPartyApiField
+      } = row
+      // this.form.tagId = tagId
+      // this.form.tagName = tagName
+      // this.form.tagKey = tagKey
+      // this.form.remark = remark || ''
+      // this.dialogTitle = '编辑种类'
+      // this.dialogVisible = true
+      this.tagCategory = {
+        tagId,
+        groupId,
+        oldGroup,
+        tagName,
+        tagKey,
+        tagType,
+        tagUnit,
+        remark,
+        dataSource,
+        thirdPartyApiId,
+        mapThirdPartyApiField
+      }
+
+      this.$refs.tagCategoryUpsert.showCreateDialog = true
     },
     // 新增或编辑组合标签种类
-    async handleAddOrEdit () {
-      if (this.form.tagId) { // 编辑
-        await this.$service.editSpecialTagType(this.form)
-      } else { // 新增
-        await this.$service.addSpecialTagType(this.form)
-      }
-      this.fetchData()
-      this.dialogVisible = false
-      this.$message.success('保存成功')
-    },
+    // async handleAddOrEdit () {
+    //   if (this.form.tagId) { // 编辑
+    //     await this.$service.editSpecialTagType(this.form)
+    //   } else { // 新增
+    //     await this.$service.addSpecialTagType(this.form)
+    //   }
+    //   this.fetchData()
+    //   this.dialogVisible = false
+    //   this.$message.success('保存成功')
+    // },
     // 新增组合标签
     handleAdd () {
       // // 数据置空，否则会残留编辑的数据

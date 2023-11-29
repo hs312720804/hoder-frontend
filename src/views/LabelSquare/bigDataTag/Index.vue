@@ -1,10 +1,9 @@
 <template>
   <div class="label-content">
     <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-content-wrap">
-
       <el-tab-pane label="行为标签" name="behaviorLabel">
         <BehaviorTag :tagName="myCollectTagName" :checkList="checkList" :show-selection="showSelection"
-          :currentSelectTag="tagList" @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
+          :currentSelectTag="currentSelectTag" @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
         </BehaviorTag>
       </el-tab-pane>
@@ -36,7 +35,7 @@
         <CirculationTag
           :checkList="checkList"
           :show-selection="showSelection"
-          :currentSelectTag="tagList"
+          :currentSelectTag="currentSelectTag"
           @clear-search="handleClearSearch"
           @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">

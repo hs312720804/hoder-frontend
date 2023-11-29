@@ -10,7 +10,8 @@ export const dataSourceColorEnum = {
   11: 'success',
   12: 'gray',
   12.2: 'gray',
-  13: 'pink'
+  13: 'pink',
+  17: 'success'
 }
 
 export const dataSourceColorClassEnum = {
@@ -25,5 +26,6 @@ export const dataSourceColorClassEnum = {
   11: 'success',
   12: 'gray',
   12.2: 'gray',
-  13: 'checkbox--pink'
+  13: 'checkbox--pink',
+  17: 'success'
 }
