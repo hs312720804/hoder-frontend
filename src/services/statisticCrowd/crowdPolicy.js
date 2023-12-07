@@ -149,3 +149,44 @@ export function getHomePageRecommendLine (params) {
     params
   })
 }
+
+// 精细化人群 - 查询策略人群树状数据
+export function refinementPolicyTree (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/refinementPolicy/policy/tree',
+    params
+  })
+}
+// 精细化人群 - 查询子人群列表
+export function refinementPolicyCrowdSearch (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/refinementPolicy/crowd/search',
+    params
+  })
+}
+// 精细化人群 - 权益分类
+export function refinementPolicyProduct (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/refinementPolicy/product',
+    params
+  })
+}
+// 精细化人群 - 人群复制
+export function copyPolicyCrowd (data) {
+  return this.fetch({
+    method: 'POST',
+    url: '/api/refinementPolicy/copyPolicyCrowd',
+    data
+  })
+}
+// 精细化人群 - 创建策略组
+export function saveRefinementPolicy (data) {
+  return this.fetch({
+    method: 'POST',
+    url: '/api/refinementPolicy/policy/save',
+    data
+  })
+}

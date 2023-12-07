@@ -65,6 +65,8 @@ import labelSquare from '@/views/LabelSquare/Index'
 import crowdCompute from '@/views/crowdCompute/Index'
 import bitmap from '@/views/DevelopTools/bitmap'
 
+import refinedPeople from '@/views/refinedPeople/Index'
+
 const children = [
   // {
   //     name: 'homePage',
@@ -864,6 +866,17 @@ const children = [
     meta: {
       title: '卡种偏好人群',
       tagId: 'cardPreference',
+      hideInMenu: true,
+      isCache: false
+    }
+  },
+  {
+    name: 'refinedPeople',
+    path: 'refinedPeople',
+    component: refinedPeople,
+    meta: {
+      title: '精细化人群',
+      tagId: 'refinedPeople',
       hideInMenu: true,
       isCache: false
     }
