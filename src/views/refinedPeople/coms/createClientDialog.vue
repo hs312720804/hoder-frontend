@@ -9,7 +9,6 @@
           ref="form"
           label-width="130px"
         >
-
           <el-form-item label="人群名称" prop="name">
             <el-input
               size="small"
@@ -32,11 +31,7 @@
               clearable>
             </el-date-picker>
           </el-form-item>
-          <!-- tags---{{tags}} -->
-          <!-- <br/> -->
-          <!-- <br/> -->
-          <!-- tags---[ { "thirdPartyApiId": "", "tagId": "4439", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010121", "tagName": "购物APK版本", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] }, { "thirdPartyApiId": "", "tagId": "8303", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010125", "tagName": "芯片型号", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] } ] -->
-          <!-- rulesJson --- {{ rulesJson }} -->
+
           <el-form-item label="添加标签" >
             <el-button @click="addTagDialogVisible = true">添加标签</el-button>
           </el-form-item>
@@ -44,8 +39,6 @@
           <!-- 设置条件 -->
           <div class="add" style="position: relative">
             <!-- 且、或 切换 -->
-            <!-- <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)"> -->
-            <!-- <div class="outer-and" v-if="(tags.length > 0) || (actionTags.length > 0  && hasBehaviorTag)"> -->
             <div class="outer-and" v-if="tags.length > 0 && actionTags.length > 0  && hasBehaviorTag">
               <el-button
                 type="danger"
@@ -55,7 +48,8 @@
               >{{ totalLink === 'OR' ? '或' : '且' }} </el-button>
             </div>
             <div v-if="tags.length > 0">
-              <el-form-item label="设置标签：" class="multipleSelect" >
+              <el-form-item label="设置标签：" class="multipleSelect">
+                <!-- {{ tags }} -->
                 <MultipleSelect
                   ref="MultipleSelectRef"
                   :tags="tags"
@@ -75,42 +69,9 @@
                 :actionTags="actionTags"
                 :behaviorRulesJson="behaviorRulesJson"
               ></MultipleActionTagSelect>
-                <!-- @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule" -->
             </el-form-item>
           </div>
-          <!-- {{ form.isShowAutoVersion }} --- {{ form.autoVersion }} -->
-          <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新：" prop="autoVersion" >
-            <el-radio-group v-model="form.autoVersion">
-              <el-radio :label="false">否</el-radio>
-              <el-radio :label="true">是</el-radio>
-            </el-radio-group>
-          </el-form-item>
 
-          <!-- 只有出口条件选择 -->
-          <el-form-item label="则视为：" v-if="type !== 'entry'" prop="stopType" class="inline-form-item">
-            <el-select v-model="form.stopType" clearable @change="handleStopTypeChange">
-              <el-option
-                v-for="item in options"
-                :label="item.label"
-                :value="item.value"
-                :key="item.value">
-                {{ item.label }}
-              </el-option>
-            </el-select>
-
-          </el-form-item>
-          <!-- 正确，下一步  选择同一场景下其他接待员 -->
-          <el-form-item v-if="type !== 'entry' && form.stopType === 1" prop="nextId" class="inline-form-item" style="margin-left: -130px;">
-            <el-select v-model="form.nextId" clearable placeholder="请选择流转接待员">
-              <el-option
-                v-for="item in servicerListFilterSelect"
-                :label="item.receptionist"
-                :value="item.crowdId"
-                :key="item.crowdId">
-                {{ item.receptionist }}
-              </el-option>
-            </el-select>
-          </el-form-item>
         </el-form>
       </el-col>
     </el-row>
@@ -123,7 +84,8 @@
       append-to-body
     >
       <CreatePolicyWithLabelSquare
-        pageType="specialTag"
+        pageType="refinePeopleTag"
+        class="refine-people-add-tag"
         :initTagList="tagList"
         @policyNextStep="handlePolicyNextStep"
         @resetFormData="resetFormData"
@@ -136,14 +98,12 @@
 <script>
 import MultipleSelect from '@/components/MultipleSelect.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
-// import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom.vue'
 import { dataSourceColorEnum, dataSourceColorClassEnum } from '@/utils/tags.js'
 import CreatePolicyWithLabelSquare from '@/views/LabelSquare/CreatePolicyWithLabelSquare'
 export default {
   components: {
     MultipleSelect,
     MultipleActionTagSelect,
-    // SetCirculationConditionsCom
     CreatePolicyWithLabelSquare
   },
   provide () {
@@ -154,22 +114,7 @@ export default {
   data () {
     return {
       addTagDialogVisible: false,
-      // ----- 添加指标 ------
-      remoteMethodParams: {
-        pageNum: 1,
-        pageSize: 30,
-        s: '',
-        isStoryline: 1
-      },
-      totalPages: 0,
-      searchOptions: [],
       checkedList: [],
-      // selectValue: [],
-      list: [],
-      loading: false,
-      // ----- 添加指标 end ----------
-      // options: [],
-      // options2: [],
       totalLink: 'OR',
       tagList: [],
       addForm: {
@@ -177,24 +122,11 @@ export default {
         crowdTagCrowdIds: []
         // 以上为表单提交的参数
       },
-      // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      // dataSourceColorClassEnum: {
-      //   1: 'checkbox--green',
-      //   2: 'checkbox--red',
-      //   3: 'checkbox--blue',
-      //   5: 'checkbox--yellow',
-      //   6: 'checkbox--orange',
-      //   7: 'checkbox--orange2',
-      //   8: 'checkbox--cyan',
-      //   11: 'success',
-      //   12: 'gray'
-      // },
+
       searchValue: '',
       selectTagInitPageSize: 500,
       selectTagTagsListTotal: 0,
       selectTagInitCurrentPage: 1,
-      // attrs: [[${attrs}]] || {},
-      versionNum: 2,
       cache: {},
       tags: [],
       actionTags: [],
@@ -230,8 +162,8 @@ export default {
         period: []
       },
       formRules: {
-        stopType: [{ required: true, message: '请选择', trigger: 'change' }],
-        nextId: [{ required: true, message: '请选择流转接待员', trigger: 'change' }]
+        // stopType: [{ required: true, message: '请选择', trigger: 'change' }],
+        // nextId: [{ required: true, message: '请选择流转接待员', trigger: 'change' }]
         // // crowdExp: [{ required: true, message: '请选择有效期', trigger: 'blur' }],
         // limitLaunchCount: [{ validator: checkIntNumber, trigger: 'blur' }]
       },
@@ -252,21 +184,6 @@ export default {
         }
       },
       currentLaunchLimitCount: undefined,
-      // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      // dataSourceColorEnum: {
-      //   1: 'success',
-      //   2: 'danger',
-      //   3: '',
-      //   5: 'warning',
-      //   6: 'warningOrange',
-      //   7: 'warningOrange2',
-      //   8: 'warningCyan',
-      //   11: 'success',
-      //   12: 'gray'
-      // },
-      cityData: [],
-      provinceValueList: [],
-      timeTagKongList: [],
       conditionTagsFiltered: [],
       collapseAddTagsFlag: false,
       circulationTagDataList: [],
@@ -276,7 +193,7 @@ export default {
   watch: {
     behaviorRulesJson: {
       handler () {
-        this.hasMoveBehaviorTagRule()
+        // this.hasMoveBehaviorTagRule()
       },
       deep: true
     },
@@ -303,12 +220,6 @@ export default {
     conditionTagsFilteredProp: {
       handler (val) {
         this.conditionTagsFiltered = val
-      },
-      immediate: true
-    },
-    selectTagTagsListTotalProp: {
-      handler (val) {
-        this.selectTagTagsListTotal = val
       },
       immediate: true
     }
@@ -361,102 +272,83 @@ export default {
     selectTagTagsListTotalProp: {
       type: Number,
       default: 0
-    },
-    receptionistId: {
-      type: [String, Number],
-      default: ''
-    },
-    delFlag: {
-      type: [String, Number],
-      default: ''
     }
+
   },
   methods: {
     // 添加标签 --- start
-    handlePolicyNextStep () {},
-    resetFormData () {},
+    handlePolicyNextStep (tagList) {
+      this.initTagList = tagList
+      console.log('tagList-->', tagList)
+      // this.initTagList = [4398]
+      this.addTagDialogVisible = false
+    },
+    // 返回
+    resetFormData () {
+      this.addTagDialogVisible = false
+    },
     handleDirectStrategyList () {},
     // 添加标签 --- end
 
-    // 选中指标
-    selectChange () {
-      const selectValues = this.checkedList
+    // remoteMethod (query) {
+    //   // 是否是加载更多
+    //   const isLoadMore = query === undefined
 
-      const allOptions = this.searchOptions.concat(this.tagList)
+    //   // 重置
+    //   if (!isLoadMore) {
+    //     this.remoteMethodParams.pageNum = 1
+    //     this.filmModelTagOptions = []
+    //     this.remoteMethodParams.s = query
+    //   }
 
-      const selectValueList = allOptions.filter(item => { return selectValues.includes(item.tagId) }) || []
-      // 去重
-      const uniqueArray = selectValueList.filter((item, index, array) => {
-        return array.findIndex(obj => obj.tagId === item.tagId) === index
-      })
+    //   this.loading = true
 
-      this.tagList = uniqueArray
-    },
-    handelQiboLoadmore () {
-      if (this.remoteMethodParams.pageNum < this.totalPages) {
-        this.remoteMethodParams.pageNum++ // 滚动加载翻页
-        this.remoteMethod()
-      }
-    },
-    remoteMethod (query) {
-      // 是否是加载更多
-      const isLoadMore = query === undefined
+    //   const params = {
+    //     ...this.remoteMethodParams
+    //   }
 
-      // 重置
-      if (!isLoadMore) {
-        this.remoteMethodParams.pageNum = 1
-        this.filmModelTagOptions = []
-        this.remoteMethodParams.s = query
-      }
+    //   this.$service.policyTagSeach(params).then(data => {
+    //     this.totalPages = data.pageInfo.pages // 总页数
 
-      this.loading = true
+    //     const list = data.pageInfo.list.map(item => {
+    //       return {
+    //         ...item,
+    //         dataSource: item.tDataSource
+    //       }
+    //     })
+    //     this.searchOptions = !isLoadMore ? list : this.searchOptions.concat(list)
 
-      const params = {
-        ...this.remoteMethodParams
-      }
-
-      this.$service.policyTagSeach(params).then(data => {
-        this.totalPages = data.pageInfo.pages // 总页数
-
-        const list = data.pageInfo.list.map(item => {
-          return {
-            ...item,
-            dataSource: item.tDataSource
-          }
-        })
-        this.searchOptions = !isLoadMore ? list : this.searchOptions.concat(list)
-
-        this.loading = false
-      }).catch(() => {
-        this.searchOptions = []
-        this.loading = false
-      })
-    },
+    //     this.loading = false
+    //   }).catch(() => {
+    //     this.searchOptions = []
+    //     this.loading = false
+    //   })
+    // },
     emitTags (data) {
       this.tagList = data
     },
     // 判断是否展示 “是否每日更新” 单选框
     // 判断条件： 是否设置行为标签规则，只要设置了行为标签规则就显示,默认值为 ‘是’,反之隐藏；
-    hasMoveBehaviorTagRule () {
-      const crowd = this.form
-      const behaviorRules = this.behaviorRulesJson ? this.behaviorRulesJson.rules : []
+    // hasMoveBehaviorTagRule () {
+    //   const crowd = this.form
+    //   const behaviorRules = this.behaviorRulesJson ? this.behaviorRulesJson.rules : []
 
-      let hasBehaviorRule = false // 是否有行为标签
-      if (behaviorRules.length > 0) {
-        hasBehaviorRule = true
-      }
+    //   let hasBehaviorRule = false // 是否有行为标签
+    //   if (behaviorRules.length > 0) {
+    //     hasBehaviorRule = true
+    //   }
 
-      if (hasBehaviorRule) { // 展示勾选“是否每日更新”
-        // 当有 isShowAutoVersion 并且 为  false 的时候，初始默认选择是。否则不限制选择
-        if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
-          crowd.autoVersion = true
-        }
-        crowd.isShowAutoVersion = true
-      } else {
-        crowd.isShowAutoVersion = false
-        crowd.autoVersion = false
-      }
-    },
+    //   if (hasBehaviorRule) { // 展示勾选“是否每日更新”
+    //     // 当有 isShowAutoVersion 并且 为  false 的时候，初始默认选择是。否则不限制选择
+    //     if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
+    //       crowd.autoVersion = true
+    //     }
+    //     crowd.isShowAutoVersion = true
+    //   } else {
+    //     crowd.isShowAutoVersion = false
+    //     crowd.autoVersion = false
+    //   }
+    // },
     // 获取流转标签
     async getCirculationTag () {
       await this.$service.getRuleIndicators().then(res => {
@@ -466,171 +358,68 @@ export default {
         this.soureceSignList = res
       })
     },
-    handleStopTypeChange () {
-      // 切换处理操作时，清空选择的流转接待员 ID
-      this.form.nextId = ''
-    },
-    collapseAddTags () {
-      this.collapseAddTagsFlag = !this.collapseAddTagsFlag
-    },
-    getTags () {
-      // this.addForm.conditionTagIds = [];
-      this.$service
-        .policyTagSeach({ pageNum: this.selectTagInitCurrentPage, pageSize: this.selectTagInitPageSize, s: this.searchValue, isStoryline: 1 })
-        .then(data => {
-          //  let checkboxData = []
-          // data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})})
-          //  this.conditionTagIdsData = checkboxData
-          //  this.conditionTagsFiltered = checkboxData
-          this.conditionTagsFiltered = data.pageInfo.list.map(item => {
-            return {
-              ...item,
-              dataSource: item.tDataSource
-            }
-          })
-          this.selectTagTagsListTotal = data.pageInfo.total
-        })
-    },
-    removeTag (tag) {
-      const addForm = this.addForm
-      if (tag.tDataSource === 12) {
-        // 人群标签 id 集合
-        addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.filter(tagId => tagId !== tag.tagId)
-      } else {
-        // 其他的标签 id 集合
-        addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
-      }
-      // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
-      this.tagList.splice(this.tagList.indexOf(tag), 1)
-      // this.tagList.forEach(item => {item.filter(item => item.tagId !== id)})
-    },
-    handleTagCurrentChange (pages) {
-      this.selectTagInitCurrentPage = pages
-      this.getTags()
-    },
-    handleTagChange (flag, item) {
-      let arr = []
-      // flag - true: 选中  false: 取消选中
-      if (flag) {
-        this.tagList.push(item)
-        if (item.tDataSource === 12) {
-          // 人群标签 id 集合
-          this.addForm.crowdTagCrowdIds.push(item.tagId)
-        } else {
-          // 其他的标签 id 集合
-          this.addForm.conditionTagIds.push(item.tagId)
-        }
-      } else {
-        arr = this.tagList
-        for (let i = arr.length - 1; i >= 0; i--) {
-          if (arr[i].tagId == item.tagId) { arr.splice(i, 1) }
-        }
 
-        if (item.tDataSource === 12) {
-          // 人群标签 id 集合
-          this.addForm.crowdTagCrowdIds = this.addForm.crowdTagCrowdIds.filter(tagId => tagId !== item.tagId)
-        } else {
-          // 其他的标签 id 集合
-          this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== item.tagId)
-        }
-      }
-    },
-    resetSearch () {
-      this.searchValue = ''
-      const currentTagsId = this.addForm.conditionTagIds
-      this.getTags()
-      this.addForm.conditionTagIds = currentTagsId
-    },
+    // getTags () {
+    //   // this.addForm.conditionTagIds = [];
+    //   this.$service
+    //     .policyTagSeach({ pageNum: this.selectTagInitCurrentPage, pageSize: this.selectTagInitPageSize, s: this.searchValue, isStoryline: 1 })
+    //     .then(data => {
+    //       this.conditionTagsFiltered = data.pageInfo.list.map(item => {
+    //         return {
+    //           ...item,
+    //           dataSource: item.tDataSource
+    //         }
+    //       })
+    //       this.selectTagTagsListTotal = data.pageInfo.total
+    //     })
+    // },
+    // removeTag (tag) {
+    //   const addForm = this.addForm
+    //   if (tag.tDataSource === 12) {
+    //     // 人群标签 id 集合
+    //     addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.filter(tagId => tagId !== tag.tagId)
+    //   } else {
+    //     // 其他的标签 id 集合
+    //     addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+    //   }
+    //   // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+    //   this.tagList.splice(this.tagList.indexOf(tag), 1)
+    //   // this.tagList.forEach(item => {item.filter(item => item.tagId !== id)})
+    // },
+    // handleTagCurrentChange (pages) {
+    //   this.selectTagInitCurrentPage = pages
+    //   this.getTags()
+    // },
 
-    // 给 behaviorRulesJson 中的table 添加序号
-    putBehaviorRulesJsonTableIndex (val) {
-      if (val) {
-        let tableIndex = 0
-        const ruleList = val.rules
-        ruleList.forEach(rule => {
-          const ruleGroup = rule.rules
-          ruleGroup.forEach(item => {
-            tableIndex = tableIndex + 1
-            item.table = item.table.split('$')[0] + '$' + tableIndex
-            if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
-          })
-        })
-      } else {
-        val = { link: 'AND', condition: 'OR', rules: [] }
-        // val = ''
-      }
-      return val
-    },
+    // // 请求新增或编辑接口
+    // fetchAddOrEdit (data) {
+    //   const tipMessage = this.isDynamicPeople ? '操作成功' : `操作成功，${this.crowdId != null ? '修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据' : '新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'}`
 
-    getFormPromise (form) {
-      return new Promise(resolve => {
-        form.validate(res => {
-          resolve(res)
-        })
-      })
-    },
+    //   if (this.crowdId != null) {
+    //     data.crowdId = this.crowdId
+    //     data.priority = this.priority
+    //     this.$service
+    //       .crowdUpdate(
+    //         data,
+    //         tipMessage
+    //         // '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
+    //       )
+    //       .then(() => {
+    //         this.$emit('goBackCrowdListPage', true)
+    //       })
+    //   } else {
+    //     this.$service
+    //       .crowdSave(
+    //         data,
+    //         tipMessage
+    //         // '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+    //       )
+    //       .then(() => {
+    //         this.$emit('goBackCrowdListPage', true)
+    //       })
+    //   }
+    // },
 
-    checkIfChildrenExist (data1, data2) {
-      if (data1.child == null || data1.child.length === 0) {
-        data1.child.push(data2)
-        return data1
-      }
-      // 递归
-      this.checkIfChildrenExist(data1.child[0], data2)
-    },
-
-    ReorganizationData (data) { // 将数组变成层级关系
-      let rData = []
-      const len = data.length
-
-      if (len > 1) {
-        for (let i = len - 1; i > -1; i--) {
-          rData = data[i]
-          if (data[i - 1]) {
-            rData = this.checkIfChildrenExist(data[i - 1], rData)
-          }
-        }
-      } else {
-        rData = data
-        if (data[0] && data[0].child && data[0].child.length > 1) {
-          rData[0].child = this.ReorganizationData(data[0].child)
-        }
-      }
-      return rData
-    },
-
-    // 请求新增或编辑接口
-    fetchAddOrEdit (data) {
-      const tipMessage = this.isDynamicPeople ? '操作成功' : `操作成功，${this.crowdId != null ? '修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据' : '新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'}`
-
-      if (this.crowdId != null) {
-        data.crowdId = this.crowdId
-        data.priority = this.priority
-        this.$service
-          .crowdUpdate(
-            data,
-            tipMessage
-            // '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
-          )
-          .then(() => {
-            this.$emit('goBackCrowdListPage', true)
-          })
-      } else {
-        this.$service
-          .crowdSave(
-            data,
-            tipMessage
-            // '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
-          )
-          .then(() => {
-            this.$emit('goBackCrowdListPage', true)
-          })
-      }
-    },
-    // 取消
-    cancelAdd: function () {
-      this.$emit('goBackCrowdListPage')
-    },
     // 数组去重
     distinct (a, b) {
       const arr = a.concat(b)
@@ -644,33 +433,7 @@ export default {
       }
       return result
     },
-    checkNum (num) {
-      if (/(^\d+$)/.test(num)) {
-        return true
-      } else {
-        this.$message.error('该值为必填项，且必须是大于等于0的整数')
-        return false
-      }
-    },
-    checkNumMostFour (num) {
-      const numInt = parseInt(num)
-      if (/(^\d+$)/.test(num) && numInt <= 9999) {
-        return true
-      } else {
-        this.$message.error(
-          '该值为必填项，且必须是大于等于0的整数且不能超过4位数'
-        )
-        return false
-      }
-    },
 
-    handleOperatorChange (item) {
-      if (item.tagType === 'string' && item.operator === 'null') {
-        item.value = 'nil'
-      } else {
-        item.value = ''
-      }
-    },
     handleRulesConditionChange (item) {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
@@ -705,51 +468,34 @@ export default {
       // 行为标签
       this.actionTags = actionTags
       this.specialTags = specialTags
-      console.log('this.tags------------->', this.tags)
-      console.log('this.actionTags------------->', this.actionTags)
-      console.log('this.specialTags------------->', this.specialTags)
+      // console.log('this.tags------------->', this.tags)
+      // console.log('this.actionTags------------->', this.actionTags)
+      // console.log('this.specialTags------------->', this.specialTags)
     },
     // 回显编辑数据
     reviewEditData () {
       // 编辑数据
       const policyData = this.editRow
       this.totalLink = policyData.link // 总运算符
+
       this.form.autoVersion = policyData.autoVersion || false
       this.form.isShowAutoVersion = policyData.isShowAutoVersion || false
+
       const tagIds = policyData.tagIds
 
-      if (this.type === 'entry') { // 入口
-        if (policyData.id) {
-          this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
-            this.tagList = data || []
-            this.sortTag()
-          })
-        } else if (tagIds && tagIds !== '') {
-          this.$service.getTagAttrsByTagIds({ tagIds }).then(data => {
-            this.tagList = data || []
-            this.sortTag()
-          })
-        } else {
-          this.sortTag() // 初始化所选标签
-          if (this.defaultData) { this.setDefaultData() } // 设置初始默认数据, 【批量创建】会用到
-        }
-      } else { // 出口
-        this.form.stopType = policyData.stopType
-        this.form.nextId = policyData.nextId
-        if (policyData.id) {
-          this.$service.getTagsByExportId({ exportId: policyData.id }).then(data => {
-            this.tagList = data || []
-            this.sortTag()
-          })
-        } else if (tagIds && tagIds !== '') {
-          this.$service.getTagAttrsByTagIds({ tagIds }).then(data => {
-            this.tagList = data || []
-            this.sortTag()
-          })
-        } else {
-          this.sortTag() // 初始化所选标签
-          if (this.defaultData) { this.setDefaultData() } // 设置初始默认数据, 【批量创建】会用到
-        }
+      if (policyData.id) {
+        this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
+          this.tagList = data || []
+          this.sortTag()
+        })
+      } else if (tagIds && tagIds !== '') {
+        this.$service.getTagAttrsByTagIds({ tagIds }).then(data => {
+          this.tagList = data || []
+          this.sortTag()
+        })
+      } else {
+        this.sortTag() // 初始化所选标签
+        if (this.defaultData) { this.setDefaultData() } // 设置初始默认数据, 【批量创建】会用到
       }
 
       let cacheIds = []
@@ -876,18 +622,16 @@ export default {
         // })
       })
     },
-
     // 设置默认数据
     setDefaultData () {
       const ruleJsonData = this.defaultData.rulesJson
-
       this.rulesJson = ruleJsonData
     }
   },
   async created () {
-    if (this.conditionTagsFilteredProp.length === 0) {
-      this.getTags() // 获取所有的标签列表
-    }
+    // if (this.conditionTagsFilteredProp.length === 0) {
+    //   this.getTags() // 获取所有的标签列表
+    // }
 
     // 有传入的参数就不需要调用接口了
     if (this.circulationTagDataListProp.length === 0 && this.soureceSignListProp.length === 0) {
@@ -998,5 +742,14 @@ i {
   display: inline-block;
   margin-right: 10px
   vertical-align: top;
+}
+.refine-people-add-tag.one-step-select-tag{
+  padding: 0
+  .fix-bottom-form {
+    position: sticky;
+    bottom: 0;
+    right: 0;
+    width: auto
+  }
 }
 </style>

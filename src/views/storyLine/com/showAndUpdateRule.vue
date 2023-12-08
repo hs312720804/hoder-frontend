@@ -187,7 +187,7 @@
     width="420px"
     append-to-body
   >
-    <div style="display: flex;align-items: center; gap: 10px">
+    <div style="display: flex; align-items: center; gap: 10px">
       <i class="el-icon-warning" style="color: #e6a23c; font-size: 24px"></i>
       <span>
         单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?

@@ -179,7 +179,8 @@ export function copyPolicyCrowd (data) {
   return this.fetch({
     method: 'POST',
     url: '/api/refinementPolicy/copyPolicyCrowd',
-    data
+    data,
+    isJSON: true
   })
 }
 // 精细化人群 - 创建策略组
@@ -187,6 +188,7 @@ export function saveRefinementPolicy (data) {
   return this.fetch({
     method: 'POST',
     url: '/api/refinementPolicy/policy/save',
-    data
+    data,
+    isJSON: true
   })
 }

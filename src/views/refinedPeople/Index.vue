@@ -31,7 +31,7 @@
           style="float: right; margin-bottom: 10px;"
           v-model="selectValue"
           class="inline-input"
-          @change="refinementPolicyTree"
+          @change="fetchTreeData"
         >
           <el-option
             v-for="item in tabList"
@@ -68,7 +68,8 @@
 
     <div class="detail-table">
       <div class="tip-wrap">
-        策略ID： 6616     有效期：2019.10.1 23:00  -  2019.10.2 23:00
+        <!-- {{ selectedTreeNode }} -->
+        策略ID： {{ selectedTreeNode.policyId }}&nbsp;&nbsp;&nbsp;&nbsp; 有效期：{{selectedTreeNode.crowdValidFrom}}  -  {{selectedTreeNode.crowdValidTo}}
       </div>
       <!-- 表格 -->
       <TableIndex
@@ -78,7 +79,6 @@
       >
       </TableIndex>
     </div>
-
     <el-dialog
       :title="crowdForm.policyId ? '编辑策略组' : '添加策略组'"
       :visible.sync="updatePolicyDialog"
@@ -120,15 +120,37 @@
       width="1200px"
       v-if="clientDialogVisible"
     >
+    <!-- editRow--{{ editRow }} -->
       <createClientDialog
         ref="createClientDialog"
-        :editRow="editClientRow">
+        :editRow="editRow">
       </createClientDialog>
       <span slot="footer" class="dialog-footer">
         <el-button @click="clientDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addOrEditEntryRule">确 定</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="openMoveOrClearDialogVisible"
+      width="420px"
+      append-to-body
+    >
+      <div style="display: flex; align-items: center; gap: 10px">
+        <i class="el-icon-warning" style="color: #e6a23c; font-size: 24px"></i>
+        <span>
+          单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?
+        </span>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <!-- <el-button @click="clearBehaviorRulesJson(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">不保存</el-button>
+        <el-button type="primary" @click="moveToRule(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">确定移入</el-button> -->
+        <el-button @click="handleClearBehaviorRulesJson">不保存</el-button>
+        <el-button type="primary" @click="handleMoveToRule">确定移入</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -136,6 +158,7 @@
 import TableIndex from './TableIndex.vue'
 import TreeForm from './coms/TreeForm.vue'
 import createClientDialog from './coms/createClientDialog.vue'
+import { validateRule, moveToRule, clearBehaviorRulesJson } from '@/views/storyLine/validateRuleData.js'
 
 export default {
   name: 'refinedPeople',
@@ -154,75 +177,8 @@ export default {
     }
   },
   data () {
-    // 测试数据
-    const data = [{
-      id: 1,
-      label: '一级 1',
-      children: [{
-        id: 4,
-        label: '二级 1-1',
-        children: [{
-          id: 9,
-          label: '三级 1-1-1',
-          children: [{
-            id: 11,
-            label: '四级 1-1-1'
-          }, {
-            id: 12,
-            label: '四级 1-1-2'
-          }, {
-            id: 11,
-            label: '四级 1-1-1'
-          }, {
-            id: 12,
-            label: '四级 1-1-2'
-          }, {
-            id: 11,
-            label: '四级 1-1-1'
-          }, {
-            id: 12,
-            label: '四级 1-1-2'
-          }, {
-            id: 11,
-            label: '四级 1-1-1'
-          }, {
-            id: 12,
-            label: '四级 1-1-2'
-          }]
-        }, {
-          id: 10,
-          label: '三级 1-1-2',
-          children: [{
-            id: 13,
-            label: '四级 1-1-1'
-          }, {
-            id: 14,
-            label: '四级 1-1-2'
-          }]
-        }]
-      }]
-    }, {
-      id: 2,
-      label: '一级 2',
-      children: [{
-        id: 5,
-        label: '二级 2-1'
-      }, {
-        id: 6,
-        label: '二级 2-2'
-      }]
-    }, {
-      id: 3,
-      label: '一级 3',
-      children: [{
-        id: 7,
-        label: '二级 3-1'
-      }, {
-        id: 8,
-        label: '二级 3-2'
-      }]
-    }]
     return {
+
       // 弹窗---------------
       updatePolicyDialog: false,
       crowdForm: {
@@ -235,7 +191,7 @@ export default {
       },
       // 弹窗---------------end
       selectValue: '',
-      treeData: JSON.parse(JSON.stringify(data)),
+      treeData: [],
       // 权益列表
       tabList: [{
         label: '爱奇艺',
@@ -258,11 +214,32 @@ export default {
       selectedTreeNode: {},
       // 添加子人群--- start
       clientDialogVisible: false,
-      editClientRow: {}
+      editRow: {},
+      openMoveOrClearDialogVisible: false,
+      openMoveOrClearDialogRef: undefined
       // 添加子人群--- end
     }
   },
   methods: {
+    // 不保存
+    handleClearBehaviorRulesJson () {
+      // 清空行为标签
+      clearBehaviorRulesJson(this.openMoveOrClearDialogRef)
+      this.openMoveOrClearDialogVisible = false
+    },
+    // 确定移入
+    handleMoveToRule () {
+      moveToRule(this.openMoveOrClearDialogRef)
+      this.openMoveOrClearDialogVisible = false
+    },
+    // 投放
+    aaa () {
+      this.$service.freshCache({ policyId: this.recordId }).then(() => {
+        // this.$emit('closeDialog')
+        // this.$emit('refreshList')
+        // this.$root.$emit('stratege-list-refresh')
+      })
+    },
     // ---------- 编辑策略组 start ---------
     // 增加策略组、增加子人群
     handleTreeAdd (node, data) {
@@ -273,7 +250,9 @@ export default {
         // 清空表单
         this.$nextTick(() => {
           this.$refs.crowdForm.resetFields()
+          console.log('this.crowdForm-->', this.crowdForm)
         })
+        this.crowdForm.policyId = undefined
       } else {
         // 添加子人群
         this.clientDialogVisible = true
@@ -294,6 +273,7 @@ export default {
 
         this.crowdForm.policyName = data.sourceName
         this.crowdForm.policyId = data.policyId
+        this.crowdForm.period = [data.crowdValidFrom || '', data.crowdValidTo || '']
       } else {
         // 编辑子人群
         this.clientDialogVisible = true
@@ -303,12 +283,104 @@ export default {
     handleDialogClose () {
       this.updatePolicyDialog = false
     },
-    // 编辑策略组 submit
-    handleSubmit () {
+    // 新增、编辑策略组 保存
+    async handleSubmit () {
+      const valid = await this.$refs.crowdForm.validate()
+      if (!valid) return
+      // 编辑
+      if (this.crowdForm.policyId) {
+        const params = {
+          policyId: this.crowdForm.policyId,
+          crowdValidTo: this.crowdForm.period[0],
+          crowdValidFrom: this.crowdForm.period[1],
+          policyName: this.crowdForm.policyName
+        }
+        this.$service.policyUpate(params).then((data) => {
 
+        })
+      } else {
+        // 新增
+        const params = {
+          productId: this.selectValue,
+          crowdValidTo: this.crowdForm.period[0],
+          crowdValidFrom: this.crowdForm.period[1],
+          policyName: this.crowdForm.policyName
+        }
+        this.$service.saveRefinementPolicy(params).then(res => {
+          this.fetchTreeData()
+          this.updatePolicyDialog = false
+        })
+      }
     },
+    // 新增/编辑添加子人群
     addOrEditEntryRule () {
+      const dialogRef = this.$refs.createClientDialog
+      // 普通标签规则
+      const rulesJson = dialogRef.rulesJson
+      // 行为标签规则
+      const behaviorRulesJson = dialogRef.behaviorRulesJson
+      // 流转条件规则
+      const flowCondition = dialogRef.flowCondition
 
+      // 校验规则
+      const validPromise = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
+
+      validPromise.then(data => {
+        this.fetchAddOrEdit(data)
+      }).catch(err => {
+        if (err.openMoveOrClear) {
+          this.openMoveOrClearDialogVisible = true
+          this.openMoveOrClearDialogRef = dialogRef
+        }
+      })
+    },
+
+    fetchAddOrEdit (data) {
+      const dialogRef = this.$refs.createClientDialog
+
+      const tagIds = dialogRef.checkedList.join(',')
+      const { rulesJson, behaviorRulesJson } = data
+
+      const name = dialogRef.form.name // 人群名称
+      const period = dialogRef.form.period // 人群有效区间
+
+      const flowCondition = JSON.stringify(dialogRef.flowCondition)
+
+      let params = {}
+      if (this.editRow) {
+        params = {
+          ...this.editRow,
+          crowdName: '',
+          parentId: '',
+          crowdValidFrom: '',
+          crowdValidTo: '',
+          isSettingValid: '',
+          tagIds,
+          rulesJson,
+          behaviorRulesJson,
+          flowCondition, // 流转指标
+          link: dialogRef.totalLink
+        }
+      } else {
+        params = {
+          crowdName: '',
+          parentId: '',
+          crowdValidFrom: '',
+          crowdValidTo: '',
+          isSettingValid: '',
+          tagIds,
+          rulesJson,
+          behaviorRulesJson,
+          flowCondition, // 流转指标
+          link: dialogRef.totalLink
+        }
+      }
+
+      this.$service.crowdSave(params).then(() => {
+        // 刷新列表
+        this.fetchTreeData()
+        this.clientDialogVisible = false
+      })
     },
     // ----------编辑策略组 end---------
 
@@ -320,12 +392,34 @@ export default {
     handleTabChange () {
     },
 
-    refinementPolicyTree () {
+    fetchTreeData () {
       const params = {
         productId: this.selectValue || 1
       }
       this.$service.refinementPolicyTree(params).then(res => {
+        // const a = [{
+        //   id: 6679,
+        //   isPolicy: true,
+        //   parentId: 0,
+        //   policyId: 6679,
+        //   sourceName: '精细化人群1'
+        // }, {
+        //   id: 6689,
+        //   isPolicy: false,
+        //   parentId: 6679,
+        //   policyId: 6689,
+        //   sourceName: '子人群'
+        // }]
+        const root = [{
+          id: -1,
+          isPolicy: false,
+          parentId: 0,
+          sourceName: '所有策略',
+          children: this.arrayToTree(res || []),
+          type: 'root'
+        }]
 
+        this.treeData = root
       })
     },
     refinementPolicyProduct () {
@@ -345,34 +439,10 @@ export default {
     }
   },
   async created () {
+    // 权益
     await this.refinementPolicyProduct()
     // 树形的数据
-    this.refinementPolicyTree()
-
-    const a = [{
-      id: 6679,
-      isPolicy: true,
-      parentId: 0,
-      policyId: 6679,
-      sourceName: '精细化人群1'
-    }, {
-      id: 6689,
-      isPolicy: false,
-      parentId: 6679,
-      policyId: 6689,
-      sourceName: '子人群'
-    }]
-
-    const root = [{
-      id: -1,
-      isPolicy: false,
-      parentId: 0,
-      sourceName: '所有策略',
-      children: this.arrayToTree(a),
-      type: 'root'
-    }]
-
-    this.treeData = root
+    this.fetchTreeData()
   }
 }
 </script>
