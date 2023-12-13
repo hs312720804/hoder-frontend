@@ -24,29 +24,53 @@
 
     <div class="tag-list">
     <el-table ref="changeTable" border :data="dataList">
-      <el-table-column prop="launchCrowdId" label="ID">
+      <el-table-column prop="crowdId" label="ID">
       </el-table-column>
-      <el-table-column prop="card" label="人群名">
+      <el-table-column prop="crowdName" label="人群名">
       </el-table-column>
-      <el-table-column prop="size" label="优先级">
-        <template v-slot="row">
+      <el-table-column prop="priority" label="优先级">
+        <!-- <template v-slot="row">
             {{ cc_format_number(row.size) }}
+        </template> -->
+        <template slot="header">
+          优先级
+          <el-popover
+            placement="top"
+            trigger="hover"
+            class="popover-button"
+          >
+            <div>数字越大，优先级越高</div>
+            <span class="priority-tip" slot="reference">!</span>
+          </el-popover>
+        </template>
+
+        <template slot-scope="scope">
+            <priorityEdit
+              @refresh="fetchData"
+              :showEdit="true"
+              :data="scope.row.priority"
+              :policyId="scope.row.policyId"
+              :crowdId="scope.row.crowdId"
+            >
+            </priorityEdit>
         </template>
       </el-table-column>
       <el-table-column prop="updateTime" label="有效期">
       </el-table-column>
       <el-table-column label="操作" width="180px">
         <template v-slot="{row}">
-          <el-button type="text" size="small" >
-            下架
+          <el-button type="text" size="small" @click="onOrOffLocalCrowd(row)">
+            <!-- 下架 -->
+            <span v-if="row.putway === 1">下架</span>
+            <span v-else>上架</span>
           </el-button>
-          <el-button type="text" size="small" >
+          <el-button type="text" size="small" @click="handleEdit(row)">
             编辑
           </el-button>
           <el-button type="text" size="small" @click="handleCopyCrowd(row)">
             复制
           </el-button>
-          <el-button  type="text" size="small">
+          <el-button  type="text" size="small" @click="handleDel(row)">
             删除
           </el-button>
 
@@ -86,28 +110,39 @@
     >
       <el-form :model="crowdForm" ref="form" label-width="150px" :rules="rules">
         <el-form-item label="选择目的父节点：" prop="launchName">
+          <!-- {{ selectedCopiedTreeNode.sourceName || ''  }} -->
+          <span v-for="(item,index) in selectedCopiedTreeNode" :key="item.id">
+            <template v-if="index !== 0">,</template>{{ item.sourceName }}
+          </span>
           <TreeForm
-          :treeData="treeData"
-          :btnFlg="false"
-          class='tree_left'>
+            v-if="updatePolicyDialog"
+            :treeData="treeData"
+            :btnFlg="false"
+            :imultiple="true"
+            :check-strictly="true"
+            style="height: 400px"
+            @nodeCheck="handleNodeCheck"
+          >
         </TreeForm>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleDialogClose">取 消</el-button>
-        <el-button @click="handleSubmit" type="primary">确 定</el-button>
+        <el-button @click="handleCopySubmit" type="primary">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import TreeForm from './coms/TreeForm.vue'
+import TreeForm from './TreeForm.vue'
+import priorityEdit from '@/components/PriorityEdit.vue'
 // import tagList from './coms/TagList'
 export default {
   name: 'MyCollect',
   components: {
-    TreeForm
+    TreeForm,
+    priorityEdit
   },
   props: {
     treeData: {
@@ -231,19 +266,85 @@ export default {
       },
       launchName: '',
       dialogTitle: '',
-      totalCount: 0
+      totalCount: 0,
+      selectedCopiedTreeNode: [],
+      operateRow: {} // 当前编辑、复制的对象
     }
   },
   methods: {
+
+    // 树状 复选框被点击的时候触发
+    handleNodeCheck (node, data) {
+      const { checkedNodes, checkedKeys, halfCheckedNodes, halfCheckedKeys } = node
+      console.log('node-->', node)
+      console.log('data-->', data)
+      this.selectedCopiedTreeNode = checkedNodes
+    },
+    // 下架
+    onOrOffLocalCrowd (row) {
+      const params = {
+        crowdId: row.crowdId,
+        putway: row.putway === 1 ? 0 : 1
+      }
+      const tipText = params.putway ? '上架' : '下架'
+      this.$confirm(`确定要${tipText}吗?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$service.crowdUpDown(params, `${tipText}成功`).then(() => {
+          this.fetchData()
+        })
+      })
+    },
     handleCopyCrowd (row) {
       console.log('row-->', row)
       this.updatePolicyDialog = true
+      this.operateRow = row
+      // 重置数据
+      this.selectedCopiedTreeNode = []
+    },
+    // 编辑人群
+    handleEdit (row) {
+      this.$emit('editCrowd', row)
+    },
+    // 删除人群
+    handleDel (row) {
+      const crowdId = row.crowdId
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$service.strategyCrowdDel({ crowdId }, '删除成功').then(() => {
+          this.fetchData()
+          // 刷新父级列表
+          this.$emit('refresh')
+        })
+      })
     },
     handleDialogClose () {
-
+      this.updatePolicyDialog = false
     },
-    handleSubmit () {
-
+    // 人群复制
+    handleCopySubmit () {
+      const policyCrowdDTOList = this.selectedCopiedTreeNode.map(item => {
+        return {
+          policyId: item.policyId,
+          crowdId: item.isPolicy ? undefined : item.id
+        }
+      })
+      const params = {
+        crowdId: this.operateRow.crowdId,
+        policyCrowdDTOList
+      }
+      this.$service.copyPolicyCrowd(params, '人群复制成功').then(rse => {
+        // 刷新
+        this.fetchData()
+        // 刷新父级列表
+        this.$emit('refresh')
+        this.updatePolicyDialog = false
+      })
     },
     // handleCloseDialog () {
     //   this.showLaunchToBusiness = false
@@ -291,7 +392,7 @@ export default {
       const params = {
         ...this.filter,
         policyId: this.selectedTreeNode.policyId,
-        crowdId: this.selectedTreeNode.isPolicy ? undefined : this.selectedTreeNode.crowdId
+        crowdId: this.selectedTreeNode.isPolicy ? undefined : this.selectedTreeNode.id
       }
       this.$service.refinementPolicyCrowdSearch(params).then(data => {
         // eslint-disable-next-line

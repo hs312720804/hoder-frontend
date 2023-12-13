@@ -4,7 +4,7 @@
   <div class='tree_form_left_input'>
     <el-input
       v-if="searchFlg"
-      placeholder="请输入"
+      placeholder="请输入关键字进行过滤"
       v-model='filterText'
       suffix-icon="el-icon-search"
       clearable>
@@ -19,42 +19,61 @@
       <el-button slot="append" icon="el-icon-search" @click="getSceneList"></el-button>
     </el-input> -->
   </div>
-  <el-scrollbar style="height: 500px; " wrap-style="overflow-x: hidden;" >
-    <div style="padding-right: 20px;">
-      <!-- {{ treeModelData }} -->
-      <el-tree
-        ref="tree"
-        class='tree_form_left_tree'
-        highlight-current
-        default-expand-all
-        :data='treeModelData'
-        :show-checkbox="imultiple"
-        :expand-on-click-node="false"
-        :filter-node-method="filterNode"
-        @node-click="handleNodeClick"
-        >
-        <div class='custom-tree-node_body' slot-scope="{ node, data }">
-          <span class="custom-tree-node">
-            <!-- 判断是否存在子级数据 -->
-            <i v-if="!data.children || data.children.length<=0" class="font_family icon-circular no_children"/>
-            <!-- 节点展开样式 -->
-            <i v-else-if="node.expanded" class="file_class font_family icon-file_open"/>
-            <!-- 节点收缩样式 -->
-            <i v-else class="file_class font_family icon-file_close"/>
-            <!-- 节点内容 -->
-            <span class='label' :title='data.sourceName || "-"'>{{ data.sourceName }} -- {{ data.isPolicy }}</span>
-          </span>
-          <!-- 自定义按钮区 -->
-          <!-- <span v-if='!data.children || data.children.length<=0' class='tree_form_left_tree_icon'> -->
-          <span v-if="btnFlg" class='tree_form_left_tree_icon'>
-            <i v-if="data.type !== 'root'" class="el-icon-edit" @click='treeEdit(node, data)'></i>
-            <i class="el-icon-circle-plus-outline" @click='treeAdd(node,data)'></i>
-            <i v-if="data.type !== 'root'"  class="el-icon-delete" @click='treeEdit(node,data)'></i>
-          </span>
-        </div>
-      </el-tree>
+  <div class="tree-wrap">
+    <!-- el-scrollbar -->
+    <div wrap-style="overflow-x: hidden;">
+      <div style="padding-right: 20px;">
+        <!-- {{ treeModelData }} -->
+        <!-- currentNodeKey -- {{ currentNodeKey }} -->
+        <el-tree
+          v-bind="$attrs"
+          ref="tree"
+          class='tree_form_left_tree'
+          highlight-current
+          default-expand-all
+          :data='treeModelData'
+          :show-checkbox="imultiple"
+          :expand-on-click-node="false"
+          :filter-node-method="filterNode"
+          node-key="id"
+          :current-node-key="currentNodeKey"
+          @node-click="handleNodeClick"
+          @check="handleCheck"
+          >
+          <div class='custom-tree-node_body' slot-scope="{ node, data }">
+            <span class="custom-tree-node">
+              <!-- 判断是否存在子级数据
+              <i v-if="!data.children || data.children.length<=0" class="font_family icon-circular no_children"/>
+              节点展开样式
+              <i v-else-if="node.expanded" class="file_class font_family icon-file_open"/>
+              节点收缩样式
+              <i v-else class="file_class font_family icon-file_close"/> -->
+              <template v-if="data.isPolicy">
+                <i v-if="node.expanded" class="el-icon-folder-opened folder"></i>
+                <i v-else class="el-icon-folder folder"></i>
+              </template>
+              <template v-else>
+                <i class="el-icon-s-custom crowd"></i>
+                <!-- <i class="el-icon-female crowd"></i> -->
+              </template>
+              <!-- 节点内容 -->
+              <span class='label' :title='data.sourceName || "-"' :class="{'is-policy':  data.isPolicy}">
+                {{ data.sourceName }}  -- {{data.policyId}}
+                -- {{ data.isPolicy }}
+              </span>
+            </span>
+            <!-- 自定义按钮区 -->
+            <!-- <span v-if='!data.children || data.children.length<=0' class='tree_form_left_tree_icon'> -->
+            <span v-if="btnFlg" class='tree_form_left_tree_icon'>
+              <i v-if="data.type !== 'root'" class="el-icon-edit" @click='treeEdit(node, data)'></i>
+              <i v-if="node.level < 4" class="el-icon-circle-plus-outline" @click='treeAdd(node,data)'></i>
+              <i v-if="data.type !== 'root'"  class="el-icon-close" style="color: #ff8888" @click='treeDelete(node,data)'></i>
+            </span>
+          </div>
+        </el-tree>
+      </div>
     </div>
-  </el-scrollbar>
+  </div>
 </div>
 </template>
 
@@ -64,11 +83,8 @@ export default {
   data () {
     return {
       filterText: '', // 搜索框对应的value值
-      treeModelData: '', // 树的展示数据
-      defaultProps: {
-        children: 'children',
-        label: 'label'
-      }
+      treeModelData: '' // 树的展示数据
+
     }
   },
   props: {
@@ -87,8 +103,11 @@ export default {
     imultiple: { // 是否显示多选框
       type: Boolean,
       default: false
+    },
+    currentNodeKey: {
+      type: [String, Number],
+      default: ''
     }
-
   },
   watch: {
     filterText (val) {
@@ -102,12 +121,24 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    currentNodeKey: {
+      handler (val) {
+        this.$nextTick(() => {
+          this.$refs.tree.setCurrentKey(val)
+        })
+      },
+      immediate: true
     }
   },
   methods: {
     // 点击节点
     handleNodeClick (data, node) {
       this.$emit('nodeClick', node, data)
+    },
+    // 当复选框被点击的时候触发
+    handleCheck (data, node) {
+      this.$emit('nodeCheck', node, data)
     },
     treeEdit (node, data) {
       this.$emit('treeEdit', node, data) // 将需要执行的数据传递出去
@@ -120,7 +151,7 @@ export default {
     },
     filterNode (value, data) {
       if (!value) return true
-      return data.label.indexOf(value) !== -1
+      return data.sourceName.indexOf(value) !== -1
     }
   }
 }
@@ -137,7 +168,7 @@ export default {
 // }
 .tree_form_left_tree {
   margin-top: 10px;
-  font-size 12px
+  font-size 13px
   .el-tree-node {
     position: relative;
     color: black;
@@ -278,4 +309,26 @@ export default {
 //     width 250px
 //   }
 // }
+.folder {
+  font-size: 16px;
+  color: #f8b007;
+}
+.crowd {
+  font-size: 14px;
+  // color: gray;
+}
+.is-policy {
+  // font-size: 13px;
+  // color: #f8b007;
+}
+.tree-wrap {
+  // position: absolute;
+  // // width: 100%;
+  // bottom: 0;
+  // left: 0
+  // right: 0
+  // top: 83px;
+  overflow: auto;
+  height: 92%;
+}
 </style>

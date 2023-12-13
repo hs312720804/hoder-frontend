@@ -9,8 +9,7 @@
           ref="form"
           label-width="130px"
         >
-        <!-- tagList--{{tagList}} -->
-          <el-form-item label="人群名称：" prop="name">
+          <el-form-item label="人群名称" prop="name">
             <el-input
               size="small"
               style="width: 380px"
@@ -33,7 +32,7 @@
             </el-date-picker>
           </el-form-item>
 
-          <el-form-item label="添加标签：" >
+          <el-form-item label="添加标签" >
             <el-button @click="addTagDialogVisible = true">添加标签</el-button>
           </el-form-item>
 
@@ -89,7 +88,7 @@
         class="refine-people-add-tag"
         :initTagList="tagList"
         @policyNextStep="handlePolicyNextStep"
-        @back="resetFormData"
+        @resetFormData="resetFormData"
         @handleDirectStrategyList="handleDirectStrategyList">
       </CreatePolicyWithLabelSquare>
     </el-dialog>
@@ -123,6 +122,7 @@ export default {
         crowdTagCrowdIds: []
         // 以上为表单提交的参数
       },
+
       searchValue: '',
       selectTagInitPageSize: 500,
       selectTagTagsListTotal: 0,
@@ -134,6 +134,19 @@ export default {
       tagInitSize: 200,
       tagCurrentPage: 1,
       tagSelectMoreShow: false,
+      // showMoreTags: false,
+      // tagList: [],
+      checkboxValue: '',
+      currentChildItem: '',
+      // 选择更多标签分页
+      // initPageSize: 200,
+      // initCurrentPage: 1,
+      // tagsListTotal: 0,
+      // tag 查询模块
+      formInline: {
+        attrName: ''
+      },
+      // usedTags: [[${usedTags}]] || {},
       rulesJson: { condition: 'OR', rules: [] },
       behaviorRulesJson: { link: 'AND', condition: 'OR', rules: [] },
       dynamicPolicyJson: { link: 'AND', condition: 'OR', rules: [] },
@@ -142,7 +155,10 @@ export default {
       suggestionsNew: [],
       priority: '',
       form: {
-        name: '',
+        stopType: '',
+        nextId: '',
+        autoVersion: false,
+        isShowAutoVersion: false,
         period: []
       },
       formRules: {
@@ -151,10 +167,26 @@ export default {
         // // crowdExp: [{ required: true, message: '请选择有效期', trigger: 'blur' }],
         // limitLaunchCount: [{ validator: checkIntNumber, trigger: 'blur' }]
       },
-
+      pickerOptions: {
+        disabledDate (time) {
+          // 设置可选时间为今天之后的60天内
+          // 为了解当前时间不是23.59.59,第60选不了当前时间点之后的时间点
+          // 比如当前是10.10.10,选不了第60天的10.10.10之后的点
+          const today = new Date().setHours(23, 59, 59)
+          const curDate = new Date(today).getTime()
+          // 算出一个月的毫秒数，这里使用30的平均值，实际应根据具体的每个月有多少天计算
+          const day = 60 * 24 * 3600 * 1000
+          const dateRange = curDate + day
+          return (
+            time.getTime() < Date.now() - 24 * 60 * 60 * 1000 ||
+            time.getTime() > dateRange
+          )
+        }
+      },
+      currentLaunchLimitCount: undefined,
       conditionTagsFiltered: [],
       collapseAddTagsFlag: false,
-      // circulationTagDataList: [],
+      circulationTagDataList: [],
       soureceSignList: []
     }
   },
@@ -172,13 +204,13 @@ export default {
         this.sortTag()
       }
     },
-    // circulationTagDataListProp: {
-    //   handler (val) {
-    //     console.log('val===>', val)
-    //     this.circulationTagDataList = val
-    //   },
-    //   immediate: true
-    // },
+    circulationTagDataListProp: {
+      handler (val) {
+        console.log('val===>', val)
+        this.circulationTagDataList = val
+      },
+      immediate: true
+    },
     soureceSignListProp: {
       handler (val) {
         this.soureceSignList = val
@@ -205,19 +237,18 @@ export default {
     }
   },
   props: {
-    selectedTreeNode: {
+    editRow: {
       type: Object,
       default: () => {}
-    },
-    editRow: {
-      type: [Object, undefined],
-      default: undefined
     },
     type: {
       type: String,
       default: 'entry'
     },
-
+    servicerListFilterSelect: {
+      type: Array,
+      default: () => []
+    },
     options: {
       type: Array,
       default: () => []
@@ -226,10 +257,10 @@ export default {
       type: Object,
       default: () => {}
     },
-    // circulationTagDataListProp: {
-    //   type: Array,
-    //   default: () => []
-    // },
+    circulationTagDataListProp: {
+      type: Array,
+      default: () => []
+    },
     soureceSignListProp: {
       type: Array,
       default: () => []
@@ -237,40 +268,20 @@ export default {
     conditionTagsFilteredProp: {
       type: Array,
       default: () => []
+    },
+    selectTagTagsListTotalProp: {
+      type: Number,
+      default: 0
     }
 
   },
   methods: {
-    // 根据 policy 查询tag
-    getTagsByPoliceId () {
-      const params = {
-        policyId: this.selectedTreeNode.policyId
-      }
-      this.$service.getTagsByPoliceId(params).then(data => {
-        this.tagList = data || []
-        this.sortTag()
-      })
-    },
     // 添加标签 --- start
-    handlePolicyNextStep (addForm) {
-      // this.initTagList = tagList
-      // console.log('addForm-->', addForm)
-      // console.log('selectedTreeNode-->', this.selectedTreeNode)
-
+    handlePolicyNextStep (tagList) {
+      this.initTagList = tagList
+      console.log('tagList-->', tagList)
       // this.initTagList = [4398]
-      const { conditionTagIds, crowdTagCrowdIds } = addForm
-
-      const params = {
-        policyId: this.selectedTreeNode.policyId,
-        policyName: this.selectedTreeNode.policyName,
-        conditionTagIds, // 其他的标签 id 集合
-        crowdTagCrowdIds // 人群标签 id 集合
-      }
-      // 添加标签
-      this.$service.policyUpate(params).then(() => {
-        this.addTagDialogVisible = false
-        this.getTagsByPoliceId()
-      })
+      this.addTagDialogVisible = false
     },
     // 返回
     resetFormData () {
@@ -339,14 +350,14 @@ export default {
     //   }
     // },
     // 获取流转标签
-    // async getCirculationTag () {
-    //   await this.$service.getRuleIndicators().then(res => {
-    //     this.circulationTagDataList = res
-    //   })
-    //   this.$service.getSourceSign().then(res => {
-    //     this.soureceSignList = res
-    //   })
-    // },
+    async getCirculationTag () {
+      await this.$service.getRuleIndicators().then(res => {
+        this.circulationTagDataList = res
+      })
+      this.$service.getSourceSign().then(res => {
+        this.soureceSignList = res
+      })
+    },
 
     // getTags () {
     //   // this.addForm.conditionTagIds = [];
@@ -453,7 +464,7 @@ export default {
       //   normalTags = normalTags.filter(item => item.dataSource !== 12)
       // }
       // 设置标签中，加上了效果指标
-      this.tags = normalTags
+      this.tags = [...this.circulationTagDataList, ...normalTags]
       // 行为标签
       this.actionTags = actionTags
       this.specialTags = specialTags
@@ -462,19 +473,31 @@ export default {
       // console.log('this.specialTags------------->', this.specialTags)
     },
     // 回显编辑数据
-    async reviewEditData () {
+    reviewEditData () {
       // 编辑数据
-      const editRow = this.editRow
-      // this.totalLink = policyData.link // 总运算符
+      const policyData = this.editRow
+      this.totalLink = policyData.link // 总运算符
 
-      // 查人群详情
-      const params = {
-        crowdId: editRow.id
+      this.form.autoVersion = policyData.autoVersion || false
+      this.form.isShowAutoVersion = policyData.isShowAutoVersion || false
+
+      const tagIds = policyData.tagIds
+
+      if (policyData.id) {
+        this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
+          this.tagList = data || []
+          this.sortTag()
+        })
+      } else if (tagIds && tagIds !== '') {
+        this.$service.getTagAttrsByTagIds({ tagIds }).then(data => {
+          this.tagList = data || []
+          this.sortTag()
+        })
+      } else {
+        this.sortTag() // 初始化所选标签
+        if (this.defaultData) { this.setDefaultData() } // 设置初始默认数据, 【批量创建】会用到
       }
-      const crowdInfo = await this.$service.crowdEdit(params) || {}
-      const policyData = crowdInfo.policyCrowds
 
-      this.form.name = policyData.crowdName
       let cacheIds = []
 
       const cacheActionIds = []
@@ -548,29 +571,6 @@ export default {
         })
       }
     },
-    // 根据省id获取市列表
-    areaSelectChange (val, tagCode, childItem) {
-      // this.provinceValueList[index] = val
-      // console.log(this.provinceValueList==='', this.provinceValueList)
-      if (childItem) childItem.value = ''
-      if (tagCode === 'mix_area') {
-        const params = {
-          id: val
-        }
-        return this.$service.specialTagChild(params).then(data => {
-          const cityData = data.slice().map(item => {
-            return {
-              attrValue: item.specialTagName,
-              attrName: item.specialTagName,
-              attrId: item.specialTagId,
-              rulesJson: item.rulesJson
-            }
-          })
-          this.$set(this.cityData, val, cityData)
-          // console.log('this.cityData===', this.cityData)
-        })
-      }
-    },
     fetchTagSuggestions (tagId) {
       this.$service
         // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
@@ -633,17 +633,17 @@ export default {
     //   this.getTags() // 获取所有的标签列表
     // }
 
-    // // 有传入的参数就不需要调用接口了
-    // if (this.circulationTagDataListProp.length === 0 && this.soureceSignListProp.length === 0) {
-    //   await this.getCirculationTag() // 获取流转标签
-    // }
-    // 根据 policy 查询tag
-    this.getTagsByPoliceId()
+    // 有传入的参数就不需要调用接口了
+    if (this.circulationTagDataListProp.length === 0 && this.soureceSignListProp.length === 0) {
+      await this.getCirculationTag() // 获取流转标签
+    }
+
     // 编辑 回显
     if (this.editRow) {
       this.reviewEditData()
     } else {
       this.sortTag() // 初始化所选标签
+      if (this.defaultData) { this.setDefaultData() } // 设置初始默认数据, 【批量创建】会用到
     }
 
     // this.tags = [{ thirdPartyApiId: '', tagId: '8303', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010125', tagName: '芯片型号', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '8304', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010126', tagName: '存储', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }]
@@ -745,11 +745,11 @@ i {
 }
 .refine-people-add-tag.one-step-select-tag{
   padding: 0
-}
-.refine-people-add-tag ::v-deep .fix-bottom-form {
-  position: sticky;
-  bottom: 0;
-  right: 0;
-  width: auto
+  .fix-bottom-form {
+    position: sticky;
+    bottom: 0;
+    right: 0;
+    width: auto
+  }
 }
 </style>
