@@ -51,6 +51,7 @@
               :data="scope.row.priority"
               :policyId="scope.row.policyId"
               :crowdId="scope.row.crowdId"
+              :parentId="scope.row.parentId"
             >
             </priorityEdit>
         </template>
