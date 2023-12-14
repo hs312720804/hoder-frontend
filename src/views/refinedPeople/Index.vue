@@ -547,7 +547,6 @@ export default {
 
         this.treeData = root
         this.selectedCopiedTreeData = this.arrayToTree(res || [], this.limitLevel - 1)
-        // console.log(' this.treeData-->', this.treeData)
         // console.log('this.selectedCopiedTreeData-->', this.selectedCopiedTreeData)
 
         this.$nextTick(() => {
@@ -562,21 +561,46 @@ export default {
         return this.selectValue
       })
     },
+    //   arrayToTree (arr, limitLevel) {
+    //     // limitLevel - 超过这个层级的就不展示了；如果未定义的话，就不限制
+    //     const arrCopy = JSON.parse(JSON.stringify(arr))
+
+    //     return arrCopy.filter(item => {
+    //       if (item.parentId === 0) item.level = 1
+
+    //       item.children = arrCopy.filter(item2 => {
+    //         if (item2.parentId === item.id) {
+    //           if (item2.id === 21529) {
+    //             debugger
+    //             console.log('item.level-->', item)
+    //             console.log('item.level-->', item.level)
+    //           }
+    //           item2.level = item.level ? item.level + 1 : undefined
+    //         }
+    //         return item2.parentId === item.id && (!limitLevel || (item2.level <= limitLevel && limitLevel))
+    //       })
+
+    //       return item.parentId === 0 && (!limitLevel || (item.level <= limitLevel && limitLevel))
+    //     })
+    //   }
+    // },
     arrayToTree (arr, limitLevel) {
+      // limitLevel - 超过这个层级的就不展示了；如果未定义的话，就不限制
       const arrCopy = JSON.parse(JSON.stringify(arr))
 
-      return arrCopy.filter(item => {
-        if (item.parentId === 0) item.level = 1
-
-        item.children = arrCopy.filter(item2 => {
-          if (item2.parentId === item.id) {
-            item2.level = item.level ? item.level + 1 : undefined
+      function getChildByParentId (parentId, level) {
+        if (level > limitLevel) { return [] }// 超过这个层级的就不展示了
+        return arrCopy.reduce((prev, item) => {
+          if (item.parentId === parentId) {
+            item.level = level
+            item.children = getChildByParentId(item.id, level + 1)
+            prev.push(item)
           }
-          return item2.parentId === item.id && (!limitLevel || (item2.level <= limitLevel && limitLevel))
-        })
+          return prev
+        }, [])
+      }
 
-        return item.parentId === 0 && (!limitLevel || (item.level <= limitLevel && limitLevel))
-      })
+      return getChildByParentId(0, 1)
     }
   },
   async created () {
