@@ -117,30 +117,34 @@
                 </el-form-item>
 
                 <el-form-item label="选择人群" prop="policyCrowdIds">
-                        <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
-                            <!-- <el-checkbox-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
-                                <el-checkbox
-                                    v-for="item in v.childs"
-                                    :label="v.policyId+'_'+item.tempCrowdId"
-                                    :key="item.tempCrowdId+''"
-                                    :disabled="item.canPush === false || item.isDisabledCrowd"
-                                  >
-                                  {{ item.crowdName }}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                            <span style="color: red">单次仅可投放一个包含行为标签的人群</span> -->
-                            <el-radio-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
-                                <el-radio
-                                  v-for="item in v.childs"
-                                  :label="v.policyId+'_'+item.tempCrowdId"
-                                  :key="item.tempCrowdId+''"
-                                  :disabled="item.canPush === null"
-                                >
-                                  {{ item.crowdName }}
-                                </el-radio>
-                            </el-radio-group>
+                  <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
+                      <!-- <el-checkbox-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
+                          <el-checkbox
+                              v-for="item in v.childs"
+                              :label="v.policyId+'_'+item.tempCrowdId"
+                              :key="item.tempCrowdId+''"
+                              :disabled="item.canPush === false || item.isDisabledCrowd"
+                            >
+                            {{ item.crowdName }}
+                          </el-checkbox>
+                      </el-checkbox-group>
+                      <span style="color: red">单次仅可投放一个包含行为标签的人群</span> -->
+                  <!--1条件：规则中只有行为标签 或 只有设备标签    限制：数据类型都可选
+                      2条件：1条件的反选                         限制：数据类型只能选【设备】
+                      3条件：规则中包含实时标签、第三方标签        限制：人群禁用，不能 push
+                    -->
+                      <el-radio-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
+                        <el-radio
+                          v-for="item in v.childs"
+                          :label="v.policyId+'_'+item.tempCrowdId"
+                          :key="item.tempCrowdId+''"
+                          :disabled="item.canPush === null"
+                        >
+                          {{ item.crowdName }}
+                        </el-radio>
+                      </el-radio-group>
 
-                        </el-form-item>
+                  </el-form-item>
                 </el-form-item>
                 <!--<el-form-item label="数据有效期" prop="expiryDay">-->
                     <!--<el-select-->
