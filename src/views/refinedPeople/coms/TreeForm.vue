@@ -58,7 +58,7 @@
               <span class='label' :title='data.sourceName || "-"' :class="{'is-policy':  data.isPolicy}">
                 {{ data.sourceName }}
                 <!-- -- {{ data.level }} -->
-                -- {{data.id}}
+                -- {{ data.id }}
                 <!-- -- {{data.policyId}} -->
                 <!-- -- {{ data.isPolicy }} -->
               </span>
@@ -82,7 +82,12 @@
                   <i slot="reference" class="el-icon-close" style="color: #ff8888" title="删除"></i>
                 </el-popconfirm>
                 <!-- <el-button v-if="data.isPolicy" type="text" @click='treePush(node,data)'>投放</el-button> -->
-                <i v-if="data.isPolicy" title="投放" class="el-icon-position" @click='treePush(node,data)'></i>
+
+                <span v-if="data.useStatus === '投放中'" @click="launchDetail(data.policyId)" class="tip-text under_line">投放中</span>
+                <!-- <span v-else-if="data.isPolicy"> -->
+                <!-- 未投放 -->
+                <i v-else-if="data.isPolicy" title="投放" class="el-icon-position" @click='treePush(node,data)'></i>
+                <!-- </span> -->
                 <!-- <el-button v-else type="text">数据分析</el-button> -->
               </template>
             </span>
@@ -91,6 +96,11 @@
       </div>
     </div>
   </div>
+  <!-- 投放中弹窗-->
+  <el-dialog :visible.sync="showLaunch" title="该策略正在使用情况">
+    <!--<div>该策略正在使用情况</div>-->
+    <div>正在投放：<span v-for="(item,index) in launchItems" :key="index" class="launch-item">{{item}}</span></div>
+  </el-dialog>
 </div>
 </template>
 
@@ -100,8 +110,11 @@ export default {
   data () {
     return {
       filterText: '', // 搜索框对应的value值
-      treeModelData: '' // 树的展示数据
-
+      treeModelData: '', // 树的展示数据
+      // --- 投放中弹窗 ----
+      showLaunch: false,
+      launchItems: []
+      // --- 投放中弹窗 --end--
     }
   },
   props: {
@@ -143,6 +156,12 @@ export default {
 
   },
   methods: {
+    launchDetail (pid) {
+      this.showLaunch = true
+      this.$service.policyUseInBi({ policyId: pid }).then((data) => {
+        this.launchItems = data
+      })
+    },
     // 点击节点
     handleNodeClick (data, node) {
       this.$emit('nodeClick', node, data)
@@ -356,4 +375,8 @@ export default {
   overflow: auto;
   height: 92%;
 }
+.under_line
+  text-decoration underline
+  color blue
+  cursor pointer
 </style>
