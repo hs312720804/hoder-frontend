@@ -56,6 +56,12 @@
         </template>
       </el-table-column>
       <el-table-column prop="updateTime" label="有效期">
+        <template v-slot="{row}">
+          <span v-if="row.isSettingValid === 0">默认</span>
+          <span v-else>
+            {{ row.crowdValidFrom }} - {{ row.crowdValidTo }}
+          </span>
+        </template>
       </el-table-column>
       <el-table-column label="操作" width="180px">
         <template v-slot="{row}">
@@ -120,6 +126,7 @@
             :btnFlg="false"
             :imultiple="true"
             :check-strictly="true"
+            :limitLevel="limitLevel"
             style="height: 400px"
             @nodeCheck="handleNodeCheck"
           >
@@ -155,6 +162,10 @@ export default {
     },
     activeName: {
       type: String
+    },
+    limitLevel: {
+      type: [Number],
+      default: 10
     }
   },
   watch: {
@@ -198,58 +209,6 @@ export default {
       showLaunchToBusiness: false,
       // 投放 params ---end
 
-      // 监控 params ---
-      // monitorDialog: false,
-      // monitorRangeTime: undefined,
-      // monitorOutForm: {
-      //   pageSize: 10,
-      //   pageNum: 1
-      // },
-      // monitorTotal: 0,
-      // monitorTable: {
-      //   props: {},
-      //   header: [
-      //     {
-      //       label: '人群名称',
-      //       prop: 'launch_name'
-      //     },
-      //     {
-      //       label: 'dmp人群ID',
-      //       prop: 'dmp_crowd_id'
-      //     },
-
-      //     {
-      //       label: '临时人群版本号',
-      //       prop: 'version'
-      //     },
-      //     {
-      //       label: '当前版本',
-      //       prop: 'cur_version'
-      //     },
-      //     {
-      //       label: '接收设备数量',
-      //       prop: 'receive_total_user'
-      //     },
-      //     {
-      //       label: '设备数量',
-      //       prop: 'total_user'
-      //     },
-      //     {
-      //       label: '人群位文件名称',
-      //       prop: 'es_index'
-      //     },
-      //     {
-      //       label: '状态',
-      //       prop: 'status_name'
-      //     },
-      //     {
-      //       label: '临时人群同步日期',
-      //       prop: 'update_time'
-      //     }
-
-      //   ],
-      //   data: []
-      // },
       dataList: [],
       filter: {
         pageNum: 1,

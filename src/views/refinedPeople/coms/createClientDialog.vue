@@ -17,6 +17,7 @@
               v-model="form.name"
               placeholder="人群名称"
               :maxlength="50"
+              clearable
             ></el-input>
           </el-form-item>
           <el-form-item label="人群有效区间：" prop="period">
@@ -29,8 +30,25 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              clearable>
+              clearable
+              :picker-options="pickerOptions"
+              @change="form.isSettingValid = 1">
             </el-date-picker>
+            <!-- 默认的有效期 -->
+
+            <template v-if="form.isSettingValid === 0">
+              <span class="tip-text">
+                默认有效期
+              </span>
+            </template>
+            <!-- 自己设置的有效期 -->
+            <template v-else>
+              <el-button type="text" @click="form.isSettingValid = 0">重置为默认</el-button>
+              <span class="tip-text">
+                可选时间范围不超过所在策略组的有效期
+                （{{ selectedTreeNodePolicy.crowdValidFrom }} - {{ selectedTreeNodePolicy.crowdValidTo }}）
+              </span>
+            </template>
           </el-form-item>
 
           <el-form-item label="添加标签：" >
@@ -46,7 +64,7 @@
                 @click="handleConditionChange()"
                 round
                 :key="'condition'"
-              >{{ totalLink === 'OR' ? '或' : '且' }} </el-button>
+              >{{ (behaviorRulesJson.link) === 'OR' ? '或' : '且' }} </el-button>
             </div>
             <div v-if="tags.length > 0">
               <el-form-item label="设置标签：" class="multipleSelect">
@@ -72,6 +90,13 @@
               ></MultipleActionTagSelect>
             </el-form-item>
           </div>
+
+          <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新：" prop="autoVersion" >
+            <el-radio-group v-model="form.autoVersion">
+              <el-radio :label="false">否</el-radio>
+              <el-radio :label="true">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
 
         </el-form>
       </el-col>
@@ -114,6 +139,14 @@ export default {
   },
   data () {
     return {
+      pickerOptions: {
+        disabledDate: (time) => {
+          // 可选时间范围不超过所在策略组的有效:{{ selectedTreeNodePolicy.crowdValidFrom }} - {{ selectedTreeNodePolicy.crowdValidTo }}期
+          const maxTime = new Date(this.selectedTreeNodePolicy.crowdValidTo).getTime()
+          const minTime = new Date(this.selectedTreeNodePolicy.crowdValidFrom).getTime()
+          return time.getTime() > maxTime || time.getTime() < minTime
+        }
+      },
       addTagDialogVisible: false,
       checkedList: [],
       totalLink: 'OR',
@@ -143,12 +176,15 @@ export default {
       priority: '',
       form: {
         name: '',
-        period: []
+        period: [],
+        isSettingValid: 0,
+        autoVersion: false,
+        isShowAutoVersion: false
       },
       formRules: {
         // stopType: [{ required: true, message: '请选择', trigger: 'change' }],
         // nextId: [{ required: true, message: '请选择流转接待员', trigger: 'change' }]
-        // // crowdExp: [{ required: true, message: '请选择有效期', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入', trigger: 'blur' }]
         // limitLaunchCount: [{ validator: checkIntNumber, trigger: 'blur' }]
       },
 
@@ -159,9 +195,20 @@ export default {
     }
   },
   watch: {
+    'form.isSettingValid': {
+      handler (val) {
+        if (this.form.isSettingValid === 0) { // 默认有效期
+          this.form.period = [
+            this.selectedTreeNodePolicy.crowdValidFrom || '',
+            this.selectedTreeNodePolicy.crowdValidTo || ''
+          ]
+        }
+      },
+      immediate: true
+    },
     behaviorRulesJson: {
       handler () {
-        // this.hasMoveBehaviorTagRule()
+        this.hasMoveBehaviorTagRule()
       },
       deep: true
     },
@@ -171,7 +218,7 @@ export default {
         this.checkedList = val.map(item => item.tagId)
         this.sortTag()
       }
-    },
+    }
     // circulationTagDataListProp: {
     //   handler (val) {
     //     console.log('val===>', val)
@@ -179,18 +226,18 @@ export default {
     //   },
     //   immediate: true
     // },
-    soureceSignListProp: {
-      handler (val) {
-        this.soureceSignList = val
-      },
-      immediate: true
-    },
-    conditionTagsFilteredProp: {
-      handler (val) {
-        this.conditionTagsFiltered = val
-      },
-      immediate: true
-    }
+    // soureceSignListProp: {
+    //   handler (val) {
+    //     this.soureceSignList = val
+    //   },
+    //   immediate: true
+    // },
+    // conditionTagsFilteredProp: {
+    //   handler (val) {
+    //     this.conditionTagsFiltered = val
+    //   },
+    //   immediate: true
+    // }
 
   },
   computed: {
@@ -205,10 +252,17 @@ export default {
     }
   },
   props: {
+    // 树形中选中的那一行
     selectedTreeNode: {
       type: Object,
       default: () => {}
     },
+    // 点击的树状节点 对应的策略
+    selectedTreeNodePolicy: {
+      type: Object,
+      default: () => {}
+    },
+    // 表格中的编辑的那一行
     editRow: {
       type: [Object, undefined],
       default: undefined
@@ -217,7 +271,6 @@ export default {
       type: String,
       default: 'entry'
     },
-
     options: {
       type: Array,
       default: () => []
@@ -233,11 +286,11 @@ export default {
     soureceSignListProp: {
       type: Array,
       default: () => []
-    },
-    conditionTagsFilteredProp: {
-      type: Array,
-      default: () => []
     }
+    // conditionTagsFilteredProp: {
+    //   type: Array,
+    //   default: () => []
+    // }
 
   },
   methods: {
@@ -318,26 +371,26 @@ export default {
     },
     // 判断是否展示 “是否每日更新” 单选框
     // 判断条件： 是否设置行为标签规则，只要设置了行为标签规则就显示,默认值为 ‘是’,反之隐藏；
-    // hasMoveBehaviorTagRule () {
-    //   const crowd = this.form
-    //   const behaviorRules = this.behaviorRulesJson ? this.behaviorRulesJson.rules : []
+    hasMoveBehaviorTagRule () {
+      const crowd = this.form
+      const behaviorRules = this.behaviorRulesJson ? this.behaviorRulesJson.rules : []
 
-    //   let hasBehaviorRule = false // 是否有行为标签
-    //   if (behaviorRules.length > 0) {
-    //     hasBehaviorRule = true
-    //   }
+      let hasBehaviorRule = false // 是否有行为标签
+      if (behaviorRules.length > 0) {
+        hasBehaviorRule = true
+      }
 
-    //   if (hasBehaviorRule) { // 展示勾选“是否每日更新”
-    //     // 当有 isShowAutoVersion 并且 为  false 的时候，初始默认选择是。否则不限制选择
-    //     if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
-    //       crowd.autoVersion = true
-    //     }
-    //     crowd.isShowAutoVersion = true
-    //   } else {
-    //     crowd.isShowAutoVersion = false
-    //     crowd.autoVersion = false
-    //   }
-    // },
+      if (hasBehaviorRule) { // 展示勾选“是否每日更新”
+        // 当有 isShowAutoVersion 并且 为  false 的时候，初始默认选择是。否则不限制选择
+        if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
+          crowd.autoVersion = true
+        }
+        crowd.isShowAutoVersion = true
+      } else {
+        crowd.isShowAutoVersion = false
+        crowd.autoVersion = false
+      }
+    },
     // 获取流转标签
     // async getCirculationTag () {
     //   await this.$service.getRuleIndicators().then(res => {
@@ -423,11 +476,13 @@ export default {
       return result
     },
 
-    handleRulesConditionChange (item) {
-      item.condition = item.condition === 'AND' ? 'OR' : 'AND'
-    },
+    // handleRulesConditionChange (item) {
+    //   item.condition = item.condition === 'AND' ? 'OR' : 'AND'
+    // },
     handleConditionChange () {
-      this.totalLink = this.totalLink === 'AND' ? 'OR' : 'AND'
+      // this.totalLink = this.totalLink === 'AND' ? 'OR' : 'AND'
+      this.behaviorRulesJson.link =
+        this.behaviorRulesJson.link === 'AND' ? 'OR' : 'AND'
     },
     // 获取不同种类的标签
     sortTag () {
@@ -465,7 +520,6 @@ export default {
     async reviewEditData () {
       // 编辑数据
       const editRow = this.editRow
-      // this.totalLink = policyData.link // 总运算符
 
       // 查人群详情
       const params = {
@@ -474,7 +528,13 @@ export default {
       const crowdInfo = await this.$service.crowdEdit(params) || {}
       const policyData = crowdInfo.policyCrowds
 
+      this.totalLink = policyData.link // 总运算符
       this.form.name = policyData.crowdName
+      this.form.period = [policyData.crowdValidFrom, policyData.crowdValidTo]
+      this.form.isSettingValid = policyData.isSettingValid
+      this.form.autoVersion = policyData.autoVersion || false
+      this.form.isShowAutoVersion = true
+
       let cacheIds = []
 
       const cacheActionIds = []
@@ -628,7 +688,7 @@ export default {
       this.rulesJson = ruleJsonData
     }
   },
-  async created () {
+  created () {
     // if (this.conditionTagsFilteredProp.length === 0) {
     //   this.getTags() // 获取所有的标签列表
     // }

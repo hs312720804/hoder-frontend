@@ -25,6 +25,7 @@
           </span>
         </span>
       </el-tree> -->
+      <!-- {{ selectedTreeNode }} -->
       <div>
         权益分类：
         <el-select
@@ -56,13 +57,16 @@
 
         </el-dropdown-menu>
       </el-dropdown> -->
+
       <TreeForm
+        ref="treeFormRef"
         :treeData="treeData"
-        :currentNodeKey="selectedTreeNode.id || ''"
         class="tree-left"
+        :limitLevel="limitLevel"
         @treeEdit="handleTreeEdit"
         @treeAdd="handleTreeAdd"
         @treeDelete="handleTreeDelete"
+        @treePush="handleTreePush"
         @nodeClick="handleNodeClick"
       >
       </TreeForm>
@@ -72,15 +76,16 @@
       <div class="tip-wrap">
 
         <!-- {{ selectedTreeNode }} -->
-
-        策略ID： {{ selectedTreeNode.policyId }}&nbsp;&nbsp;&nbsp;&nbsp;
-        有效期：{{selectedTreeNode.crowdValidFrom}}  -  {{selectedTreeNode.crowdValidTo}}
+        <i class="el-icon-folder-opened folder"></i>
+        策略ID： {{ selectedTreeNodePolicy.policyId }}&nbsp;&nbsp;&nbsp;&nbsp;
+        有效期：{{selectedTreeNodePolicy.crowdValidFrom}}  -  {{selectedTreeNodePolicy.crowdValidTo}}
       </div>
       <!-- 表格 -->
       <TableIndex
         ref="tableIndexRef"
         :activeName="activeName"
-        :treeData="treeData"
+        :treeData="selectedCopiedTreeData"
+        :limitLevel="limitLevel"
         :selectedTreeNode="selectedTreeNode"
         @editCrowd="handleTableEditCrowd"
         @refresh="refreshList"
@@ -133,6 +138,7 @@
       <createClientDialog
         ref="createClientDialog"
         :selectedTreeNode="selectedTreeNode"
+        :selectedTreeNodePolicy="selectedTreeNodePolicy"
         :editRow="editRow">
       </createClientDialog>
       <span slot="footer" class="dialog-footer">
@@ -161,6 +167,14 @@
       </span>
     </el-dialog>
 
+    <el-dialog :visible.sync="showLaunchToBusiness" v-if="showLaunchToBusiness">
+      <StrategyPutIn
+        :recordId="selectedTreeNode.policyId"
+        :tempPolicyAndCrowd="selectedTreeNode"
+        @closeDialog="showLaunchToBusiness = false"
+        @refreshList="fetchTreeData"
+      ></StrategyPutIn>
+    </el-dialog>
   </div>
 </template>
 
@@ -169,13 +183,14 @@ import TableIndex from './coms/TableIndex.vue'
 import TreeForm from './coms/TreeForm.vue'
 import createClientDialog from './coms/createClientDialog.vue'
 import { validateRule, moveToRule, clearBehaviorRulesJson } from '@/views/storyLine/validateRuleData.js'
-
+import StrategyPutIn from '../launch/StrategyPutIn'
 export default {
   name: 'refinedPeople',
   components: {
     TableIndex,
     TreeForm,
-    createClientDialog
+    createClientDialog,
+    StrategyPutIn
   },
   props: {
     showSelection: {
@@ -188,6 +203,10 @@ export default {
   },
   data () {
     return {
+
+      // 投放--------------
+      showLaunchToBusiness: false,
+      // 投放 --------------end
       // 弹窗---------------
       updatePolicyDialog: false,
       crowdForm: {
@@ -200,7 +219,11 @@ export default {
       },
       // 弹窗---------------end
       selectValue: '',
-      treeData: [],
+      treeFlatData: [], // 扁平的树形数据
+      treeData: [], // 父子结构的树形数据
+      selectedCopiedTreeData: [], // 复制人群弹窗里用的 tree 数据
+
+      limitLevel: 4,
       // 权益列表
       tabList: [{
         label: '爱奇艺',
@@ -219,14 +242,26 @@ export default {
       checkList: [],
       tagList: [],
       tempCheckList: [],
-      // 点击的树状节点
-      selectedTreeNode: {},
+      selectedTreeNode: {}, // 点击的树状节点
+      selectedTreeNodePolicy: {}, // 点击的树状节点 对应的策略
       // 添加子人群--- start
       clientDialogVisible: false,
       editRow: undefined,
       openMoveOrClearDialogVisible: false,
       openMoveOrClearDialogRef: undefined
       // 添加子人群--- end
+    }
+  },
+  watch: {
+    selectedTreeNode: {
+      handler (val) {
+        // console.log('watch: selectedTreeNode-->', val)
+        this.selectedTreeNodePolicy = this.treeFlatData.find(item => {
+          return item.id === val.policyId
+        })
+
+        // console.log('this.selectedTreeNodePolicy-->', this.selectedTreeNodePolicy)
+      }
     }
   },
   methods: {
@@ -255,6 +290,7 @@ export default {
     // ---------- 编辑策略组 start ---------
     // 增加策略组、子人群
     handleTreeAdd (node, data) {
+      this.handleNodeClick(node, data)
       // console.log('data-->', data)
       if (data.type === 'root') {
         // 添加策略组
@@ -281,8 +317,8 @@ export default {
         isSettingValid: row.isSettingValid,
         policyId: row.policyId,
         isPolicy: false,
-        crowdValidFrom: null,
-        crowdValidTo: null,
+        crowdValidFrom: row.crowdValidFrom,
+        crowdValidTo: row.crowdValidTo,
         id: row.crowdId,
         sourceName: row.crowdName,
         parentId: row.parentId
@@ -290,7 +326,7 @@ export default {
     },
     // 编辑策略组、子人群 open 弹窗
     handleTreeEdit (node, data) {
-      this.selectedTreeNode = data
+      this.handleNodeClick(node, data)
       // 编辑策略组
       if (data.isPolicy) {
         this.updatePolicyDialog = true
@@ -321,8 +357,8 @@ export default {
       if (this.crowdForm.policyId) {
         const params = {
           policyId: this.crowdForm.policyId,
-          crowdValidTo: this.crowdForm.period[0],
-          crowdValidFrom: this.crowdForm.period[1],
+          crowdValidFrom: this.crowdForm.period[0],
+          crowdValidTo: this.crowdForm.period[1],
           policyName: this.crowdForm.policyName
         }
         this.$service.policyUpate(params, '编辑成功').then((data) => {
@@ -333,8 +369,8 @@ export default {
         // 新增
         const params = {
           productId: this.selectValue,
-          crowdValidTo: this.crowdForm.period[0],
-          crowdValidFrom: this.crowdForm.period[1],
+          crowdValidFrom: this.crowdForm.period[0],
+          crowdValidTo: this.crowdForm.period[1],
           policyName: this.crowdForm.policyName
         }
         this.$service.saveRefinementPolicy(params, '新增成功').then(res => {
@@ -369,27 +405,32 @@ export default {
     handleTreeDelete (node, data) {
       // console.log('node-->', node)
       // console.log('data-->', data)
-      this.$confirm('确定要删除吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // 删除 策略组
-        if (data.isPolicy) {
-          const policyId = data.policyId
-          this.$service.policyDel({ policyId }, '删除成功').then(() => {
-            // 刷新列表
-            this.fetchTreeData()
-          })
-        } else {
-          // 删除子人群
-          const crowdId = data.id
-          this.$service.strategyCrowdDel({ crowdId }, '删除成功').then(() => {
-            // 刷新列表
-            this.fetchTreeData()
-          })
-        }
-      })
+      // this.$confirm('确定要删除吗?', '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
+      // 删除 策略组
+      if (data.isPolicy) {
+        const policyId = data.policyId
+        this.$service.policyDel({ policyId }, '删除成功').then(() => {
+          // 刷新列表
+          this.fetchTreeData()
+        })
+      } else {
+        // 删除子人群
+        const crowdId = data.id
+        this.$service.strategyCrowdDel({ crowdId }, '删除成功').then(() => {
+          // 刷新列表
+          this.fetchTreeData()
+        })
+      }
+      // })
+    },
+    // 投放策略组
+    handleTreePush (node, data) {
+      this.handleNodeClick(node, data)
+      this.showLaunchToBusiness = true
     },
     fetchAddOrEdit (data) {
       const dialogRef = this.$refs.createClientDialog
@@ -397,20 +438,22 @@ export default {
       const tagIds = dialogRef.checkedList.join(',')
       const { rulesJson, behaviorRulesJson } = data
 
-      const crowdName = dialogRef.form.name // 人群名称
-      const period = dialogRef.form.period // 人群有效区间
-
+      // const crowdName = dialogRef.form.name // 人群名称
+      // const period = dialogRef.form.period // 人群有效区间
+      // const isSettingValid = dialogRef.form.isSettingValid // 人群有效区间
+      // const autoVersion = dialogRef.form.autoVersion // 是否每日更新
+      // const isShowAutoVersion = dialogRef.form.isShowAutoVersion // 是否显示每日更新
+      const { name: crowdName, period, isSettingValid, autoVersion, isShowAutoVersion } = dialogRef.form
       const flowCondition = JSON.stringify(dialogRef.flowCondition)
 
       // 编辑
       if (this.editRow) {
-        const { isSettingValid, parentId, id, policyId } = this.editRow
+        const { parentId, id, policyId } = this.editRow
         const params = {
         // ...this.editRow,
           crowdId: id,
           policyId,
           // -- 以下是新增参数-----
-          parentId,
           crowdValidFrom: period[0] || '',
           crowdValidTo: period[1] || '',
           isSettingValid,
@@ -420,7 +463,9 @@ export default {
           rulesJson,
           behaviorRulesJson,
           flowCondition, // 流转指标
-          link: dialogRef.totalLink
+          link: dialogRef.totalLink,
+          autoVersion,
+          isShowAutoVersion
         }
 
         this.$service.crowdUpdate(params).then(() => {
@@ -432,9 +477,11 @@ export default {
         })
       } else {
         // 新增
-        const { isSettingValid, id } = this.selectedTreeNode
+        const { id, policyId, isPolicy } = this.selectedTreeNode
         const params = {
-          parentId: id,
+          policyId,
+          parentId: isPolicy ? 0 : id, // 在策略下创建的话，parentId 传 0， 在人群下创建的话，传该人群 id
+          // -- 以下是新增参数-----
           crowdValidFrom: period[0] || '',
           crowdValidTo: period[1] || '',
           isSettingValid,
@@ -444,7 +491,9 @@ export default {
           rulesJson,
           behaviorRulesJson,
           flowCondition, // 流转指标
-          link: dialogRef.totalLink
+          link: dialogRef.totalLink,
+          autoVersion,
+          isShowAutoVersion
         }
 
         this.$service.crowdSave(params).then(() => {
@@ -463,6 +512,7 @@ export default {
       // console.log('node-->', node)
       // console.log('data-->', data)
       if (data.type !== 'root') {
+        // 设置选中节点数据
         this.selectedTreeNode = data
       }
     },
@@ -485,6 +535,7 @@ export default {
         //   policyId: 6689,
         //   sourceName: '子人群'
         // }]
+        this.treeFlatData = res
         const root = [{
           id: -1,
           isPolicy: true,
@@ -495,6 +546,13 @@ export default {
         }]
 
         this.treeData = root
+        this.selectedCopiedTreeData = this.arrayToTree(res || [], this.limitLevel - 1)
+        // console.log(' this.treeData-->', this.treeData)
+        // console.log('this.selectedCopiedTreeData-->', this.selectedCopiedTreeData)
+
+        this.$nextTick(() => {
+          this.$refs.treeFormRef.$refs.tree.setCurrentKey(this.selectedTreeNode.id)
+        })
       })
     },
     refinementPolicyProduct () {
@@ -504,12 +562,20 @@ export default {
         return this.selectValue
       })
     },
-    arrayToTree (arr) {
-      return arr.filter(item => {
-        item.children = arr.filter(item2 => {
-          return item2.parentId === item.id
+    arrayToTree (arr, limitLevel) {
+      const arrCopy = JSON.parse(JSON.stringify(arr))
+
+      return arrCopy.filter(item => {
+        if (item.parentId === 0) item.level = 1
+
+        item.children = arrCopy.filter(item2 => {
+          if (item2.parentId === item.id) {
+            item2.level = item.level ? item.level + 1 : undefined
+          }
+          return item2.parentId === item.id && (!limitLevel || (item2.level <= limitLevel && limitLevel))
         })
-        return item.parentId === 0
+
+        return item.parentId === 0 && (!limitLevel || (item.level <= limitLevel && limitLevel))
       })
     }
   },
@@ -550,10 +616,14 @@ export default {
   width: 50%;
 }
 .tip-wrap {
-  font-size: 14px;
   margin-bottom: 20px;
-  // font-weight: 700;
-  color: rgba(0, 0, 0, 0.65);
+  color: rgba(0,0,0,0.65);
+  font-size: 14px;
+  line-height: 34px;
+  padding: 1px 16px;
+  background-color: #ecf8ff;
+  border-radius: 4px;
+  border-left: 4px solid #50bfff;
 }
 .tree-left {
   position: absolute;

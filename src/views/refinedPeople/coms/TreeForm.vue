@@ -24,7 +24,6 @@
     <div wrap-style="overflow-x: hidden;">
       <div style="padding-right: 20px;">
         <!-- {{ treeModelData }} -->
-        <!-- currentNodeKey -- {{ currentNodeKey }} -->
         <el-tree
           v-bind="$attrs"
           ref="tree"
@@ -36,7 +35,6 @@
           :expand-on-click-node="false"
           :filter-node-method="filterNode"
           node-key="id"
-          :current-node-key="currentNodeKey"
           @node-click="handleNodeClick"
           @check="handleCheck"
           >
@@ -58,16 +56,35 @@
               </template>
               <!-- 节点内容 -->
               <span class='label' :title='data.sourceName || "-"' :class="{'is-policy':  data.isPolicy}">
-                {{ data.sourceName }}  -- {{data.policyId}}
-                -- {{ data.isPolicy }}
+                {{ data.sourceName }}
+                <!-- -- {{ data.level }} -->
+                -- {{data.id}}
+                <!-- -- {{data.policyId}} -->
+                <!-- -- {{ data.isPolicy }} -->
               </span>
             </span>
             <!-- 自定义按钮区 -->
             <!-- <span v-if='!data.children || data.children.length<=0' class='tree_form_left_tree_icon'> -->
             <span v-if="btnFlg" class='tree_form_left_tree_icon'>
-              <i v-if="data.type !== 'root'" class="el-icon-edit" @click='treeEdit(node, data)'></i>
-              <i v-if="node.level < 4" class="el-icon-circle-plus-outline" @click='treeAdd(node,data)'></i>
-              <i v-if="data.type !== 'root'"  class="el-icon-close" style="color: #ff8888" @click='treeDelete(node,data)'></i>
+              <!-- 根节点，只能添加策略组 -->
+              <i v-if="data.type === 'root'" title="新增" class="el-icon-circle-plus-outline" @click='treeAdd(node,data)'></i>
+              <!-- 策略组/子人群节点 -->
+              <template v-else >
+                <!-- 编辑 -->
+                <i class="el-icon-edit" title="编辑" @click='treeEdit(node, data)'></i>
+                <!-- 新增 -->
+                <i v-if="node.level <= limitLevel" title="新增" class="el-icon-circle-plus-outline" @click='treeAdd(node,data)'></i>
+                <!-- 删除 -->
+                <el-popconfirm
+                  title="确定要删除吗?"
+                  @confirm="treeDelete(node,data)"
+                >
+                  <i slot="reference" class="el-icon-close" style="color: #ff8888" title="删除"></i>
+                </el-popconfirm>
+                <!-- <el-button v-if="data.isPolicy" type="text" @click='treePush(node,data)'>投放</el-button> -->
+                <i v-if="data.isPolicy" title="投放" class="el-icon-position" @click='treePush(node,data)'></i>
+                <!-- <el-button v-else type="text">数据分析</el-button> -->
+              </template>
             </span>
           </div>
         </el-tree>
@@ -104,9 +121,10 @@ export default {
       type: Boolean,
       default: false
     },
-    currentNodeKey: {
-      type: [String, Number],
-      default: ''
+
+    limitLevel: {
+      type: [Number],
+      default: 10
     }
   },
   watch: {
@@ -121,15 +139,8 @@ export default {
       },
       deep: true,
       immediate: true
-    },
-    currentNodeKey: {
-      handler (val) {
-        this.$nextTick(() => {
-          this.$refs.tree.setCurrentKey(val)
-        })
-      },
-      immediate: true
     }
+
   },
   methods: {
     // 点击节点
@@ -145,6 +156,9 @@ export default {
     },
     treeAdd (node, data) {
       this.$emit('treeAdd', node, data)
+    },
+    treePush (node, data) {
+      this.$emit('treePush', node, data)
     },
     treeDelete (node, data) {
       this.$emit('treeDelete', node, data)
@@ -269,6 +283,12 @@ export default {
       content: "";
       display: none;
     }
+    .custom-tree-node {
+      flex: 1
+      width: 0
+      overflow hidden
+      text-overflow ellipsis
+    }
     .custom-tree-node .file_class{
       color: #ffb400;
     }
@@ -285,16 +305,21 @@ export default {
     width:100%;
     display: flex;
     justify-content: space-between;
+    align-items: center
     // margin-top:-3px;
   }
   .tree_form_left_tree_icon {
     padding:0 3px;
     font-size:14px;
     color: #666;
-    // display none
+    display none
     display block
     i {
-      margin:0 4px;
+      padding:  4px;
+      &:hover {
+        background: #d7d7d7;
+        border-radius: 5px;
+      }
     }
     &:hover {
       cursor: pointer;
