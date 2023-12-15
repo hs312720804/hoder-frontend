@@ -89,6 +89,25 @@
                 <i v-else-if="data.isPolicy" title="投放" class="el-icon-position" @click='treePush(node,data)'></i>
                 <!-- </span> -->
                 <!-- <el-button v-else type="text">数据分析</el-button> -->
+                <el-button
+                  v-if="data.isPolicy"
+                  size="small"
+                  type="text"
+                  v-permission="'hoder:policy:sync'"
+                  @click="freshCache(data)"
+                >
+                  <span v-if="data.status === 1">未同步</span>
+                  <span v-if="data.status === 2">已同步</span>
+                </el-button>
+                <el-button
+                  v-if="data.isPolicy"
+                  size="small"
+                  type="text"
+                  @click="seeDevDetail(data)"
+                >
+                  查看配置
+                </el-button>
+
               </template>
             </span>
           </div>
@@ -100,6 +119,22 @@
   <el-dialog :visible.sync="showLaunch" title="该策略正在使用情况">
     <!--<div>该策略正在使用情况</div>-->
     <div>正在投放：<span v-for="(item,index) in launchItems" :key="index" class="launch-item">{{item}}</span></div>
+  </el-dialog>
+
+  <!-- 查看配置弹窗-->
+  <el-dialog title="查看配置" :visible.sync="showConfiguration">
+    <c-content-wrapper
+      :pagination="detailPagination.pagination"
+      @filter-change="handleFilterChange"
+    >
+      <c-table
+        :data="seeDetailData.data"
+        :props="seeDetailData.props"
+        :header="seeDetailData.header"
+      >
+      </c-table>
+    </c-content-wrapper>
+    <!-- <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input> -->
   </el-dialog>
 </div>
 </template>
@@ -113,8 +148,70 @@ export default {
       treeModelData: '', // 树的展示数据
       // --- 投放中弹窗 ----
       showLaunch: false,
-      launchItems: []
+      launchItems: [],
       // --- 投放中弹窗 --end--
+      // --- 查看配置 ----
+      showConfiguration: false,
+      showAll: false,
+      seeDetailData: {
+        props: {
+          border: true
+        },
+        data: [],
+        header: [
+          {
+            label: '版本号',
+            prop: 'versionId'
+          },
+          {
+            label: '文件名称',
+            prop: 'fileName'
+          },
+          {
+            label: '创建时间',
+            prop: 'createTime'
+          },
+          {
+            label: '操作',
+            width: '100px',
+            render: (h, { row }) => {
+              return h('el-popover', {
+                attrs: {
+                  placement: 'left',
+                  width: '600',
+                  trigger: 'click'
+                }
+              }, [
+                h('el-input', {
+                  props: {
+                    type: 'textarea',
+                    rows: 8,
+                    readonly: true,
+                    value: row.content,
+                    autosize: { minRows: 10, maxRows: 20 }
+                  },
+                  class: 'get-setting'
+                }),
+                h('el-button', {
+                  props: {
+                    type: 'text'
+                  },
+                  slot: 'reference'
+                }, '查看配置')])
+            }
+          }
+        ]
+      },
+      detailPagination: {
+        filter: {},
+        pagination: {
+          pageSize: 10,
+          currentPage: 1,
+          total: 0
+        },
+        currentId: null
+      }
+      // --- 查看配置 --end--
     }
   },
   props: {
@@ -156,6 +253,43 @@ export default {
 
   },
   methods: {
+
+    seeDevDetail (row) {
+      this.showConfiguration = true
+      this.detailPagination.currentId = row.policyId
+      this.loadDetailList()
+    },
+    loadDetailList () {
+      const params = {
+        policyId: this.detailPagination.currentId,
+        pageNum: this.detailPagination.pagination.currentPage,
+        pageSize: this.detailPagination.pagination.pageSize
+      }
+      this.$service.seeDevFileList(params).then((data) => {
+        this.seeDetailData.data = data.rows
+        this.detailPagination.pagination.total = data.total
+      })
+    },
+    // 查看配置分页
+    handleFilterChange () {
+      this.loadDetailList(this.detailPagination.currentId)
+    },
+    freshCache (row) {
+      this.$confirm('新建的人群策略将实时生效，旧的策略更新需要延时2小时生效', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$service.freshCache({ policyId: row.policyId }).then(data => {
+            this.$emit('refresh')
+            this.$message({
+              type: 'info',
+              message: data
+            })
+          })
+        })
+    },
     launchDetail (pid) {
       this.showLaunch = true
       this.$service.policyUseInBi({ policyId: pid }).then((data) => {
@@ -308,19 +442,19 @@ export default {
       overflow hidden
       text-overflow ellipsis
     }
-    .custom-tree-node .file_class{
+    .custom-tree-node .file_class {
       color: #ffb400;
     }
-    .custom-tree-node .label{
+    .custom-tree-node .label {
       margin-left: 2px;
       line-height: 23px;
     }
-    .custom-tree-node .no_children{
+    .custom-tree-node .no_children {
       color: #aaa;
     }
   }
   // 自定义树形内容
-  .custom-tree-node_body{
+  .custom-tree-node_body {
     width:100%;
     display: flex;
     justify-content: space-between;

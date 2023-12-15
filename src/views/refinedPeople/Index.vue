@@ -68,6 +68,7 @@
         @treeDelete="handleTreeDelete"
         @treePush="handleTreePush"
         @nodeClick="handleNodeClick"
+        @refresh="refreshList"
       >
       </TreeForm>
     </div>
