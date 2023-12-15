@@ -859,12 +859,18 @@
        <div>酷开openId：{{ total2 }}</div>
        <div>微信openId：{{ total3 }}</div>
    </el-dialog>
-    <!-- 查看统计 投后效果弹窗-->
+    <!-- 命中曝光分析 -->
     <el-dialog
-            :visible.sync="showStatistics"
-            width="90%"
+      :visible.sync="showStatistics"
+      width="90%"
+      title="命中曝光分析"
     >
-      <div class="export-button">
+      <AfterPushDetail
+        v-if="showStatistics"
+        :currentCid="currentCid"
+        :showStatistics="showStatistics"
+      ></AfterPushDetail>
+      <!-- <div class="export-button">
           <a :href="launchedExportUrl" download ref="launchedDownLoad"></a>
           <el-button type="success" @click="handleLaunchedExport">导出数据</el-button>
       </div>
@@ -1004,7 +1010,7 @@
           <div class="lines-title">{{exposeProvinceTitle}}</div>
           <div class="main" ref="exposeProvince" v-if=" showStatistics === true"></div>
         </div>
-      </div>
+      </div> -->
     </el-dialog>
     <!--上下架确认弹窗-->
     <el-dialog title="提示" :visible.sync="showUpDownDialog">
@@ -1171,6 +1177,7 @@
             </el-table-column>
             <el-table-column label="操作" width="300">
                 <template slot-scope="scope">
+                  <!-- AB子人群的 -->
                     <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">命中曝光分析</el-button>
                     <!-- <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId, scope.row.crowdName)">看主页数据</el-button> -->
                     <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
@@ -1218,6 +1225,7 @@
             </el-table-column>
             <el-table-column label="操作" width="160">
               <template slot-scope="scope">
+                <!-- 再分割人群de  -->
                 <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">命中曝光分析</el-button>
                 <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
               </template>
@@ -1668,6 +1676,7 @@ import CommitHistoryDialog from '@/components/CommitHistory'
 import numOrTextEdit from '../../components/EditNumOrText'
 import viewEffectDialog from '../launch/viewEffectDialog'
 import LinkAnalysis from './LinkAnalysis/Index'
+import AfterPushDetail from './AfterPushDetail'
 import { dataSourceColorEnum } from '@/utils/tags.js'
 import TipPopover from '@/views/crowdCompute/components/tipPopover.vue'
 
@@ -1680,7 +1689,8 @@ export default {
     numOrTextEdit,
     viewEffectDialog,
     LinkAnalysis,
-    TipPopover
+    TipPopover,
+    AfterPushDetail
   },
   data () {
     const checkFinanceCode = (rule, value, callback) => {
@@ -1815,25 +1825,25 @@ export default {
       total3: undefined,
       totalUser: undefined,
       total4: undefined,
-      time0: [],
-      time1: [],
-      time2: [],
-      time3: [],
-      time4: [],
-      time5: [],
-      time6: [],
-      time7: [],
+      // time0: [],
+      // time1: [],
+      // time2: [],
+      // time3: [],
+      // time4: [],
+      // time5: [],
+      // time6: [],
+      // time7: [],
       showStatistics: false,
-      hitLinesTitle: '',
-      hitPieTitle: '',
-      exposeLinesTitle: '',
-      exposePieTitle: '',
-      clickLinesTitle: '',
-      clickPieTitle: '',
-      crowdLaunchTitle: '',
-      exposeProvinceTitle: '',
-      startDate: '',
-      endDate: '',
+      // hitLinesTitle: '',
+      // hitPieTitle: '',
+      // exposeLinesTitle: '',
+      // exposePieTitle: '',
+      // clickLinesTitle: '',
+      // clickPieTitle: '',
+      // crowdLaunchTitle: '',
+      // exposeProvinceTitle: '',
+      // startDate: '',
+      // endDate: '',
       currentCid: undefined,
       showUpDownDialog: false,
       upDownTips: '',
@@ -2084,10 +2094,10 @@ export default {
     // this.$watch('time2', this.createTimeWatcher(2, 'drawExposeLine'))
 
     this.loadData()
-    const start = new Date()
-    const end = new Date()
-    this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
-    this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
+    // const start = new Date()
+    // const end = new Date()
+    // this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
+    // this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
   },
   // mounted () {
   //   function changeMobsfIframe () {
@@ -2703,31 +2713,31 @@ export default {
         // crowds: [{ crowdId: '',crowdName: '',priority: 1 }]
       }
     },
-    handleInputTime (index, val, method) {
-      const key = 'time' + index
-      const oldVal = this[key]
-      if (this.currentCid && oldVal.length !== 0) {
-        if (this.setDataInMonth(val[0], val[1])) {
-          this[key] = val
-          this[method](this.currentCid, val[0], val[1])
-        } else {
-          this.$message.error('日期间隔最多只能是30天！请重新选择日期')
-        }
-      }
-    },
+    // handleInputTime (index, val, method) {
+    //   const key = 'time' + index
+    //   const oldVal = this[key]
+    //   if (this.currentCid && oldVal.length !== 0) {
+    //     if (this.setDataInMonth(val[0], val[1])) {
+    //       this[key] = val
+    //       this[method](this.currentCid, val[0], val[1])
+    //     } else {
+    //       this.$message.error('日期间隔最多只能是30天！请重新选择日期')
+    //     }
+    //   }
+    // },
     goBack () {
       this.$emit('goBack')
     },
-    initTime () {
-      this.time0 = [this.startDate, this.endDate]
-      this.time1 = [this.startDate, this.endDate]
-      this.time2 = [this.startDate, this.endDate]
-      this.time3 = [this.startDate, this.endDate]
-      this.time4 = [this.startDate, this.endDate]
-      this.time5 = [this.startDate, this.endDate]
-      this.time6 = [this.startDate, this.endDate]
-      this.time7 = [this.startDate, this.endDate]
-    },
+    // initTime () {
+    //   this.time0 = [this.startDate, this.endDate]
+    //   this.time1 = [this.startDate, this.endDate]
+    //   this.time2 = [this.startDate, this.endDate]
+    //   this.time3 = [this.startDate, this.endDate]
+    //   this.time4 = [this.startDate, this.endDate]
+    //   this.time5 = [this.startDate, this.endDate]
+    //   this.time6 = [this.startDate, this.endDate]
+    //   this.time7 = [this.startDate, this.endDate]
+    // },
     callback () {
       this.loadData()
     },
@@ -2940,55 +2950,55 @@ export default {
       this.$refs.searchForm.resetFields()
       this.loadData()
     },
-    // 通用多线性参数设置
-    setLinesEchart (element, title, xData, yData, legend) {
-      const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
-      myChart.setOption({
-        title: {
-          text: title
-        },
-        // tooltip: {
-        //     trigger: 'axis'
-        // },
-        tooltip: {
-          trigger: 'item',
-          formatter: function (a) {
-            return _this.cc_format_number(a.data)
-          }
-        },
-        legend: {
-          data: legend
-        },
-        xAxis: {
-          type: 'category',
-          data: xData,
-          axisLabel: {
-            interval: 0,
-            rotate: -45
-          }
-        },
-        yAxis: {
-          type: 'value',
-          axisTick: {
-            inside: true
-          },
-          scale: true,
-          axisLabel: {
-            margin: 2,
-            formatter: function (value) {
-              if (value >= 10000 && value < 10000000) {
-                value = value / 10000 + '万'
-              } else if (value >= 10000000) {
-                value = value / 10000000 + '千万'
-              } return value
-            }
-          }
-        },
-        series: yData
-      })
-    },
+    // // 通用多线性参数设置
+    // setLinesEchart (element, title, xData, yData, legend) {
+    //   const _this = this
+    //   const echarts = require('echarts')
+    //   const myChart = echarts.init(this.$refs[element])
+    //   myChart.setOption({
+    //     title: {
+    //       text: title
+    //     },
+    //     // tooltip: {
+    //     //     trigger: 'axis'
+    //     // },
+    //     tooltip: {
+    //       trigger: 'item',
+    //       formatter: function (a) {
+    //         return _this.cc_format_number(a.data)
+    //       }
+    //     },
+    //     legend: {
+    //       data: legend
+    //     },
+    //     xAxis: {
+    //       type: 'category',
+    //       data: xData,
+    //       axisLabel: {
+    //         interval: 0,
+    //         rotate: -45
+    //       }
+    //     },
+    //     yAxis: {
+    //       type: 'value',
+    //       axisTick: {
+    //         inside: true
+    //       },
+    //       scale: true,
+    //       axisLabel: {
+    //         margin: 2,
+    //         formatter: function (value) {
+    //           if (value >= 10000 && value < 10000000) {
+    //             value = value / 10000 + '万'
+    //           } else if (value >= 10000000) {
+    //             value = value / 10000000 + '千万'
+    //           } return value
+    //         }
+    //       }
+    //     },
+    //     series: yData
+    //   })
+    // },
     // 通用柱状图参数设置
     setBarEchart (element, title, xData, yData) {
       const _this = this
@@ -3398,7 +3408,7 @@ export default {
       xhr.send()
       this.operationalAnalysisUrl = url
     },
-    // 显示投后效果弹窗
+    // 预约投后分析
     showAppointmentDialog (crowdId) {
       this.estimateId = crowdId
       this.showAppointment = true
@@ -3424,103 +3434,103 @@ export default {
         }
       })
     },
-    // 显示投后效果弹窗
+    // // 显示投后效果弹窗
     showCrowdDetailDialog () {
       this.showStatistics = true
-      this.initTime()
-      this.drawCrowdPie(this.currentCid, this.time1[0], this.time1[1])
-      this.drawCrowdLine(this.currentCid, this.time0[0], this.time0[1])
-      this.drawExposePie(this.currentCid, this.time3[0], this.time3[1])
-      this.drawExposeLine(this.currentCid, this.time2[0], this.time2[1])
-      this.drawClickPie(this.currentCid, this.time5[0], this.time5[1])
-      this.drawClickLine(this.currentCid, this.time4[0], this.time4[1])
-      this.crowdLaunchDetail(this.currentCid, this.time6[0], this.time6[1])
-      this.setProvinceData(this.currentCid, this.time7[0], this.time7[1])
+      // this.initTime()
+      // this.drawCrowdPie(this.currentCid, this.time1[0], this.time1[1])
+      // this.drawCrowdLine(this.currentCid, this.time0[0], this.time0[1])
+      // this.drawExposePie(this.currentCid, this.time3[0], this.time3[1])
+      // this.drawExposeLine(this.currentCid, this.time2[0], this.time2[1])
+      // this.drawClickPie(this.currentCid, this.time5[0], this.time5[1])
+      // this.drawClickLine(this.currentCid, this.time4[0], this.time4[1])
+      // this.crowdLaunchDetail(this.currentCid, this.time6[0], this.time6[1])
+      // this.setProvinceData(this.currentCid, this.time7[0], this.time7[1])
     },
-    // 统计投后效果---开始
-    drawCrowdPie (id, startTime, endTime) {
-      this.$service.hitAndBiToTalPie({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
-        if (data.data.length === 0) { this.hitPieTitle = '累计命中次数按业务分布暂无数据' } else { this.hitPieTitle = '累计命中次数按业务分布' }
-        this.setCircleEcharts('hitPie', '', data.name, data.data, true)
-      })
-    },
-    drawCrowdLine (id, startTime, endTime) {
-      this.$service.hitAndBiToTalLine({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
-        const legendData = data.series.map((key) => {
-          return key.name
-        })
-        const linesData = data.series.map((key) => {
-          return { name: key.name, data: key.data, type: 'line' }
-        })
-        this.hitLinesTitle = '该人群总命中量以及各业务的命中量'
-        this.setLinesEchart('hitLine', '', data.date, linesData, legendData)
-      })
-    },
-    drawExposePie (id, startTime, endTime) {
-      this.$service.exposeCrowdTotalPie({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
-        if (data.data.length === 0) { this.exposePieTitle = '累计曝光数按业务分布暂无数据' } else { this.exposePieTitle = '累计曝光数按业务分布' }
-        this.setCircleEcharts('exposePie', '', data.name, data.data, true)
-      })
-    },
-    drawExposeLine (id, startTime, endTime) {
-      this.$service.exposeCrowdTotalLine({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
-        const legendData = data.series.map((key) => {
-          return key.name
-        })
-        const linesData = data.series.map((key) => {
-          return { name: key.name, data: key.data, type: 'line' }
-        })
-        this.exposeLinesTitle = '该人群总曝光量以及各业务的曝光量'
-        this.setLinesEchart('exposeLine', '', data.date, linesData, legendData)
-      })
-    },
-    drawClickPie (id, startTime, endTime) {
-      this.$service.clickCrowdTotalPie({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
-        if (data.data.length === 0) { this.clickPieTitle = '累计点击次数按业务分布暂无数据' } else { this.clickPieTitle = '累计点击次数按业务分布' }
-        this.setCircleEcharts('clickPie', '', data.name, data.data, true)
-      })
-    },
-    drawClickLine (id, startTime, endTime) {
-      this.$service.clickCrowdTotalLine({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
-        const legendData = data.series.map((key) => {
-          return key.name
-        })
-        const linesData = data.series.map((key) => {
-          return { name: key.name, data: key.data, type: 'line' }
-        })
-        this.clickLinesTitle = '该人群总点击以及各业务的点击次数'
-        this.setLinesEchart('clickLine', '', data.date, linesData, legendData)
-      })
-    },
-    crowdLaunchDetail (id, startTime, endTime) {
-      this.$service.crowdLanuchData({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
-        if (data.data.length === 0) { this.crowdLaunchTitle = '该人群投放数据漏斗基本详情暂无数据' } else { this.crowdLaunchTitle = '该人群投放数据漏斗基本详情' }
-        this.setFunnelEcharts('crowdLaunch', '', data.names, data.data)
-      })
-    },
-    setProvinceData (id, startTime, endTime) {
-      this.$service.exposeProvinceScale({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
-        const newData = data.map((item) => {
-          return { name: item.name, value: parseFloat(item.value) }
-        })
-        this.exposeProvinceTitle = '曝光人群省份分布'
-        this.setMapEcharts('exposeProvince', '', newData)
-      })
-    },
+    // // 统计投后效果---开始
+    // drawCrowdPie (id, startTime, endTime) {
+    //   this.$service.hitAndBiToTalPie({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+    //     if (data.data.length === 0) { this.hitPieTitle = '累计命中次数按业务分布暂无数据' } else { this.hitPieTitle = '累计命中次数按业务分布' }
+    //     this.setCircleEcharts('hitPie', '', data.name, data.data, true)
+    //   })
+    // },
+    // drawCrowdLine (id, startTime, endTime) {
+    //   this.$service.hitAndBiToTalLine({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+    //     const legendData = data.series.map((key) => {
+    //       return key.name
+    //     })
+    //     const linesData = data.series.map((key) => {
+    //       return { name: key.name, data: key.data, type: 'line' }
+    //     })
+    //     this.hitLinesTitle = '该人群总命中量以及各业务的命中量'
+    //     this.setLinesEchart('hitLine', '', data.date, linesData, legendData)
+    //   })
+    // },
+    // drawExposePie (id, startTime, endTime) {
+    //   this.$service.exposeCrowdTotalPie({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+    //     if (data.data.length === 0) { this.exposePieTitle = '累计曝光数按业务分布暂无数据' } else { this.exposePieTitle = '累计曝光数按业务分布' }
+    //     this.setCircleEcharts('exposePie', '', data.name, data.data, true)
+    //   })
+    // },
+    // drawExposeLine (id, startTime, endTime) {
+    //   this.$service.exposeCrowdTotalLine({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+    //     const legendData = data.series.map((key) => {
+    //       return key.name
+    //     })
+    //     const linesData = data.series.map((key) => {
+    //       return { name: key.name, data: key.data, type: 'line' }
+    //     })
+    //     this.exposeLinesTitle = '该人群总曝光量以及各业务的曝光量'
+    //     this.setLinesEchart('exposeLine', '', data.date, linesData, legendData)
+    //   })
+    // },
+    // drawClickPie (id, startTime, endTime) {
+    //   this.$service.clickCrowdTotalPie({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+    //     if (data.data.length === 0) { this.clickPieTitle = '累计点击次数按业务分布暂无数据' } else { this.clickPieTitle = '累计点击次数按业务分布' }
+    //     this.setCircleEcharts('clickPie', '', data.name, data.data, true)
+    //   })
+    // },
+    // drawClickLine (id, startTime, endTime) {
+    //   this.$service.clickCrowdTotalLine({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+    //     const legendData = data.series.map((key) => {
+    //       return key.name
+    //     })
+    //     const linesData = data.series.map((key) => {
+    //       return { name: key.name, data: key.data, type: 'line' }
+    //     })
+    //     this.clickLinesTitle = '该人群总点击以及各业务的点击次数'
+    //     this.setLinesEchart('clickLine', '', data.date, linesData, legendData)
+    //   })
+    // },
+    // crowdLaunchDetail (id, startTime, endTime) {
+    //   this.$service.crowdLanuchData({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+    //     if (data.data.length === 0) { this.crowdLaunchTitle = '该人群投放数据漏斗基本详情暂无数据' } else { this.crowdLaunchTitle = '该人群投放数据漏斗基本详情' }
+    //     this.setFunnelEcharts('crowdLaunch', '', data.names, data.data)
+    //   })
+    // },
+    // setProvinceData (id, startTime, endTime) {
+    //   this.$service.exposeProvinceScale({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+    //     const newData = data.map((item) => {
+    //       return { name: item.name, value: parseFloat(item.value) }
+    //     })
+    //     this.exposeProvinceTitle = '曝光人群省份分布'
+    //     this.setMapEcharts('exposeProvince', '', newData)
+    //   })
+    // },
     // 统计投后效果---结束
-    formatDate (d) {
-      const time = new Date(d)
-      const y = time.getFullYear() // 年份
-      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      const r = time.getDate().toString().padStart(2, '0') // 日子
-      return `${y}-${m}-${r}`
-    },
-    setDataInMonth (startDate, endDate) {
-      const startTime = new Date(startDate).getTime()
-      const endTime = new Date(endDate).getTime()
-      const oneMonth = 3600 * 1000 * 24 * 30
-      return endTime - startTime <= oneMonth
-    },
+    // formatDate (d) {
+    //   const time = new Date(d)
+    //   const y = time.getFullYear() // 年份
+    //   const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+    //   const r = time.getDate().toString().padStart(2, '0') // 日子
+    //   return `${y}-${m}-${r}`
+    // },
+    // setDataInMonth (startDate, endDate) {
+    //   const startTime = new Date(startDate).getTime()
+    //   const endTime = new Date(endDate).getTime()
+    //   const oneMonth = 3600 * 1000 * 24 * 30
+    //   return endTime - startTime <= oneMonth
+    // },
     upDownCrowd (row) {
       this.showUpDownDialog = true
       this.upDownTips = row.putway === 1 ? '确定下架人群吗？下架后该人群将无法使用，不再命中、返回' : '确定上架人群吗？点击确认后，该人群将可以用'
@@ -4084,22 +4094,22 @@ export default {
         this.$refs.download_Url.click()
       })
     },
-    //  导出投后效果数据
-    handleLaunchedExport () {
-      this.launchedExportUrl =
-              '/api/crowdAndPolicyStatistics/export/' + this.currentCid +
-              '?sHitLineTime=' + this.time0[0] + '&eHitLineTime=' + this.time0[1] +
-              '&sHitPieTime=' + this.time1[0] + '&eHitPieTime=' + this.time1[1] +
-              '&sExposeLineTime=' + this.time2[0] + '&eExposeLineTime=' + this.time2[1] +
-              '&sExposePieTime=' + this.time3[0] + '&eExposePieTime=' + this.time3[1] +
-              '&sClickLineTime=' + this.time4[0] + '&eClickLineTime=' + this.time4[1] +
-              '&sClickPieTime=' + this.time5[0] + '&eClickPieTime=' + this.time5[1] +
-              '&sFunnelTime=' + this.time6[0] + '&eFunnelTime=' + this.time6[1] +
-              '&sProvinceTime=' + this.time7[0] + '&eProvinceTime=' + this.time7[1]
-      this.$nextTick(() => {
-        this.$refs.launchedDownLoad.click()
-      })
-    },
+    // //  导出投后效果数据
+    // handleLaunchedExport () {
+    //   this.launchedExportUrl =
+    //           '/api/crowdAndPolicyStatistics/export/' + this.currentCid +
+    //           '?sHitLineTime=' + this.time0[0] + '&eHitLineTime=' + this.time0[1] +
+    //           '&sHitPieTime=' + this.time1[0] + '&eHitPieTime=' + this.time1[1] +
+    //           '&sExposeLineTime=' + this.time2[0] + '&eExposeLineTime=' + this.time2[1] +
+    //           '&sExposePieTime=' + this.time3[0] + '&eExposePieTime=' + this.time3[1] +
+    //           '&sClickLineTime=' + this.time4[0] + '&eClickLineTime=' + this.time4[1] +
+    //           '&sClickPieTime=' + this.time5[0] + '&eClickPieTime=' + this.time5[1] +
+    //           '&sFunnelTime=' + this.time6[0] + '&eFunnelTime=' + this.time6[1] +
+    //           '&sProvinceTime=' + this.time7[0] + '&eProvinceTime=' + this.time7[1]
+    //   this.$nextTick(() => {
+    //     this.$refs.launchedDownLoad.click()
+    //   })
+    // },
     unActiveTips (activeType) {
       if (activeType == 1 || activeType == 3) {
         return '人群未生效，因为该人群条件' + this.crowdValidEnum[activeType]
@@ -4435,36 +4445,36 @@ fieldset>div
 .label-or-space
   color: #1ac71c
   margin: 0 5px
-.echarts-container
-  position relative
-  width 50%
-  height auto
-  float left
-.crowd-statistic
-  border-bottom 1px dashed #ccc
-  &:before
-  &:after
-    display table
-    content ""
-  &:after
-    clear: both
-.main
-  width 100%
-  height 300px
-  padding 30px
-.click-date-picker
-  text-align center
-  margin 20px 0
-.lines-title
-  position absolute
-  font-size 18px
-  font-weight bold
-  color #000
-  margin-left 25px
-.funnel-tips
-  font-size 14px
-  color #333
-  margin 50px 0 0 25px
+// .echarts-container
+//   position relative
+//   width 50%
+//   height auto
+//   float left
+// .crowd-statistic
+//   border-bottom 1px dashed #ccc
+//   &:before
+//   &:after
+//     display table
+//     content ""
+//   &:after
+//     clear: both
+// .main
+//   width 100%
+//   height 300px
+//   padding 30px
+// // .click-date-picker
+// //   text-align center
+// //   margin 20px 0
+// .lines-title
+//   position absolute
+//   font-size 18px
+//   font-weight bold
+//   color #000
+//   margin-left 25px
+// .funnel-tips
+//   font-size 14px
+//   color #333
+//   margin 50px 0 0 25px
 .crowd-list >>> .el-table tr.gray-row
   color #ccc
 .copy-form >>> .el-select
