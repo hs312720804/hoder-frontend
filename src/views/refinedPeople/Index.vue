@@ -74,13 +74,7 @@
     </div>
 
     <div class="detail-table">
-      <div class="tip-wrap">
 
-        <!-- {{ selectedTreeNode }} -->
-        <i class="el-icon-folder-opened folder"></i>
-        策略ID： {{ selectedTreeNodePolicy.policyId }}&nbsp;&nbsp;&nbsp;&nbsp;
-        有效期：{{selectedTreeNodePolicy.crowdValidFrom}}  -  {{selectedTreeNodePolicy.crowdValidTo}}
-      </div>
       <!-- 表格 -->
       <TableIndex
         ref="tableIndexRef"
@@ -640,16 +634,7 @@ export default {
   flex: 1;
   width: 50%;
 }
-.tip-wrap {
-  margin-bottom: 20px;
-  color: rgba(0,0,0,0.65);
-  font-size: 14px;
-  line-height: 34px;
-  padding: 1px 16px;
-  background-color: #ecf8ff;
-  border-radius: 4px;
-  border-left: 4px solid #50bfff;
-}
+
 .tree-left {
   position: absolute;
   bottom: 0;

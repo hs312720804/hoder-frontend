@@ -82,31 +82,33 @@
                   <i slot="reference" class="el-icon-close" style="color: #ff8888" title="删除"></i>
                 </el-popconfirm>
                 <!-- <el-button v-if="data.isPolicy" type="text" @click='treePush(node,data)'>投放</el-button> -->
+                <template v-if="data.isPolicy">
+                  <span v-if="data.useStatus === '投放中'" @click="launchDetail(data.policyId)" class="under_line" >投放中</span>
+                  <i v-else title="投放" class="el-icon-position" @click='treePush(node,data)'></i>
+                  <!-- <el-button size="small" type="text" v-permission="'hoder:policy:sync'" @click="freshCache(data)">
+                    <span v-if="data.status === 1">未同步</span>
+                    <span v-if="data.status === 2">已同步</span>
+                  </el-button>
+                  <el-button size="small" type="text" @click="seeDevDetail(data)">
+                    查看配置
+                  </el-button> -->
 
-                <span v-if="data.useStatus === '投放中'" @click="launchDetail(data.policyId)" class="tip-text under_line">投放中</span>
-                <!-- <span v-else-if="data.isPolicy"> -->
-                <!-- 未投放 -->
-                <i v-else-if="data.isPolicy" title="投放" class="el-icon-position" @click='treePush(node,data)'></i>
-                <!-- </span> -->
-                <!-- <el-button v-else type="text">数据分析</el-button> -->
-                <el-button
-                  v-if="data.isPolicy"
-                  size="small"
-                  type="text"
-                  v-permission="'hoder:policy:sync'"
-                  @click="freshCache(data)"
-                >
-                  <span v-if="data.status === 1">未同步</span>
-                  <span v-if="data.status === 2">已同步</span>
-                </el-button>
-                <el-button
-                  v-if="data.isPolicy"
-                  size="small"
-                  type="text"
-                  @click="seeDevDetail(data)"
-                >
-                  查看配置
-                </el-button>
+                  <el-dropdown @command="handleCommand">
+                    <!-- ... -->
+                    <i class="el-icon-more-outline"></i>
+                    <el-dropdown-menu slot="dropdown">
+
+                      <el-dropdown-item :command="['freshCache', data]" v-permission="'hoder:policy:sync'">
+                        <span v-if="data.status === 1">未同步</span>
+                        <span v-if="data.status === 2">已同步</span>
+                      </el-dropdown-item>
+                      <el-dropdown-item :command="['detail', data]" >
+                        查看配置
+                      </el-dropdown-item>
+
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </template>
 
               </template>
             </span>
@@ -253,7 +255,15 @@ export default {
 
   },
   methods: {
-
+    handleCommand (scope) {
+      const type = scope[0]
+      const params = scope[1]
+      if (type === 'detail') {
+        this.seeDevDetail(params)
+      } else if (type === 'freshCache') {
+        this.freshCache(params)
+      }
+    },
     seeDevDetail (row) {
       this.showConfiguration = true
       this.detailPagination.currentId = row.policyId
@@ -513,4 +523,5 @@ export default {
   text-decoration underline
   color blue
   cursor pointer
+  font-size 12px
 </style>

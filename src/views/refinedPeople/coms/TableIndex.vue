@@ -1,26 +1,32 @@
 <template>
-  <div class="my-collect">
-    <!-- <div class="header">
-      <div v-if="!showSelection">
-        <el-button @click="handleAdd" type="primary">
-          新建
-        </el-button>
-      </div>
-      <div v-else></div>
-      标签分类搜索
-      <div class="search-input">
-        <el-input placeholder="支持按标签名搜索" class="header-input" v-model="launchName"
-          @keyup.enter.native="fetchData"></el-input>
-        <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
-      </div>
-    </div> -->
-    <!-- <tag-list
-      :data-list="dataList">
-      <div align="right">
-        <pagination :currentpage="filter.pageNum" :pagesize="filter.pageSize" :totalcount="totalCount"
-          @handle-size-change="handleSizeChange" @handle-current-change="handleCurrentChange"></pagination>
-      </div>
-    </tag-list> -->
+  <div>
+    <div v-if="selectedTreeNodePolicy.policyId" class="tip-wrap" >
+      <!-- {{ selectedTreeNode }} -->
+      <span>
+        <i class="el-icon-folder-opened folder"></i>
+        策略ID： {{ selectedTreeNodePolicy.policyId }}&nbsp;&nbsp;&nbsp;&nbsp;
+        <i class="el-icon-date folder" style="color: #67c23a;;"></i>
+        有效期：{{selectedTreeNodePolicy.crowdValidFrom}}  -  {{selectedTreeNodePolicy.crowdValidTo}}
+      </span>
+
+      <span class="tip-text-wrap">
+        <div>
+          7日是否有命中及命中次数:
+          <span v-if="selectedTreeNodePolicy.past7ActiveSize" style="color: red">
+            {{ cc_format_number(selectedTreeNodePolicy.past7ActiveSize) }}
+          </span>
+          <span v-else> 否 </span>
+        </div>
+        <div>
+          7日是否有请求及请求次数:
+          <span v-if="selectedTreeNodePolicy.past7ReqSize" style="color: red">
+            {{ cc_format_number(selectedTreeNodePolicy.past7ReqSize) }}
+          </span>
+          <span v-else> 否 </span>
+        </div>
+
+      </span>
+    </div>
 
     <div class="tag-list">
     <el-table ref="changeTable" border :data="dataList">
@@ -66,21 +72,30 @@
       </el-table-column>
       <el-table-column label="操作" width="180px">
         <template v-slot="{row}">
-          <el-button type="text" size="small" @click="onOrOffLocalCrowd(row)">
-            <!-- 下架 -->
-            <span v-if="row.putway === 1">下架</span>
-            <span v-else>上架</span>
-          </el-button>
-          <el-button type="text" size="small" @click="handleEdit(row)">
-            编辑
-          </el-button>
-          <el-button type="text" size="small" @click="handleCopyCrowd(row)">
-            复制
-          </el-button>
-          <el-button  type="text" size="small" @click="handleDel(row)">
-            删除
-          </el-button>
-
+          <div class="el-button-group">
+            <el-button type="text" size="small" @click="onOrOffLocalCrowd(row)">
+              <!-- 下架 -->
+              <span v-if="row.putway === 1">下架</span>
+              <span v-else>上架</span>
+            </el-button>
+            <el-button type="text" size="small" @click="handleEdit(row)">
+              编辑
+            </el-button>
+            <el-button type="text" size="small" @click="handleCopyCrowd(row)">
+              复制
+            </el-button>
+            <el-button  type="text" size="small" @click="handleDel(row)">
+              删除
+            </el-button>
+            <el-dropdown @command="handleCommandStastic">
+              <el-button size="small" type="text">
+                分析
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="['detail', row]">命中曝光分析</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
         </template>
       </el-table-column>
 
@@ -139,18 +154,34 @@
         <el-button @click="handleCopySubmit" type="primary">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 命中曝光分析 -->
+    <el-dialog
+      :visible.sync="showStatistics"
+      width="90%"
+      title="命中曝光分析"
+    >
+      <AfterPushDetail
+        v-if="showStatistics"
+        :currentCid="currentCid"
+        :showStatistics="showStatistics"
+      ></AfterPushDetail>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import TreeForm from './TreeForm.vue'
 import priorityEdit from '@/components/PriorityEdit.vue'
+import AfterPushDetail from '@/views/crowdStrategy/AfterPushDetail'
+
 // import tagList from './coms/TagList'
 export default {
   name: 'MyCollect',
   components: {
     TreeForm,
-    priorityEdit
+    priorityEdit,
+    AfterPushDetail
   },
   props: {
     treeData: {
@@ -193,7 +224,13 @@ export default {
 
   data () {
     return {
-      // 弹窗---------------
+      selectedTreeNodePolicy: {},
+      // 查看统计 投后效果弹窗 ------
+      showStatistics: false,
+      currentCid: undefined,
+      // 查看统计 投后效果弹窗 --- end ---
+
+      // 复制人群 弹窗---------------
       updatePolicyDialog: false,
       crowdForm: {
         launchName: ''
@@ -201,7 +238,7 @@ export default {
       rules: {
         launchName: { required: true, message: '请输入', trigger: ['blur'] }
       },
-      // 弹窗---------------end
+      // 复制人群 弹窗---------------end
 
       selectedRow: {},
       // 投放 params ---
@@ -232,7 +269,18 @@ export default {
     }
   },
   methods: {
-
+    // 分析
+    handleCommandStastic (scope) {
+      const type = scope[0]
+      const row = scope[1]
+      this.currentCid = row.crowdId
+      switch (type) {
+        // 命中曝光分析
+        case 'detail':
+          this.showStatistics = true
+          break
+      }
+    },
     // 树状 复选框被点击的时候触发
     handleNodeCheck (node, data) {
       const { checkedNodes, checkedKeys, halfCheckedNodes, halfCheckedKeys } = node
@@ -354,13 +402,12 @@ export default {
         policyId: this.selectedTreeNode.policyId,
         crowdId: this.selectedTreeNode.isPolicy ? undefined : this.selectedTreeNode.id
       }
-      this.$service.refinementPolicyCrowdSearch(params).then(data => {
+      this.$service.refinementPolicyCrowdSearch(params).then(result => {
         // eslint-disable-next-line
         // debugger
-        const result = data
         this.dataList = result.pageInfo ? result.pageInfo.list : []
         this.totalCount = result.pageInfo ? result.pageInfo.total : 0
-
+        this.selectedTreeNodePolicy = result.policy
         console.log('this.dataList--->', this.dataList)
       })
     },
@@ -393,4 +440,25 @@ export default {
   display flex
   justify-content space-between
   margin 10px 0
+.el-button-group >>> .el-button
+  float none
+  margin 0 3px
+.tip-wrap {
+  margin-bottom: 20px;
+  color: rgba(0,0,0,0.65);
+  font-size: 14px;
+  line-height: 34px;
+  padding: 1px 16px;
+  background-color: #ecf8ff;
+  border-radius: 4px;
+  border-left: 4px solid #50bfff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tip-text-wrap {
+  font-size: 12px;
+  line-height: 25px
+  color: red
+}
 </style>
