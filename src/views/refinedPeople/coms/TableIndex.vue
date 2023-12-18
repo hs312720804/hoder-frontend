@@ -396,7 +396,7 @@ export default {
     //   this.handleGetMonitorTableList()
     // },
     fetchData () {
-      console.log('this.selectedTreeNode-->', this.selectedTreeNode)
+      if (!this.selectedTreeNode.policyId) return
       const params = {
         ...this.filter,
         policyId: this.selectedTreeNode.policyId,
@@ -408,7 +408,6 @@ export default {
         this.dataList = result.pageInfo ? result.pageInfo.list : []
         this.totalCount = result.pageInfo ? result.pageInfo.total : 0
         this.selectedTreeNodePolicy = result.policy
-        console.log('this.dataList--->', this.dataList)
       })
     },
 
