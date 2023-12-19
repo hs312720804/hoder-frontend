@@ -754,7 +754,7 @@ export default {
         const nodes = flowChart.nodes || [] // 画布中节点的数据
         const mainArithmetic = group.mainArithmetic // 流转方式
 
-        let errorFlag = false
+        // const errorFlag = false
         // 流转方式: mainArithmetic
         // value: 6:'故事线';
         // value: 0:'顺序';
@@ -766,16 +766,29 @@ export default {
 
         // 流转条件的限制：不流转 不用配； 顺序 最后一个不用配；其他的每一个都要配
         if (mainArithmetic !== 4) {
-          errorFlag = nodes.some((node, index) => {
+          for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i]
+            // 顺序 最后一个不用配；
             if (mainArithmetic === 0) {
-              return (node.dynamicJson === '{"condition":"OR","rules":[]}' || !node.dynamicJson) && index !== nodes.length - 1
+              if ((node.dynamicJson === '{"condition":"OR","rules":[]}' || !node.dynamicJson) && i !== nodes.length - 1) {
+                return this.$message.error(`请填写分组${group.name}-${node.crowdName}中的流转条件`)
+              }
+            } else if ((node.dynamicJson === '{"condition":"OR","rules":[]}' || !node.dynamicJson)) {
+              // 其他的每一个都要配
+              return this.$message.error(`请填写分组${group.name}-${node.crowdName}中的流转条件`)
             }
-            return (node.dynamicJson === '{"condition":"OR","rules":[]}' || !node.dynamicJson)
-          })
+          }
         }
-        if (errorFlag) {
-          return this.$message.error(`请填写分组${group.name}中的流转条件`)
-        }
+        // errorFlag = nodes.some((node, index) => {
+        //   console.log('node-->', node)
+        //   if (mainArithmetic === 0) {
+        //     return (node.dynamicJson === '{"condition":"OR","rules":[]}' || !node.dynamicJson) && index !== nodes.length - 1
+        //   }
+        //   return (node.dynamicJson === '{"condition":"OR","rules":[]}' || !node.dynamicJson)
+        // })
+        // if (errorFlag) {
+        //   return this.$message.error(`请填写分组${group.name}-${node.crowdName}中的流转条件`)
+        // }
       }
       // 所有实验分组的数据
       const parmas = this.allGroupList
