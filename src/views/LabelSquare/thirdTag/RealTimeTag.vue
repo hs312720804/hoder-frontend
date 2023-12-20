@@ -12,7 +12,10 @@
         <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
       </div> -->
     </div>
-    <tag-list :data-list="dataList" :data-source-enum="dataSourceEnum" :type-enum="typeEnum"
+    <tag-list
+      :data-list="dataList"
+      :defaultDataSourceEnum="dataSourceEnum"
+      :defaultTypeEnum="typeEnum"
       :check-list-parent="checkList" :current-selected-tags="currentSelectTag" :show-selection="showSelection"
       :show-delete-btn="true" :show-edit-btn="true" @fetch-data="fetchData" @change-checkList="handleCheckListChange"
       @table-selected="handleTableSelected" @delete="handleDelete" @edit="handleEdit">
@@ -62,6 +65,12 @@ export default {
     },
     showSelection: {
       type: Boolean
+    },
+    dataSourceEnum: {
+      type: Object
+    },
+    typeEnum: {
+      type: Object
     }
   },
   watch: {
@@ -80,8 +89,8 @@ export default {
         pageSize: 50,
         tagName: undefined
       },
-      dataSourceEnum: {},
-      typeEnum: {},
+      // dataSourceEnum: {},
+      // typeEnum: {},
       multipleSelection: [],
       dialogVisible: false,
       form: {
@@ -145,10 +154,6 @@ export default {
         const result = data
         this.dataList = result.row
         this.totalCount = result.total
-        // this.dataSourceEnum = result.DataSourceMap
-        this.typeEnum = result.tagKey
-
-        console.log('this.dataList--->', this.dataList)
       })
     },
     handleCheckListChange (val) {

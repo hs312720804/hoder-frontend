@@ -10,9 +10,16 @@
     <!-- v-if="showTypeTab" -->
     <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-content-wrap">
       <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.groupName" :key="item.groupName">
-        <tag-list :data-list="dataList" :data-source-enum="dataSourceEnum" :type-enum="typeEnum"
-          :check-list-parent="checkList" :current-selected-tags="currentSelectTag" :show-selection="showSelection"
-          @fetch-data="fetchData" @change-checkList="handleCheckListChange" @table-selected="handleTableSelected"
+        <tag-list
+          :data-list="dataList"
+          :defaultDataSourceEnum="dataSourceEnum"
+          :defaultTypeEnum="typeEnum"
+          :check-list-parent="checkList"
+          :current-selected-tags="currentSelectTag"
+          :show-selection="showSelection"
+          @fetch-data="fetchData"
+          @change-checkList="handleCheckListChange"
+          @table-selected="handleTableSelected"
           @delete="handleDelete" @edit="handleEdit">
           <div align="right">
             <pagination :currentpage="filter.pageNum" :pagesize="filter.pageSize" :totalcount="totalCount"
@@ -22,7 +29,12 @@
       </el-tab-pane>
 
       <el-tab-pane label="实时标签" name="realTime">
-        <RealTimeTag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="currentSelectTag"
+        <RealTimeTag
+          :checkList="checkList"
+          :dataSourceEnum="dataSourceEnum"
+          :typeEnum="typeEnum"
+          :show-selection="showSelection"
+          :currentSelectTag="currentSelectTag"
           @change-checkList="handleCheckListChange" @get-table-selected="handleTableSelected">
         </RealTimeTag>
       </el-tab-pane>
@@ -68,6 +80,12 @@ export default {
     },
     showSelection: {
       type: Boolean
+    },
+    dataSourceEnum: {
+      type: Object
+    },
+    typeEnum: {
+      type: Object
     }
   },
   watch: {
@@ -88,8 +106,8 @@ export default {
         pageSize: 10,
         tagName: undefined
       },
-      dataSourceEnum: {},
-      typeEnum: {},
+      // dataSourceEnum: {},
+      // typeEnum: {},
       multipleSelection: [],
       dialogVisible: false,
       form: {
@@ -161,8 +179,6 @@ export default {
         const result = data
         this.dataList = result.pageInfo.list
         this.totalCount = result.pageInfo.total
-        this.dataSourceEnum = result.DataSourceMap
-        this.typeEnum = result.tagKey
       })
     },
     handleCheckListChange (val) {

@@ -182,6 +182,9 @@ export default {
     defaultDataSourceEnum: {
       type: Object
     },
+    defaultTypeEnum: {
+      type: Object
+    },
     launchStatusEnum: {
       type: Object,
       default: () => {}
@@ -215,6 +218,16 @@ export default {
           this.dataSourceEnum = value
         } else {
           this.getDataSourceList()
+        }
+      },
+      immediate: true
+    },
+    defaultTypeEnum: {
+      handler (value) {
+        if (value) {
+          this.typeEnum = value
+        } else {
+          this.getTagType()
         }
       },
       immediate: true
@@ -347,8 +360,6 @@ export default {
     }
   },
   created () {
-    // this.getDataSourceList()
-    this.getTagType()
     this.checkList = this.checkListParent
   }
 }
