@@ -143,6 +143,7 @@
             :imultiple="true"
             :check-strictly="true"
             :limitLevel="limitLevel"
+            :check-on-click-node="true"
             style="height: 400px"
             @nodeCheck="handleNodeCheck"
           >
