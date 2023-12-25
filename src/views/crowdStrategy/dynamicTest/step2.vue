@@ -457,6 +457,7 @@ export default {
     setGroupData (val) {
       this.currentGroup = this.allGroupList[val]
       const currentGroup = this.currentGroup
+      if (!currentGroup) return
 
       const cid = currentGroup.cid // 方案id 'id1, id2'
       this.radioType = currentGroup.mainArithmetic // 流转算法
@@ -764,8 +765,8 @@ export default {
         // value: 4: '不流转'
         // value: 5: '智能'
 
-        // 流转条件的限制：不流转 不用配； 顺序 最后一个不用配；其他的每一个都要配
-        if (mainArithmetic !== 4) {
+        // 流转条件的限制：不流转/故事线 不用配； 顺序 最后一个不用配；其他的每一个都要配
+        if (mainArithmetic !== 4 && mainArithmetic !== 6) {
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i]
             // 顺序 最后一个不用配；
