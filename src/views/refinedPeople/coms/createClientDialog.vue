@@ -534,6 +534,7 @@ export default {
       this.form.isSettingValid = policyData.isSettingValid
       this.form.autoVersion = policyData.autoVersion || false
       this.form.isShowAutoVersion = true
+      this.form.priority = policyData.priority
 
       let cacheIds = []
 

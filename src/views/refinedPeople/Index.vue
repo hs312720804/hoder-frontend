@@ -438,9 +438,8 @@ export default {
       // const isSettingValid = dialogRef.form.isSettingValid // 人群有效区间
       // const autoVersion = dialogRef.form.autoVersion // 是否每日更新
       // const isShowAutoVersion = dialogRef.form.isShowAutoVersion // 是否显示每日更新
-      const { name: crowdName, period, isSettingValid, autoVersion, isShowAutoVersion } = dialogRef.form
+      const { name: crowdName, period, isSettingValid, autoVersion, isShowAutoVersion, priority } = dialogRef.form
       const flowCondition = JSON.stringify(dialogRef.flowCondition)
-
       // 编辑
       if (this.editRow) {
         const { parentId, id, policyId } = this.editRow
@@ -448,6 +447,7 @@ export default {
         // ...this.editRow,
           crowdId: id,
           policyId,
+          priority,
           // -- 以下是新增参数-----
           crowdValidFrom: period[0] || '',
           crowdValidTo: period[1] || '',
