@@ -52,7 +52,7 @@
 
         <template slot-scope="scope">
             <priorityEdit
-              @refresh="fetchData"
+              @refresh="priorityEditRefresh"
               :showEdit="true"
               :data="scope.row.priority"
               :policyId="scope.row.policyId"
@@ -270,6 +270,11 @@ export default {
     }
   },
   methods: {
+    priorityEditRefresh () {
+      this.fetchData()
+      // 刷新父级列表
+      this.$emit('refresh')
+    },
     // 分析
     handleCommandStastic (scope) {
       const type = scope[0]
@@ -303,6 +308,8 @@ export default {
       }).then(() => {
         this.$service.crowdUpDown(params, `${tipText}成功`).then(() => {
           this.fetchData()
+          // 刷新父级列表
+          this.$emit('refresh')
         })
       })
     },
