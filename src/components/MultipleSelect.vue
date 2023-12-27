@@ -60,7 +60,7 @@
 
               <!-- 实时标签[大数据] 标签  需要特地增加一个下拉框选择二级标签-->
               <!-- v-if="childItem.tagCode === 'vip_status' || childItem.tagCode === 'vip_last_buy' " -->
-              <span v-if="childItem.dataSource === 13">
+              <span v-if="childItem.dataSource === 13 || childItem.dataSource === 18">
                 <el-select
                   style="width: 130px"
                   class="time-dot-select-new"
@@ -76,6 +76,26 @@
                     :value="item.attrValue"
                     :label="item.attrName">
                   </el-option>
+                </el-select>
+              </span>
+              <!-- 临时标签中tagCode为以下这三种的时候，加一个选卡种的下拉框 -->
+              <span v-if="childItem.tagCode === 'buy_time' || childItem.tagCode === 'end_buy_date'|| childItem.tagCode === 'first_buy_date' ">
+                <el-select
+                  style="width: 130px"
+                  class="time-dot-select-new"
+                  :key="n + 'realTime'"
+                  v-model="childItem.secendTag"
+                  filterable
+                  clearable
+                  placeholder="请选择卡种"
+                  v-if="cache[childItem.tagId]"
+                >
+                  <el-option
+                    v-for="item in cache[childItem.tagId].list"
+                    :key="index + item.attrValue + item.attrId"
+                    :label="item.attrName"
+                    :value="item.attrValue"
+                  ></el-option>
                 </el-select>
               </span>
               <span class="sel">
@@ -1343,7 +1363,8 @@ export default {
       if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
         this.crowd.tagIds.push(tag.tagId)
       }
-      if (tag.tagType === 'string' || tag.tagType === 'collect') {
+      const isSource18NeedfetchTagSuggestions = tag.tagKey === 'buy_time' || tag.tagKey === 'end_buy_date' || tag.tagKey === 'first_buy_date'
+      if (tag.tagType === 'string' || tag.tagType === 'collect' || isSource18NeedfetchTagSuggestions) {
         if (this.cache[tag.tagId] === undefined) {
           this.fetchTagSuggestions(tag.tagId)
         }
@@ -1393,7 +1414,8 @@ export default {
                   ? tag.rulesJson
                   : ''
                 : undefined,
-            subTag: tag.dataSource === 13 ? '' : undefined
+            subTag: tag.dataSource === 13 || tag.dataSource === 18 ? '' : undefined,
+            secondTag: (tag.tagKey === 'buy_time' || tag.tagKey === 'end_buy_date' || tag.tagKey === 'first_buy_date') ? '' : undefined
           }
         ]
       })
@@ -1430,7 +1452,8 @@ export default {
         return
       }
 
-      if (tag.tagType === 'string' || tag.tagType === 'collect') {
+      const isSource18NeedfetchTagSuggestions = tag.tagKey === 'buy_time' || tag.tagKey === 'end_buy_date' || tag.tagKey === 'first_buy_date'
+      if (tag.tagType === 'string' || tag.tagType === 'collect' || isSource18NeedfetchTagSuggestions) {
         if (this.cache[tag.tagId] === undefined) {
           this.fetchTagSuggestions(tag.tagId)
         }
@@ -1469,7 +1492,8 @@ export default {
           tag.tagType === 'time' ? (tag.endDay ? tag.endDay : '') : undefined,
         initValue: tag.initValue,
         specialCondition: '',
-        subTag: tag.dataSource === 13 ? '' : undefined
+        subTag: tag.dataSource === 13 || tag.dataSource === 18 ? '' : undefined,
+        secondTag: (tag.tagKey === 'buy_time' || tag.tagKey === 'end_buy_date' || tag.tagKey === 'first_buy_date') ? '' : undefined
       })
     },
     handleAddSpecialRule (tag) {
@@ -1601,7 +1625,8 @@ export default {
         const cacheSpecialIds = []
         ruleJsonData.rules.forEach(itemParent => {
           itemParent.rules.forEach(item => {
-            if (item.tagType === 'string' || item.tagType === 'collect') {
+            const isSource18NeedfetchTagSuggestions = item.tagCode === 'buy_time' || item.tagCode === 'end_buy_date' || item.tagCode === 'first_buy_date'
+            if (item.tagType === 'string' || item.tagType === 'collect' || isSource18NeedfetchTagSuggestions) {
               cacheIds.push(item.tagId)
             }
             if (item.tagType === 'mix') {

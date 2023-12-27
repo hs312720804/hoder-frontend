@@ -75,49 +75,48 @@
               <div v-else class="behavior-label">
                 <span class="txt">{{ childItem.categoryName }}</span>
 
-                <span class="sel">
-                  <!-- 不是时间（time）类型的下拉框 -->
-                  <el-select v-if="childItem.tagType !== 'time'"
-                    style="width: 80px"
-                    name="oxve"
-                    v-model="childItem.operator"
-                    class="input-inline"
-                    @change="handleOperatorChange(childItem)"
+                <!-- 实时标签[大数据] 标签  需要特地增加一个下拉框选择二级标签-->
+                <!-- v-if="childItem.tagCode === 'vip_status' || childItem.tagCode === 'vip_last_buy' " -->
+                <span v-if="childItem.dataSource === 13 || childItem.dataSource === 18">
+                  <el-select
+                    style="width: 130px"
+                    class="time-dot-select-new"
+                    :key="n + 'realTime'"
+                    v-model="childItem.subTag"
+                    filterable
+                    clearable
+                    placeholder="请选择权益"
                   >
-                    <!-- number 类型 -->
-                    <template v-if="childItem.tagType === 'number'">
-                      <el-option value="="></el-option>
-                      <el-option value=">="></el-option>
-                      <el-option value="<="></el-option>
-                      <el-option value=">"></el-option>
-                      <el-option value="<"></el-option>
-                    </template>
-
-                    <!-- string 或者 mix 类型 -->
-                    <template
-                      v-if="
-                        childItem.tagType === 'string' ||
-                        childItem.tagType === 'mix'
-                      "
-                    >
-                      <el-option value="=" label="是"></el-option>
-                      <el-option value="!=" label="不是"></el-option>
-                      <!-- <el-option value="like" label="包含"></el-option> -->
-                      <el-option value="null" label="为空"></el-option>
-                    </template>
-
-                    <!-- boolean 类型 -->
-                    <template v-if="childItem.tagType === 'boolean'">
-                      <el-option value="=" label="="></el-option>
-                    </template>
-
-                    <!-- collect 类型 -->
-                    <template v-if="childItem.tagType === 'collect'">
-                      <el-option value="=" label="是"></el-option>
-                      <el-option value="!=" label="不是"></el-option>
-                    </template>
+                    <el-option
+                      v-for="item in getTagAttrChild[childItem.tagId]"
+                      :key="item.attrValue"
+                      :value="item.attrValue"
+                      :label="item.attrName">
+                    </el-option>
                   </el-select>
-
+                </span>
+                <!-- 临时标签中tagCode为以下这三种的时候，加一个选卡种的下拉框 -->
+                <span v-if="childItem.tagCode === 'buy_time' || childItem.tagCode === 'end_buy_date'|| childItem.tagCode === 'first_buy_date' ">
+                  <el-select
+                    style="width: 130px"
+                    class="time-dot-select-new"
+                    :key="n + 'realTime'"
+                    v-model="childItem.secendTag"
+                    filterable
+                    clearable
+                    placeholder="请选择卡种"
+                    v-if="cache[childItem.tagId]"
+                  >
+                    <el-option
+                      v-for="item in cache[childItem.tagId].list"
+                      :key="index + item.attrValue + item.attrId"
+                      :label="item.attrName"
+                      :value="item.attrValue"
+                    ></el-option>
+                  </el-select>
+                </span>
+                <span class="sel">
+                  <!-- {{ childItem.tagType }} -->
                   <!-- 是时间（time）类型的下拉框 -->
                   <template v-if="childItem.tagType === 'time'">
 
@@ -168,16 +167,58 @@
                     </template>
 
                   </template>
+
+                  <!-- 不是时间（time）类型的下拉框 -->
+                  <el-select v-else
+                    style="width: 100px"
+                    name="oxve"
+                    v-model="childItem.operator"
+                    class="input-inline"
+                    @change="handleOperatorChange(childItem)"
+                  >
+                    <!-- number 类型 -->
+                    <template v-if="childItem.tagType === 'number'">
+                      <el-option value="="></el-option>
+                      <el-option value=">="></el-option>
+                      <el-option value="<="></el-option>
+                      <el-option value=">"></el-option>
+                      <el-option value="<"></el-option>
+                    </template>
+
+                    <!-- string 或者 mix 类型 -->
+                    <template
+                      v-if="
+                        childItem.tagType === 'string' ||
+                        childItem.tagType === 'mix'
+                      "
+                    >
+                      <el-option value="=" label="是"></el-option>
+                      <el-option value="!=" label="不是"></el-option>
+                      <!-- <el-option value="like" label="包含"></el-option> -->
+                      <el-option value="null" label="为空"></el-option>
+                    </template>
+
+                    <!-- boolean 类型 -->
+                    <template v-if="childItem.tagType === 'boolean' || childItem.tagType === 'bool'">
+                      <el-option value="=" label="="></el-option>
+                      <el-option value="null" label="为空"></el-option>
+                    </template>
+
+                    <!-- collect 类型 -->
+                    <template v-if="childItem.tagType === 'collect' || childItem.tagType === 'crowd'">
+                      <el-option value="=" label="是"></el-option>
+                      <el-option value="!=" label="不是"></el-option>
+                    </template>
+                  </el-select>
                 </span>
 
-                <span class="in">
+                <span class="in" v-if="childItem.tagType !== 'crowd'">
                   <!-- time 类型 -->
 
                   <span v-if="childItem.tagType === 'time'">
                     <template v-if="childItem.dateAreaType !== 0">
                       <!-- 二期之后的版本 -->
                       <template v-if="childItem.version > 0">
-
                         <span v-if="childItem.dateAreaType === 2" style="display: flex">   <!-- 固定时间 -->
                           <el-date-picker
                             v-model="childItem.startDay"
@@ -363,7 +404,7 @@
                         >
                           <el-option
                             v-for="item in cache[childItem.tagId].list"
-                            :key="index + item.attrValue + item.attrId"
+                            :key="index + item.attrValue"
                             :label="item.attrName"
                             :value="item.attrValue"
                           ></el-option>
@@ -378,24 +419,39 @@
                   </template>
 
                   <!-- number 类型 -->
-                  <el-input-number v-else-if="childItem.tagType === 'number'"
-                    :key="index + 'input'"
-                    v-model="childItem.value"
-                    placeholder="请输入内容"
-                  ></el-input-number>
+                  <template v-else-if="childItem.tagType === 'number'">
+                    <el-input-number
+                      :key="index + 'input'"
+                      v-model="childItem.value"
+                      placeholder="请输入内容"
+                    ></el-input-number>
+                    <!-- 给【主页版本】标签增加提示 -->
+                    <span v-if="childItem.tagName.includes('主页版本')" style="color: gray; font-size: 12px;">
+                      例如：7470000
+                    </span>
+                  </template>
 
                   <!-- 其他 -->
                   <el-select v-else
                     v-model="childItem.value"
                     :disabled="
-                      childItem.tagType === 'string' &&
-                      childItem.operator === 'null'
+                      (childItem.tagType === 'string' && childItem.operator === 'null') ||
+                      (childItem.tagType === 'boolean' && childItem.operator === 'null') ||
+                      (childItem.tagType === 'bool' && childItem.operator === 'null')
                     "
                   >
                     <template
                       v-if="
                         childItem.tagType === 'string' &&
                         childItem.operator === 'null'
+                      "
+                    >
+                      <el-option label="空" value="nil"></el-option>
+                    </template>
+                    <template
+                      v-if="
+                        (childItem.tagType === 'boolean' && childItem.operator === 'null') ||
+                        (childItem.tagType === 'bool' && childItem.operator === 'null')
                       "
                     >
                       <el-option label="空" value="nil"></el-option>
@@ -456,7 +512,11 @@
                   </span>
                 </template>
 
-                <!-- <span class="i" @click="handleRemoveRule(item, childItem)">
+                <!-- <span>
+                  <el-button type="text" @click="handelCopyRule(item, childItem, n)">复制</el-button>
+                </span>
+
+                <span class="i" @click="handleRemoveRule(item, childItem)">
                   <i class="icon iconfont el-icon-cc-delete"></i>
                 </span> -->
                 <span
@@ -464,15 +524,8 @@
                     childItem.tagType === 'time' && childItem.isDynamicTime === 3
                   "
                 >
-                  <!-- <el-tooltip class="item" effect="dark" placement="top-start">
-                    <div slot="content">
-                      状态：到期时间请选择“已过期”或“未过期”，其他请选“空”
-                      <br />时间设置：30天以内：输入0～30天；30天以外：请输入30天～9999天
-                    </div>
-                    <el-button type="text">提示</el-button>
-                  </el-tooltip> -->
-
                   <!-- 选择动态时间提示 -->
+                  <!-- 二期之后的版本 -->
                   <div v-if="childItem.version > 0 && childItem.dateAreaType === 1" style="color: gray; font-size: 12px;">
                     提示：负数表示过去的日期，例如过去一周到未来3天，可以表示成-7天到3天
                   </div>
@@ -1353,8 +1406,14 @@ export default {
     handleOperatorChange (item) {
       if (item.tagType === 'string' && item.operator === 'null') {
         item.value = 'nil'
+      } else if (item.tagType === 'boolean' && item.operator === 'null') {
+        item.value = 'nil'
+      } else if (item.tagType === 'bool' && item.operator === 'null') {
+        item.value = 'nil'
       } else if (item.tagType === 'string') { // string 类型的标签可多选 value值是数组
         item.value = []
+      } else if (item.tagType === 'crowd') { // crowd value值固定为 '-'
+        item.value = '-'
       } else {
         item.value = ''
       }

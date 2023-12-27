@@ -457,6 +457,7 @@ export default {
     setGroupData (val) {
       this.currentGroup = this.allGroupList[val]
       const currentGroup = this.currentGroup
+      if (!currentGroup) return
 
       const cid = currentGroup.cid // 方案id 'id1, id2'
       this.radioType = currentGroup.mainArithmetic // 流转算法
@@ -747,6 +748,49 @@ export default {
         this.allGroupList[this.groupCheckIndex].flowChart = currentGroupChartJson || null
       }
 
+      for (let i = 0; i < this.allGroupList.length; i++) {
+        const group = this.allGroupList[i]
+        // this.allGroupList.forEach(item => {
+        const flowChart = JSON.parse(group.flowChart) || {} // 画布的数据
+        const nodes = flowChart.nodes || [] // 画布中节点的数据
+        const mainArithmetic = group.mainArithmetic // 流转方式
+
+        // const errorFlag = false
+        // 流转方式: mainArithmetic
+        // value: 6:'故事线';
+        // value: 0:'顺序';
+        // value: 1:'循环'
+        // value: 2:'随机'
+        // value: 3: '自定义'
+        // value: 4: '不流转'
+        // value: 5: '智能'
+
+        // 流转条件的限制：不流转/故事线 不用配； 顺序 最后一个不用配；其他的每一个都要配
+        if (mainArithmetic !== 4 && mainArithmetic !== 6) {
+          for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i]
+            // 顺序 最后一个不用配；
+            if (mainArithmetic === 0) {
+              if ((node.dynamicJson === '{"condition":"OR","rules":[]}' || !node.dynamicJson) && i !== nodes.length - 1) {
+                return this.$message.error(`请填写分组${group.name}-${node.crowdName}中的流转条件`)
+              }
+            } else if ((node.dynamicJson === '{"condition":"OR","rules":[]}' || !node.dynamicJson)) {
+              // 其他的每一个都要配
+              return this.$message.error(`请填写分组${group.name}-${node.crowdName}中的流转条件`)
+            }
+          }
+        }
+        // errorFlag = nodes.some((node, index) => {
+        //   console.log('node-->', node)
+        //   if (mainArithmetic === 0) {
+        //     return (node.dynamicJson === '{"condition":"OR","rules":[]}' || !node.dynamicJson) && index !== nodes.length - 1
+        //   }
+        //   return (node.dynamicJson === '{"condition":"OR","rules":[]}' || !node.dynamicJson)
+        // })
+        // if (errorFlag) {
+        //   return this.$message.error(`请填写分组${group.name}-${node.crowdName}中的流转条件`)
+        // }
+      }
       // 所有实验分组的数据
       const parmas = this.allGroupList
 

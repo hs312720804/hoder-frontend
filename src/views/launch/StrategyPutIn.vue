@@ -277,7 +277,7 @@
 
                     </el-checkbox-group>
                 </el-form-item>
-                <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持 push 设备类型、pushId 类型</div>
+                <div v-if="crowdForm.crowdType === 3" class="tip-text tip">Tips: 行为人群当前仅支持 push 设备类型、pushId 类型</div>
             </div>
             <!-- 一键投放故事线场景，不需要展示下面的 -->
             <el-form-item v-if="!hiddenButton">
@@ -791,6 +791,5 @@ export default {
     color #333
     margin 10px
 .tip
-  color: #999;
-  margin: 0 50px
+  margin-left: 50px
 </style>

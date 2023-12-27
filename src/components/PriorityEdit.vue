@@ -17,7 +17,7 @@ export default {
       dataBackup: ''
     }
   },
-  props: ['data', 'crowdId', 'policyId', 'byPassId', 'showEdit', 'isDynamicPeople'],
+  props: ['data', 'crowdId', 'policyId', 'byPassId', 'showEdit', 'isDynamicPeople', 'parentId'],
   watch: {
     data: 'onDataChange'
   },
@@ -69,8 +69,14 @@ export default {
             this.priority = this.dataBackup
           })
         } else {
+          const params = {
+            crowdId: this.crowdId,
+            priority: this.priority,
+            policyId: this.policyId,
+            parentId: this.parentId
+          }
           // 调老的接口
-          this.$service.updatePrioorityInCrowdList({ crowdId: this.crowdId, priority: this.priority, policyId: this.policyId }, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
+          this.$service.updatePrioorityInCrowdList(params, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
             this.isEdit = false
             this.dataBackup = this.priority
             this.$emit('refresh')

@@ -535,6 +535,10 @@ export default {
 
     handleAdd () {
       this.dialogFormVisible = true
+      // 没有初始化数据的时候才去请求
+      if (this.crowdList.length === 0) {
+        this.qiBoRemoteMethod() // 弹窗 - 下拉列表
+      }
       this.$nextTick(res => {
         // 初始化数据
         this.form = this.initFormData()
@@ -624,7 +628,6 @@ export default {
     this.fetchData()
     // 初始化数据
     this.form = this.initFormData()
-    this.qiBoRemoteMethod() // 弹窗 - 下拉列表
   }
 }
 

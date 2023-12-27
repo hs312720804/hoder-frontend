@@ -132,6 +132,11 @@
         <el-button type="warning" @click="specialHandelBack">返回</el-button>
         <el-button type="primary" @click="specialTagSaveAndNext">下一步</el-button>
       </el-form-item>
+      <!-- 精细化人群 -->
+      <el-form-item v-if="pageType === 'refinePeopleTag'">
+        <el-button type="warning" @click="refinePeopleTagHandelBack">返回</el-button>
+        <el-button type="primary" @click="refinePeopleTagSaveAndNext">保存</el-button>
+      </el-form-item>
     </el-form>
 
     <!-- 组合标签场景下 -->
@@ -268,21 +273,21 @@ export default {
     initTagList: {
       handler (val) {
         // 编辑组合标签回显
-        if (this.pageType === 'specialTag') {
-          this.tagList = val
-          // this.addForm.crowdTagCrowdIds = [] // 人群标签
-          // this.addForm.conditionTagIds = [] // 其他
+        // if (this.pageType === 'specialTag') {
+        this.tagList = JSON.parse(JSON.stringify(val))
+        // this.addForm.crowdTagCrowdIds = [] // 人群标签
+        // this.addForm.conditionTagIds = [] // 其他
 
-          // val.forEach(item => {
-          //   if (item.dataSource === 12) {
-          //   // 人群标签 id 集合
-          //     this.addForm.crowdTagCrowdIds.push(item.tagId)
-          //   } else {
-          //   // 其他的标签 id 集合
-          //     this.addForm.conditionTagIds.push(item.tagId)
-          //   }
-          // })
-        }
+        // val.forEach(item => {
+        //   if (item.dataSource === 12) {
+        //   // 人群标签 id 集合
+        //     this.addForm.crowdTagCrowdIds.push(item.tagId)
+        //   } else {
+        //   // 其他的标签 id 集合
+        //     this.addForm.conditionTagIds.push(item.tagId)
+        //   }
+        // })
+        // }
       },
       immediate: true
     },
@@ -462,6 +467,29 @@ export default {
         }
       })
     },
+    // 精细化人群 返回
+    refinePeopleTagHandelBack () {
+      this.$emit('back')
+    },
+    //  精细化人群 保存
+    refinePeopleTagSaveAndNext () {
+      const addForm = JSON.parse(JSON.stringify(this.addForm))
+
+      if (addForm.conditionTagIds.length === 0) {
+        this.$message.error('请选择策略维度！')
+        return
+      }
+
+      // 其他的标签 id 集合
+      addForm.conditionTagIds = addForm.conditionTagIds.join(',')
+
+      // 人群标签 id 集合
+      addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.join(',')
+      // const tagIds = addForm.conditionTagIds
+      // this.$service.saveSpecialTag({ tagIds }).then((data) => {
+      this.$emit('policyNextStep', addForm)
+      // })
+    },
     // 组合标签 返回
     specialHandelBack () {
       this.$router.push({
@@ -621,7 +649,7 @@ export default {
         // 取消选中的则删除这一项
         let index = -1
         for (let i = 0; i < tagList.length; i++) {
-          if (tagList[i].tagId === val.tagId) {
+          if (Number(tagList[i].tagId) === Number(val.tagId)) {
             index = i
             this.tagList.splice(index, 1)
             return
@@ -657,13 +685,13 @@ export default {
   created () {
     this.fetchCheckListData()
     this.fetchTempCheckListData()
+    this.tagList = JSON.parse(JSON.stringify(this.initTagList))
+    // 一键投放
     if (this.recordId) {
       this.getPolicyDetail()
-      this.tagList = this.initTagList
     }
     // this.pageType === 'specialTag'  编辑组合标签回显
     if (this.policyId || this.pageType === 'specialTag') {
-      this.tagList = this.initTagList
       // console.log('this.addForm-->', this.addForm)
       // console.log('this.initTagList-->', this.initTagList)
       this.addForm.policyName = this.policyName

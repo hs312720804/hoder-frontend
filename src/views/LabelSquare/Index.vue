@@ -13,7 +13,7 @@
     <div class="other-form" v-if="!!filter.tagName" style="padding-top: 45px">
       <tag-list
         :data-list="dataList"
-        :default-data-source-enum="dataSourceEnum"
+        :defaultDataSourceEnum="dataSourceEnum"
         :launchStatusEnum="launchStatusEnum"
         :current-selected-tags="tagList"
         :type-enum="typeEnum"
@@ -50,20 +50,27 @@
       </el-tab-pane>
 
       <el-tab-pane label="大数据标签" name="bigDataTag">
-        <BigDataTag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+        <BigDataTag v-if="activeName === 'bigDataTag'" :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
           @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData"></BigDataTag>
       </el-tab-pane>
 
       <el-tab-pane label="第三方标签" name="third">
-        <third-party-tag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
-          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
+        <third-party-tag
+          v-if="activeName === 'third'"
+          :dataSourceEnum="dataSourceEnum"
+          :typeEnum="typeEnum"
+          :checkList="checkList"
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          @clear-search="handleClearSearch"
+          @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
         </third-party-tag>
       </el-tab-pane>
 
       <el-tab-pane label="自定义标签" name="customTag">
-        <custom-tag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+        <custom-tag v-if="activeName === 'customTag'" :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
           @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
         </custom-tag>
@@ -218,8 +225,6 @@ export default {
       dialogTitle: '',
       // ---------自定义编辑弹窗----------
 
-      // dataSourceEnum: {},
-      // typeEnum: {},
       tagCategory: {},
       definedTagId: '',
       launchStatusEnum: {}
@@ -227,6 +232,16 @@ export default {
     }
   },
   methods: {
+    getDataSourceList () {
+      this.$service.getDatasource().then((data) => {
+        this.dataSourceEnum = data || {}
+      })
+    },
+    getTagType () {
+      this.$service.getTagType().then((data) => {
+        this.typeEnum = data || {}
+      })
+    },
     handleRefreshList () {
       this.showAddTemp = false
       // this.refreshFlag = true
@@ -344,8 +359,8 @@ export default {
 
       this.$service.getTagGroupTreeList(filter).then((data) => {
         this.dataList = data.pageInfo.list
-        this.dataSourceEnum = data.lableDataSourceEnum
-        this.typeEnum = data.tagsTypeEnum
+        // this.dataSourceEnum = data.lableDataSourceEnum
+        // this.typeEnum = data.tagsTypeEnum
         this.launchStatusEnum = data.launchStatusEnum
         this.loading = false
         this.pagination.total = data.pageInfo.total
@@ -495,6 +510,8 @@ export default {
   created () {
     this.fetchCheckListData()
     this.fetchTempCheckListData()
+    this.getDataSourceList() // 数据来源字典
+    this.getTagType() // 数据类型字典：bool: "布尔型" boolean: "布尔型" collect: "数据集"crowd: "人群标签"mix: "特定标签"number: "数字型"string: "字符型"time: "时间型"
   }
 
 }

@@ -217,6 +217,7 @@ export default {
         '/storyLine': 'storyLine',
         '/operationHelper': 'operationHelper',
         '/cardPreference': 'cardPreference',
+        '/refinedPeople': 'refinedPeople',
         '/crowdCompute': 'crowdCompute',
         '/bitmap': 'bitmap'
       },
