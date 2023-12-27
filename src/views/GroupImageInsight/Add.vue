@@ -57,7 +57,7 @@ export default {
       default: true
     },
     localCrowdId: {
-      type: Number,
+      type: [String, Number],
       default: undefined
     },
     crowdName: {

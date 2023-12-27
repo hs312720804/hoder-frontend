@@ -8,10 +8,10 @@
     :crowdName="crowdName"
     :uploadTipMessage="uploadTipMessage"
     @close-add="handleCloseAddForm"
-    @upsert-end="handleRefreshList"
     @save-form="handleSave"
     @currentFileType="handleChangeType"
   >
+  <!-- @upsert-end="handleRefreshList" -->
       <!-- 解构插槽 Prop -->
       <template #default="{slotData}">
         <el-form-item label="标签名称">
@@ -39,9 +39,17 @@ export default {
       type: [String, Number],
       default: ''
     },
+    editTagId: {
+      type: [String, Number],
+      default: undefined
+    },
     crowdName: {
       type: String,
       default: ''
+    },
+    addOrEditStatus: {
+      type: String,
+      default: 'edit'
     }
   },
   data () {
@@ -63,6 +71,7 @@ export default {
       const formData = new FormData()
       formData.append('file', selectedFile)
       formData.append('launchName', launchName)
+      formData.append('tagId', this.editTagId)
       // debugger
       if (this.addOrEditStatus === 'add') {
         this.$service.addLocalCrowd(formData, '保存成功').then(() => {
@@ -76,17 +85,17 @@ export default {
       } else {
         this.$service.updateLocalCrowd({ formData, id: this.localCrowdId }, '编辑成功').then(() => {
           // this.$root.$emit('local-label-list-refresh')
+          debugger
           this.$root.$emit('custom-tag-list-refresh')
           this.handleCloseAddForm()
+          this.$emit('upsert-end')
         })
       }
     },
 
-    handleRefreshList () {
-      this.showList = true
-      this.refreshFlag = true
-      this.$root.$emit('custom-tag-list-refresh')
-    },
+    // handleRefreshList () {
+    //   this.$emit('upsert-end')
+    // },
     handleCloseAddForm () {
       // this.showAdd2 = false
       this.$emit('close-add')

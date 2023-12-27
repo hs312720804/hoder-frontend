@@ -82,7 +82,8 @@ export default {
     handleEdit (row) {
       const crowdName = row.launchName
       const localCrowdId = row.launchCrowdId
-      this.$emit('show-add', localCrowdId, crowdName)
+      const tagId = row.tagId
+      this.$emit('show-add', localCrowdId, crowdName, tagId)
     },
     // 下架
     onOrOffLocalCrowd (row) {

@@ -17,6 +17,7 @@
   </template>
   <template
     v-else-if="(launchStatusEnum[history.status]).code === 1 || (launchStatusEnum[history.status]).code === 4 || (launchStatusEnum[history.status]).code === 7">
+    <!-- 广告数据银行 crowdType：4 -->
     <span v-if="crowdType === 4">计算</span>
     <el-button type="text" v-else @click="calculate">计算</el-button>
   </template>
@@ -49,6 +50,10 @@ export default {
     launchStatusEnum: {
       type: Object,
       default: () => {}
+    },
+    crowdType: {
+      type: [Number, String],
+      default: ''
     }
   },
   data () {

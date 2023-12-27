@@ -109,6 +109,7 @@
       title="编辑本地标签"
       :localCrowdId="localCrowdId"
       :crowdName="crowdName"
+      :editTagId="editTagId"
       @close-add="handleCloseAddForm"
     >
     </LocalListEdit>
@@ -173,6 +174,7 @@ export default {
       showAddLocal: false, // 弹窗
       localCrowdId: '',
       crowdName: '',
+      editTagId: null,
       // // ------全局搜索 - 编辑本地标签  end-----
 
       dataList: [],
@@ -233,6 +235,8 @@ export default {
     },
     handleCloseAddForm () {
       this.showAddLocal = false
+      // 重新刷新
+      this.handleSearch()
     },
     // <!-- 全局搜索 - 编辑临时标签、本地标签 -->
     handleShowAdd (localCrowdId, crowdName, type) {
@@ -248,6 +252,7 @@ export default {
         this.refreshFlag = false
         this.localCrowdId = localCrowdId
         this.crowdName = crowdName
+        this.editTagId = this.dataList.find(item => item.launchCrowdId === localCrowdId).tagId || null
       }
     },
     // --------全局搜索标签，删除----------
