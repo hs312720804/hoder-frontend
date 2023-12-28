@@ -101,7 +101,7 @@
                     style="width: 130px"
                     class="time-dot-select-new"
                     :key="n + 'realTime'"
-                    v-model="childItem.secendTag"
+                    v-model="childItem.secondTag"
                     filterable
                     clearable
                     placeholder="请选择卡种"
