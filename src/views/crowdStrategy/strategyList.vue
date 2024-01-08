@@ -96,7 +96,11 @@
         >
           策略维度（
           <span class="checkbox--red">红色</span>为大数据标签,
-          <span class="checkbox--green">绿色</span>为自定义/本地标签,
+          <!-- <span class="checkbox--green">绿色</span>为自定义/本地标签, -->
+          <!-- 绿色为临时标签，橙色为本地标签，浅紫为自定义标签 -->
+          <span class="checkbox--green">绿色</span>为临时标签,
+          <span class="checkbox--localOrange">橙色</span>为本地标签,
+          <span class="checkbox--lavender">浅紫</span>为自定义标签,
           <span class="checkbox--blue">蓝色</span>为账号标签,
           <span class="checkbox--yellow">黄色</span>为实时标签,
           <span class="checkbox--orange">紫色</span>为动态指标,
@@ -300,7 +304,10 @@
         <div class="tags-tips">
           <!-- 注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
           注：<span class="checkbox--red">红色为大数据标签</span>,
-          <span class="checkbox--green">绿色为自定义/本地标签</span>,
+          <!-- <span class="checkbox--green">绿色为自定义/本地标签</span>, -->
+          <span class="checkbox--green">绿色</span>为临时标签,
+          <span class="checkbox--localOrange">橙色</span>为本地标签,
+          <span class="checkbox--lavender">浅紫</span>为自定义标签,
           <span class="checkbox--blue">蓝色为账号标签</span>,
           <span class="checkbox--yellow">黄色为实时标签</span>,
           <span class="checkbox--orange">紫色为动态指标</span>,

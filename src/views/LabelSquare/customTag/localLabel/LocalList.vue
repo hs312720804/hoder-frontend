@@ -204,9 +204,9 @@ export default {
         if (this.showSelection) {
           this.updateTableSelected()
         }
-        this.tableData.forEach(item => {
-          item.dataSource = 1
-        })
+        // this.tableData.forEach(item => {
+        //   item.dataSource = 1
+        // })
       })
     },
     // handleCommandOpreate(scope) {
