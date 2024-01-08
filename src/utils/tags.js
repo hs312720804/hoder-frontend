@@ -2,7 +2,7 @@ export const dataSourceColorEnum = {
   1: 'lavender ', // 自定义
   2: 'danger', // 大数据
   3: '',
-  5: 'warning',
+  5: 'yellow',
   6: 'warningOrange', // 动态指标
   7: 'warningOrange2', // DMP组合标签
   8: 'warningCyan', // 行为标签
