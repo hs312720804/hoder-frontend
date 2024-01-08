@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { nodeTypeText } from './enum.js'
+import { nodeTypeText } from './utils/enum.js'
 import Right from './Right.vue'
 export default {
   components: {
