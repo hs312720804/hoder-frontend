@@ -12,6 +12,11 @@ npm install
 npm run serve
 ```
 
+打包
+```
+npm run build
+```
+
 使用前端测试服务器的后端服务
 ```
 BACKEND=172.20.155.102:8009 npm run serve
