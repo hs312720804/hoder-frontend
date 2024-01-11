@@ -124,18 +124,42 @@
     </el-dialog>
 
     <el-dialog
-      :title="`${editRow ? editRow.sourceName : selectedTreeNode.sourceName} - ${editRow ? '编辑': '新增'}子人群`"
-      :visible.sync="clientDialogVisible"
-      width="1200px"
       v-if="clientDialogVisible"
+      :visible.sync="clientDialogVisible"
+      :title="`${editRow ? editRow.sourceName : selectedTreeNode.sourceName} - ${editRow ? '编辑': '新增'}子人群`"
+      width="1200px"
     >
     <!-- editRow--{{ editRow }} -->
+      <!-- 编辑人群条件-->
+      <!-- v-if="!editRow.abMainCrowd" -->
       <createClientDialog
         ref="createClientDialog"
         :selectedTreeNode="selectedTreeNode"
         :selectedTreeNodePolicy="selectedTreeNodePolicy"
         :editRow="editRow">
       </createClientDialog>
+
+      <!-- 编辑人群条件、编辑AB人群 -->
+      <!-- <div v-else-if="editRow.abMainCrowd == 1">
+        <el-tabs v-model="tabSet" type="card">
+          <el-tab-pane label="编辑人群条件" name="first">
+            <createClientDialog
+              ref="createClientDialog"
+              :selectedTreeNode="selectedTreeNode"
+              :selectedTreeNodePolicy="selectedTreeNodePolicy"
+              :editRow="editRow">
+            </createClientDialog>
+          </el-tab-pane>
+          <el-tab-pane label="编辑AB子人群" name="second">
+            <CrowdABAdd
+              mode="editABTest"
+              :crowd="editRow"
+              @goBackCrowdListPage="goBackCrowdListPage"
+            ></CrowdABAdd>
+          </el-tab-pane>
+        </el-tabs>
+      </div> -->
+
       <span slot="footer" class="dialog-footer">
         <el-button @click="clientDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addOrEditEntryRule">确 定</el-button>
@@ -179,13 +203,15 @@ import TreeForm from './coms/TreeForm.vue'
 import createClientDialog from './coms/createClientDialog.vue'
 import { validateRule, moveToRule, clearBehaviorRulesJson } from '@/views/storyLine/validateRuleData.js'
 import StrategyPutIn from '../launch/StrategyPutIn'
+import CrowdABAdd from '@/views/crowdStrategy/crowdAbTest'
 export default {
   name: 'refinedPeople',
   components: {
     TableIndex,
     TreeForm,
     createClientDialog,
-    StrategyPutIn
+    StrategyPutIn,
+    CrowdABAdd
   },
   props: {
     showSelection: {
@@ -243,8 +269,9 @@ export default {
       clientDialogVisible: false,
       editRow: undefined,
       openMoveOrClearDialogVisible: false,
-      openMoveOrClearDialogRef: undefined
+      openMoveOrClearDialogRef: undefined,
       // 添加子人群--- end
+      tabSet: 'first'
     }
   },
   watch: {
@@ -260,6 +287,13 @@ export default {
     }
   },
   methods: {
+    goBackCrowdListPage () {
+      // 刷新tree列表
+      this.fetchTreeData()
+      // 刷新表格
+      this.$refs.tableIndexRef.fetchData()
+      this.clientDialogVisible = false
+    },
     refreshList () {
       this.fetchTreeData()
     },
@@ -274,14 +308,14 @@ export default {
       moveToRule(this.openMoveOrClearDialogRef)
       this.openMoveOrClearDialogVisible = false
     },
-    // 投放
-    aaa () {
-      this.$service.freshCache({ policyId: this.recordId }).then(() => {
-        // this.$emit('closeDialog')
-        // this.$emit('refreshList')
-        // this.$root.$emit('stratege-list-refresh')
-      })
-    },
+    // // 投放
+    // aaa () {
+    //   this.$service.freshCache({ policyId: this.recordId }).then(() => {
+    //     // this.$emit('closeDialog')
+    //     // this.$emit('refreshList')
+    //     // this.$root.$emit('stratege-list-refresh')
+    //   })
+    // },
     // ---------- 编辑策略组 start ---------
     // 增加策略组、子人群
     handleTreeAdd (node, data) {
@@ -316,7 +350,8 @@ export default {
         crowdValidTo: row.crowdValidTo,
         id: row.crowdId,
         sourceName: row.crowdName,
-        parentId: row.parentId
+        parentId: row.parentId,
+        abMainCrowd: row.abMainCrowd
       }
     },
     // 编辑策略组、子人群 open 弹窗
@@ -464,7 +499,7 @@ export default {
         }
 
         this.$service.crowdUpdate(params).then(() => {
-          // 刷新列表
+          // 刷新tree列表
           this.fetchTreeData()
           // 刷新表格
           this.$refs.tableIndexRef.fetchData()
@@ -492,8 +527,10 @@ export default {
         }
 
         this.$service.crowdSave(params).then(() => {
-          // 刷新列表
+          // 刷新tree列表
           this.fetchTreeData()
+          // 刷新表格
+          this.$refs.tableIndexRef.fetchData()
           this.clientDialogVisible = false
         })
       }
